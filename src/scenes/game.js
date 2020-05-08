@@ -11,9 +11,9 @@ class Game extends Phaser.Scene {
         this.load.image('bg', 'bg.png');
 
         //sound
-        this.load.audio('E', 'sounds/E_guitar.wav');
-        this.load.audio('F', 'sounds/F_guitar.wav');
-        this.load.audio('G', 'sounds/G_guitar.wav');
+        this.load.audio('E', 'sounds/Short_E.wav');
+        this.load.audio('F', 'sounds/Short_F.wav');
+        this.load.audio('G', 'sounds/Short_G.wav');
     }
     create() {
         //BACKGROUND
