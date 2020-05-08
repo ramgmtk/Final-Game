@@ -21,11 +21,19 @@ let config = {
 //GLOBALS
 let centerX = config.width/2;
 let centerY = config.height/2;
+
 let playerAtlas = 'foo';
 let playerAccel = 2000;
 let playerMaxVelocity = 700;
 let playerDrag = playerAccel * 0.3;
 let playerHealth = 3;
+
+let noteQueueSize = 3;
+let noteTextConfig = {
+    fontSize: '32px',
+    strokeThickness: 3,
+}
+let uiDepth = 4;
 
 //change this to true to disable console.logs
 //ex: console.assert(debugFlag.foo, 'Your statement here');

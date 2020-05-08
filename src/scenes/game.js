@@ -51,19 +51,18 @@ class Game extends Phaser.Scene {
         this.cameras.main.setName('Player');
 
         //UI ELEMENTS
-        this.healthBar = this.add.group({
-            scene: this,
-            maxSize: playerHealth,
-
-        });
+        this.heartInfo = this.textures.get('heart').getSourceImage();
+        this.healthBar = [];
         this.createHealthBar();
         console.assert(debugFlags.uiFlag, this.healthBar);
+
         this.songBar = this.add.group({
             scene: this,
         });
-        this.noteBar = this.add.group({
-            scene: this,
-        });
+
+        this.noteBar = [];
+        this.createNoteBar();
+        console.assert(debugFlags.uiFlag, this.noteBar);
 
         //ENEMIES
 
@@ -75,7 +74,7 @@ class Game extends Phaser.Scene {
         //SOUND
         this.createSound();
 
-        //temporary variable
+        //temporary variable using to test collision things
         this.bullet = this.physics.add.sprite(centerX + 100, centerY + 100, 'projectile');
         this.bullet.setImmovable(true);
     }
@@ -94,8 +93,10 @@ class Game extends Phaser.Scene {
     //object2 is the projectile that has hit the player
     damagePlayer(object1, object2) {
         console.assert(debugFlags.enemyFlag, 'Collision with projectile');
-        this.healthBar.remove(this.healthBar.children.entries[this.healthBar.children.entries.length - 1], this, true)
-        if (this.healthBar.children.entries.length == 0) {
+        let heart = this.healthBar.pop();
+        heart.destroy();
+        //Check if player has hit 0 health
+        if (this.healthBar.length == 0) {
             this.gameOver = true;
         } else {
             //SHOULD FIX add player blinking effect here
@@ -113,11 +114,31 @@ class Game extends Phaser.Scene {
         
     }
 
+    //Initial setup of the healthbar
     createHealthBar() {
-        let heart = this.textures.get('heart').getSourceImage();
         for (let i = 0; i < playerHealth; i++) {
-            this.healthBar.add(this.add.image(i * heart.width, 0, 'heart').setOrigin(0).setScrollFactor(0));
+            this.healthBar.push(this.add.image(i * this.heartInfo.width, 0, 'heart').setOrigin(0).setDepth(uiDepth).setScrollFactor(0));
         }
+    }
+
+    //initial setup of the notebar
+    createNoteBar() {
+        for (let i = 0; i < noteQueueSize; i++) {
+            this.noteBar.push(this.add.text(i * this.heartInfo.width, this.heartInfo.height, '',noteTextConfig).setOrigin(0).setDepth(uiDepth).setScrollFactor(0));
+        }
+        console.log(this.noteBar[0]);
+    }
+
+    //simulates a queue-like behavior for adding notes to the bar.
+    addNotes(note) {
+        let curr = note;
+        let prev = this.noteBar[this.noteBar.length - 1].text;
+        for (let i = this.noteBar.length - 1; i > 0; i--) {
+            this.noteBar[i].setText(curr);
+            curr = prev;
+            prev = this.noteBar[i - 1].text;
+        }
+        this.noteBar[0].setText(curr);
     }
 
     createAnimations() {

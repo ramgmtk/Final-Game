@@ -77,12 +77,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         switch(musicalNote.keyCode) {
             case Phaser.Input.Keyboard.KeyCodes.J:
                 this.scene.musicalNoteOne.play();
+                this.scene.addNotes('j');
                 break;
             case Phaser.Input.Keyboard.KeyCodes.K:
                 this.scene.musicalNoteTwo.play();
+                this.scene.addNotes('k');
                 break;
             case Phaser.Input.Keyboard.KeyCodes.L:
                 this.scene.musicalNoteThree.play();
+                this.scene.addNotes('l');
                 break;
         }
     }
