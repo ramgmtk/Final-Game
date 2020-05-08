@@ -9,6 +9,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.setMaxVelocity(playerMaxVelocity);
 
         this.scene = scene;
+        this.canCollide = true;
 
         //add listeners for music playing
         this.scene.controls.j.addListener('down', this.playMusic, this);
@@ -44,7 +45,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         }
 
         if (this.scene.controls.a.isDown) {
-            console.assert(debugFlag, 'a');
+            console.assert(debugFlags.playerFlag, 'a');
             if (!this.anims.isPlaying || this.anims.getCurrentKey() != 'play') {
                 this.anims.play('left', false);
             }
@@ -54,7 +55,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             }*/
             this.setAccelerationX(-playerAccel);
         } else if (this.scene.controls.d.isDown) {
-            console.assert(debugFlag, 'd');
+            console.assert(debugFlags.playerFlag, 'd');
             if (!this.anims.isPlaying || this.anims.getCurrentKey() != 'play') {
                 this.anims.play('right', false);
             }
@@ -71,7 +72,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     //callback function for pressing jkl keys
     playMusic(musicalNote) {
-        console.assert(debugFlag, 'Entered music note callback');
+        console.assert(debugFlags.playerFlag, 'Entered music note callback');
         this.anims.play('play');
         switch(musicalNote.keyCode) {
             case Phaser.Input.Keyboard.KeyCodes.J:

@@ -9,6 +9,8 @@ class Game extends Phaser.Scene {
         this.load.path = './assets/';
         this.load.atlas(playerAtlas, 'spritesheet.png', 'sprites.json');
         this.load.image('bg', 'bg.png');
+        this.load.image('heart', 'heart.png')
+        this.load.image('projectile', 'projectile.png');
 
         //sound
         this.load.audio('E', 'sounds/Short_E.wav');
@@ -16,9 +18,11 @@ class Game extends Phaser.Scene {
         this.load.audio('G', 'sounds/Short_G.wav');
     }
     create() {
+        //misc
+        this.gameOver = false;
         //BACKGROUND
         this.add.image(0, 0, 'bg').setOrigin(0);
-        this.stageInfo = game.textures.get('bg');
+        this.stageInfo = this.textures.get('bg');
         this.stageInfo = this.stageInfo.getSourceImage();
         this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height)
         //PLAYER RELATED VARIABLES
@@ -44,10 +48,79 @@ class Game extends Phaser.Scene {
         this.cameras.main.startFollow(this.player, true, 1.0, 1.0);
         //wiggle room for the camera
         this.cameras.main.setDeadzone(this.playerSpriteInfo.width * 2, this.playerSpriteInfo.height * 2);
+        this.cameras.main.setName('Player');
+
+        //UI ELEMENTS
+        this.healthBar = this.add.group({
+            scene: this,
+            maxSize: playerHealth,
+
+        });
+        this.createHealthBar();
+        console.assert(debugFlags.uiFlag, this.healthBar);
+        this.songBar = this.add.group({
+            scene: this,
+        });
+        this.noteBar = this.add.group({
+            scene: this,
+        });
+
+        //ENEMIES
 
         //ANIMATIONS
         //Animations for the different animation states of the player
         //Left, Right, Up, Down movement, as well as playing a note.
+        this.createAnimations();
+
+        //SOUND
+        this.createSound();
+
+        //temporary variable
+        this.bullet = this.physics.add.sprite(centerX + 100, centerY + 100, 'projectile');
+        this.bullet.setImmovable(true);
+    }
+
+    update() {
+        if (!this.gameOver) {
+            this.player.update();
+            this.physics.world.collide(this.player, this.bullet, this.damagePlayer, (object1, object2) => {
+                return object1.canCollide;
+            }, this);
+        }
+    }
+
+    //callback function for if the player gets hit by projectile
+    //object1 should correspond to player
+    //object2 is the projectile that has hit the player
+    damagePlayer(object1, object2) {
+        console.assert(debugFlags.enemyFlag, 'Collision with projectile');
+        this.healthBar.remove(this.healthBar.children.entries[this.healthBar.children.entries.length - 1], this, true)
+        if (this.healthBar.children.entries.length == 0) {
+            this.gameOver = true;
+        } else {
+            //SHOULD FIX add player blinking effect here
+            object1.canCollide = false;
+            object2.destroy();
+            this.time.addEvent({
+                delay: 2000,
+                callback: () => {
+                    this.player.canCollide = true;
+                },
+                callbackScope: this,
+                loop: false
+            });
+        }
+        
+    }
+
+    createHealthBar() {
+        let heart = this.textures.get('heart').getSourceImage();
+        for (let i = 0; i < playerHealth; i++) {
+            this.healthBar.add(this.add.image(i * heart.width, 0, 'heart').setOrigin(0).setScrollFactor(0));
+        }
+    }
+
+    createAnimations() {
         this.anims.create({
             key: 'left',
             defaultTextureKey: playerAtlas,
@@ -92,8 +165,9 @@ class Game extends Phaser.Scene {
             ],
             duration: 2000,
         });
+    }
 
-        //SOUND
+    createSound() {
         this.musicalNoteOne = this.sound.add('E', {
             mute: false,
             volume: 0.3,
@@ -114,9 +188,5 @@ class Game extends Phaser.Scene {
             rate: 1.0,
             loop: false,
         });
-    }
-
-    update() {
-        this.player.update();
     }
 }

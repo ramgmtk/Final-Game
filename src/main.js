@@ -25,9 +25,14 @@ let playerAtlas = 'foo';
 let playerAccel = 2000;
 let playerMaxVelocity = 700;
 let playerDrag = playerAccel * 0.3;
+let playerHealth = 3;
 
 //change this to true to disable console.logs
-//ex: console.assert(debugFlag, 'Your statement here');
-let debugFlag = false;
+//ex: console.assert(debugFlag.foo, 'Your statement here');
+let debugFlags = {
+    playerFlag: false,
+    uiFlag: false,
+    enemyFlag: false,
+}
 
 let game = new Phaser.Game(config);
