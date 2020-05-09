@@ -7,6 +7,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.setImmovable(true);
         this.setCollideWorldBounds(true);
         this.setMaxVelocity(playerMaxVelocity);
+        this.setOrigin(0.5);
+        this.setDepth(uiDepth - 1);
 
         this.scene = scene;
         this.canCollide = true;
@@ -49,7 +51,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         }
 
         if (this.scene.controls.a.isDown) {
-            console.assert(debugFlags.playerFlag, 'a');
             if (!this.anims.isPlaying || this.anims.getCurrentKey() != 'play') {
                 this.anims.play('left', false);
             }
@@ -59,7 +60,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             }*/
             this.setAccelerationX(-playerAccel);
         } else if (this.scene.controls.d.isDown) {
-            console.assert(debugFlags.playerFlag, 'd');
             if (!this.anims.isPlaying || this.anims.getCurrentKey() != 'play') {
                 this.anims.play('right', false);
             }

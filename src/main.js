@@ -27,6 +27,7 @@ let playerAccel = 2000;
 let playerMaxVelocity = 700;
 let playerDrag = playerAccel * 0.3;
 let playerHealth = 3;
+let projectileVelocity = 100;
 
 let noteQueueSize = 3;
 let noteTextConfig = {

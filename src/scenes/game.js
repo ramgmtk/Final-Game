@@ -39,7 +39,7 @@ class Game extends Phaser.Scene {
             l: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L),
             space: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
         };
-        this.player = new Player(this, centerX, centerY, playerAtlas, 'sprite5').setOrigin(0.5).setDepth(3);
+        this.player = new Player(this, centerX, centerY, playerAtlas, 'sprite5');
 
         //CAMERA SETUP
         //How far the camera can go within the world.
@@ -63,7 +63,14 @@ class Game extends Phaser.Scene {
         });
 
         //ENEMIES
-
+        this.projectileGroup = this.add.group({
+            scene: this,
+            runChildUpdate: true,
+        });
+        
+        let test = new Projectile(this, centerX + 300, centerY + 300, 'projectile', this.player, Math.cos(5*Math.PI / 4), Math.sin(5*Math.PI / 4));
+        this.projectileGroup.add(test);
+        console.assert(debugFlags.enemyFlag, this.projectileGroup);
         //ANIMATIONS
         //Animations for the different animation states of the player
         //Left, Right, Up, Down movement, as well as playing a note.
@@ -71,10 +78,6 @@ class Game extends Phaser.Scene {
 
         //SOUND
         this.createSound();
-
-        //temporary variable using to test collision things
-        this.bullet = this.physics.add.sprite(centerX + 100, centerY + 100, 'projectile');
-        this.bullet.setImmovable(true);
     }
 
     update() {
@@ -83,7 +86,7 @@ class Game extends Phaser.Scene {
             if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
                 this.noteComboCheck();
             }
-            this.physics.world.collide(this.player, this.bullet, this.damagePlayer, (object1, object2) => {
+            this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
                 return object1.canCollide;
             }, this);
         }
@@ -122,12 +125,23 @@ class Game extends Phaser.Scene {
         }
     }
 
+    //used to manage the combo system.
     noteComboCheck() {
         let noteCombo = '';
         for (let i = 0; i < this.player.noteBar.length; i++) {
             noteCombo += this.player.noteBar[i].text;
         }
-        console.log(noteCombo);
+        //add code below to string compare which combo to play
+        if (noteCombo == 'jkl') {
+            console.log('bingus');
+            for(let i = 0; i < this.projectileGroup.children.entries.length; i++) {
+                this.projectileGroup.children.entries[i].redirect();
+            }
+        }
+        //Reset the bar
+        for (let i = 0; i < this.player.noteBar.length; i++) {
+            this.player.noteBar[i].setText('');
+        }
     }
 
     createAnimations() {
