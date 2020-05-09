@@ -15,6 +15,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.scene.controls.j.addListener('down', this.playMusic, this);
         this.scene.controls.k.addListener('down', this.playMusic, this);
         this.scene.controls.l.addListener('down', this.playMusic, this);
+
+        //notebar setup
+        this.noteBar = [];
+        this.createNoteBar();
     }
 
     update() {
@@ -77,16 +81,35 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         switch(musicalNote.keyCode) {
             case Phaser.Input.Keyboard.KeyCodes.J:
                 this.scene.musicalNoteOne.play();
-                this.scene.addNotes('j');
+                this.addNotes('j');
                 break;
             case Phaser.Input.Keyboard.KeyCodes.K:
                 this.scene.musicalNoteTwo.play();
-                this.scene.addNotes('k');
+                this.addNotes('k');
                 break;
             case Phaser.Input.Keyboard.KeyCodes.L:
                 this.scene.musicalNoteThree.play();
-                this.scene.addNotes('l');
+                this.addNotes('l');
                 break;
+        }
+    }
+
+    //simulates a queue-like behavior for adding notes to the bar.
+    addNotes(note) {
+        //array.shift can shift elements, but destroys some elements.
+        let curr = note;
+        let prev = this.noteBar[this.noteBar.length - 1].text;
+        for (let i = this.noteBar.length - 1; i > 0; i--) {
+            this.noteBar[i].setText(curr);
+            curr = prev;
+            prev = this.noteBar[i - 1].text;
+        }
+        this.noteBar[0].setText(curr);
+    }
+
+    createNoteBar() {
+        for (let i = 0; i < noteQueueSize; i++) {
+            this.noteBar.push(this.scene.add.text(i * noteSize, this.scene.heartInfo.height, '',noteTextConfig).setOrigin(0).setDepth(uiDepth).setScrollFactor(0));
         }
     }
 }

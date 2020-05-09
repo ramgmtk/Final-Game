@@ -24,6 +24,7 @@ class Game extends Phaser.Scene {
         this.add.image(0, 0, 'bg').setOrigin(0);
         this.stageInfo = this.textures.get('bg');
         this.stageInfo = this.stageInfo.getSourceImage();
+        this.heartInfo = this.textures.get('heart').getSourceImage();
         this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height)
         //PLAYER RELATED VARIABLES
         //key controls
@@ -36,6 +37,7 @@ class Game extends Phaser.Scene {
             j: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J),
             k: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K),
             l: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L),
+            space: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
         };
         this.player = new Player(this, centerX, centerY, playerAtlas, 'sprite5').setOrigin(0.5).setDepth(3);
 
@@ -51,7 +53,7 @@ class Game extends Phaser.Scene {
         this.cameras.main.setName('Player');
 
         //UI ELEMENTS
-        this.heartInfo = this.textures.get('heart').getSourceImage();
+        
         this.healthBar = [];
         this.createHealthBar();
         console.assert(debugFlags.uiFlag, this.healthBar);
@@ -59,10 +61,6 @@ class Game extends Phaser.Scene {
         this.songBar = this.add.group({
             scene: this,
         });
-
-        this.noteBar = [];
-        this.createNoteBar();
-        console.assert(debugFlags.uiFlag, this.noteBar);
 
         //ENEMIES
 
@@ -82,6 +80,9 @@ class Game extends Phaser.Scene {
     update() {
         if (!this.gameOver) {
             this.player.update();
+            if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
+                this.noteComboCheck();
+            }
             this.physics.world.collide(this.player, this.bullet, this.damagePlayer, (object1, object2) => {
                 return object1.canCollide;
             }, this);
@@ -121,24 +122,12 @@ class Game extends Phaser.Scene {
         }
     }
 
-    //initial setup of the notebar
-    createNoteBar() {
-        for (let i = 0; i < noteQueueSize; i++) {
-            this.noteBar.push(this.add.text(i * this.heartInfo.width, this.heartInfo.height, '',noteTextConfig).setOrigin(0).setDepth(uiDepth).setScrollFactor(0));
+    noteComboCheck() {
+        let noteCombo = '';
+        for (let i = 0; i < this.player.noteBar.length; i++) {
+            noteCombo += this.player.noteBar[i].text;
         }
-        console.log(this.noteBar[0]);
-    }
-
-    //simulates a queue-like behavior for adding notes to the bar.
-    addNotes(note) {
-        let curr = note;
-        let prev = this.noteBar[this.noteBar.length - 1].text;
-        for (let i = this.noteBar.length - 1; i > 0; i--) {
-            this.noteBar[i].setText(curr);
-            curr = prev;
-            prev = this.noteBar[i - 1].text;
-        }
-        this.noteBar[0].setText(curr);
+        console.log(noteCombo);
     }
 
     createAnimations() {
@@ -192,14 +181,14 @@ class Game extends Phaser.Scene {
         this.musicalNoteOne = this.sound.add('E', {
             mute: false,
             volume: 0.3,
-            rate: 7.0,
+            rate: 1.0,
             loop: false,
         });
 
         this.musicalNoteTwo = this.sound.add('F', {
             mute: false,
             volume: 0.3,
-            rate: 7.0,
+            rate: 1.0,
             loop: false,
         });
 

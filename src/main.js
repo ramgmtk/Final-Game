@@ -33,6 +33,7 @@ let noteTextConfig = {
     fontSize: '32px',
     strokeThickness: 3,
 }
+let noteSize = parseFloat(noteTextConfig.fontSize);
 let uiDepth = 4;
 
 //change this to true to disable console.logs
