@@ -67,10 +67,9 @@ class Game extends Phaser.Scene {
             scene: this,
             runChildUpdate: true,
         });
-        
-        let test = new Projectile(this, centerX + 300, centerY + 300, 'projectile', this.player, Math.cos(5*Math.PI / 4), Math.sin(5*Math.PI / 4));
-        this.projectileGroup.add(test);
         console.assert(debugFlags.enemyFlag, this.projectileGroup);
+        //test enemy
+        this.enemy = new Enemy(this, centerX + 300, centerY, playerAtlas, 50, 'sprite5');
         //ANIMATIONS
         //Animations for the different animation states of the player
         //Left, Right, Up, Down movement, as well as playing a note.
@@ -83,11 +82,14 @@ class Game extends Phaser.Scene {
     update() {
         if (!this.gameOver) {
             this.player.update();
+            if (this.enemy != null){
+                this.enemy.update();
+            }
             if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
                 this.noteComboCheck();
             }
             this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
-                return object1.canCollide;
+                return object1.canCollide && !object2.canCollideParent ? true : false;
             }, this);
         }
     }
