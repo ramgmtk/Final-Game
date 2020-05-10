@@ -15,6 +15,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
             //runChildUpdate: true,
         });
 
+        this.spawnNumber = 16;
         this.projectileSpawn = scene.time.addEvent({
             delay: 3000,
             callback: this.spawnPattern,
@@ -38,13 +39,14 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
             }, (object1, object2) => {
                 return object2.canCollideParent;
             }, this);
-            console.assert(debugFlags.enemyFlag, this.health);
+            console.assert(debugFlags.enemyFlag, `Enemy health ${this.health}`);
         }
     }
 
     spawnPattern() {
-        for (let i = 0; i < 15; i++) {
-            let projectile = new Projectile(this.scene, this.x, this.y, 'projectile',this, Math.cos(i*Math.PI/8), Math.sin(i*Math.PI/8));
+        for (let i = 0; i < this.spawnNumber; i++) {
+            let projectile = new Projectile(this.scene, this.x, this.y, 'projectile',this, 
+                Math.cos(i*Math.PI/(this.spawnNumber/2)), Math.sin(i*Math.PI/(this.spawnNumber/2)));
             this.projectileGroup.add(projectile);
             this.scene.projectileGroup.add(projectile);
         }
