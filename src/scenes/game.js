@@ -99,9 +99,12 @@ class Game extends Phaser.Scene {
             this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
                 return object1.canCollide && !object2.canCollideParent ? true : false;
             }, this);
-            this.physics.world.collide(this.player.weapon, this.enemyGroup, (object1, object2) => {
-                object2.health -= 1;
-            }, null, this);
+
+            if (this.player.isAttacking) {
+                this.physics.world.collide(this.player.weapon, this.enemyGroup, (object1, object2) => {
+                    object2.health -= 1;
+                }, null, this);
+            }
         }
     }
 

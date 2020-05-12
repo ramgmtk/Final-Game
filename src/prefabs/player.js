@@ -29,6 +29,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.weapon.body.setSize(scene.playerSpriteInfo.width/2, scene.playerSpriteInfo.height/2);
         this.weaponOffsetX = 0;
         this.weaponOffsetY = 0;
+        this.isAttacking = false;
     }
 
     update() {
@@ -75,6 +76,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         //https://codepen.io/samme/pen/ExYGRyo?editors=0010
         //Courtesy of user: samme https://phaser.discourse.group/t/arcade-physics-create-one-sprite-with-multiple-collision-bodies-compounded-sprite/3773
         if (Phaser.Input.Keyboard.JustDown(this.scene.controls.f)) {
+            this.isAttacking = true;
             console.assert(debugFlags.playerFlag, 'Performing melee attack');
             this.weaponOffsetX = 0;
             this.weaponOffsetY = 0
@@ -96,6 +98,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.weapon.body.setSize(this.scene.playerSpriteInfo.width/2, this.scene.playerSpriteInfo.height/2)
             this.weaponOffsetX = 0;
             this.weaponOffsetY = 0;
+            this.isAttacking = false;
         }
         this.weapon.body.x = this.body.x + this.body.halfWidth - this.weapon.body.halfWidth + this.weaponOffsetX;
         this.weapon.body.y = this.body.y + this.body.halfHeight - this.weapon.body.halfHeight + this.weaponOffsetY;

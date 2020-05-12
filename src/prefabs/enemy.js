@@ -18,7 +18,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.spawnNumber = 16;
         this.projectileSpawn = scene.time.addEvent({
             delay: 3000,
-            //callback: this.spawnPattern,
+            callback: this.spawnPattern,
             callbackScope: this,
             loop: true,
         });
