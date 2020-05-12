@@ -21,29 +21,31 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         //notebar setup
         this.noteBar = [];
         this.createNoteBar();
+
+        this.weapon = new Phaser.Physics.Arcade.Sprite(scene, this.x, this.y, texture = null, frame = 0).setOrigin(0.5).setDepth(uiDepth - 1);
+        scene.physics.add.existing(this.weapon);
+        this.weapon.body.setSize(scene.playerSpriteInfo.width/2, scene.playerSpriteInfo.height/2);
+        this.weaponOffsetX = 0;
+        this.weaponOffsetY = 0;
     }
 
     update() {
         this.playerMovement();
+        this.weaponMovement();
     }
 
     //handles the players basic movement
     playerMovement() {
+        //this.weapon.body.velocity.copy(this.body.velocity)
         if (this.scene.controls.w.isDown) {
-            if (!this.anims.isPlaying || this.anims.getCurrentKey() != 'play') {
+            if (!this.anims.isPlaying && (this.anims.getCurrentKey() != 'play' || this.anims.getCurrentKey() != 'melee')) {
                 this.anims.play('up', false);
             }
-            /*if (Phaser.Input.Keyboard.JustUp(this.scene.controls.s)) {
-                this.setVelocityY(playerMaxVelocity * 0.5);
-            }*/
             this.setAccelerationY(-playerAccel);
         } else if (this.scene.controls.s.isDown) {
-            if (!this.anims.isPlaying || this.anims.getCurrentKey() != 'play') {
+            if (!this.anims.isPlaying && (this.anims.getCurrentKey() != 'play' || this.anims.getCurrentKey() != 'melee')) {
                 this.anims.play('down', false);
             }
-            /*if (Phaser.Input.Keyboard.JustUp(this.scene.controls.w)) {
-                this.setVelocityY(-playerMaxVelocity * 0.5);
-            }*/
             this.setAccelerationY(playerAccel);
         } else {
             this.setAccelerationY(0);
@@ -51,27 +53,47 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         }
 
         if (this.scene.controls.a.isDown) {
-            if (!this.anims.isPlaying || this.anims.getCurrentKey() != 'play') {
+            if (!this.anims.isPlaying && (this.anims.getCurrentKey() != 'play' || this.anims.getCurrentKey() != 'melee')) {
                 this.anims.play('left', false);
             }
-            /*if (Phaser.Input.Keyboard.JustUp(this.scene.controls.d)) {
-                console.assert(debugFlag, 'testing drag a');
-                this.setVelocityX(playerMaxVelocity * 0.7);
-            }*/
             this.setAccelerationX(-playerAccel);
         } else if (this.scene.controls.d.isDown) {
-            if (!this.anims.isPlaying || this.anims.getCurrentKey() != 'play') {
+            if (!this.anims.isPlaying && (this.anims.getCurrentKey() != 'play' || this.anims.getCurrentKey() != 'melee')) {
                 this.anims.play('right', false);
             }
-            /*if (Phaser.Input.Keyboard.JustUp(this.scene.controls.a)) {
-                console.assert(debugFlag, 'testing drag d');
-                this.setVelocityX(-playerMaxVelocity * 0.7);
-            }*/
             this.setAccelerationX(playerAccel);
         } else {
             this.setAccelerationX(0);
             this.setDragX(playerDrag);
         }
+    }
+
+    weaponMovement() {
+        if (Phaser.Input.Keyboard.JustDown(this.scene.controls.f)) {
+            console.assert(debugFlags.playerFlag, 'Performing melee attack');
+            this.weaponOffsetX = 0;
+            this.weaponOffsetY = 0
+            this.anims.play('melee');
+            if (this.scene.controls.w.isDown) {
+                this.weapon.body.setSize(this.scene.playerSpriteInfo.width*2, this.scene.playerSpriteInfo.height);
+                this.weaponOffsetY = -this.scene.playerSpriteInfo.height
+            } else if (this.scene.controls.s.isDown) {
+                this.weapon.body.setSize(this.scene.playerSpriteInfo.width*2, this.scene.playerSpriteInfo.height);
+                this.weaponOffsetY = this.scene.playerSpriteInfo.height;
+            } else if (this.scene.controls.a.isDown) {
+                this.weapon.body.setSize(this.scene.playerSpriteInfo.width, this.scene.playerSpriteInfo.height*2);
+                this.weaponOffsetX = -this.scene.playerSpriteInfo.width;
+            } else {
+                this.weapon.body.setSize(this.scene.playerSpriteInfo.width, this.scene.playerSpriteInfo.height*2);
+                this.weaponOffsetX = this.scene.playerSpriteInfo.width;
+            }
+        } else if (!this.anims.isPlaying || this.anims.getCurrentKey() != 'melee') {
+            this.weapon.body.setSize(this.scene.playerSpriteInfo.width/2, this.scene.playerSpriteInfo.height/2)
+            this.weaponOffsetX = 0;
+            this.weaponOffsetY = 0;
+        }
+        this.weapon.body.x = this.body.x + this.body.halfWidth - this.weapon.body.halfWidth + this.weaponOffsetX;
+        this.weapon.body.y = this.body.y + this.body.halfHeight - this.weapon.body.halfHeight + this.weaponOffsetY;
     }
 
     //callback function for pressing jkl keys

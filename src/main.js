@@ -23,9 +23,9 @@ let centerX = config.width/2;
 let centerY = config.height/2;
 
 let playerAtlas = 'foo';
-let playerAccel = 2000;
+let playerAccel = 5000; //note at values this high, might be better off working with velocity alone.
 let playerMaxVelocity = 700;
-let playerDrag = playerAccel * 0.3;
+let playerDrag = playerAccel * 1.5;
 let playerHealth = 3;
 let projectileVelocity = 100;
 

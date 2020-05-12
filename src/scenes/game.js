@@ -34,6 +34,7 @@ class Game extends Phaser.Scene {
             a: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
             s: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
             d: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
+            f: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F),
             j: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J),
             k: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K),
             l: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L),
@@ -43,14 +44,14 @@ class Game extends Phaser.Scene {
 
         //CAMERA SETUP
         //How far the camera can go within the world.
-        this.cameras.main.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height);
+        this.playerCam = this.cameras.main.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height);
         //The actual lens through which we see the game.
-        this.cameras.main.setViewport(0, 0, game.config.width, game.config.height);
+        this.playerCam.setViewport(0, 0, game.config.width, game.config.height);
         //how the camera follows the player
-        this.cameras.main.startFollow(this.player, true, 1.0, 1.0);
+        this.playerCam.startFollow(this.player, true, 1.0, 1.0);
         //wiggle room for the camera
-        this.cameras.main.setDeadzone(this.playerSpriteInfo.width * 2, this.playerSpriteInfo.height * 2);
-        this.cameras.main.setName('Player');
+        this.playerCam.setDeadzone(this.playerSpriteInfo.width * 2, this.playerSpriteInfo.height * 2);
+        this.playerCam.setName('Player');
 
         //UI ELEMENTS
         
@@ -68,8 +69,13 @@ class Game extends Phaser.Scene {
             runChildUpdate: true,
         });
         console.assert(debugFlags.enemyFlag, this.projectileGroup);
-        //test enemy
-        this.enemy = new Enemy(this, centerX + 300, centerY, playerAtlas, 50, 'sprite5');
+        
+        this.enemyGroup = this.add.group({
+            scene: this,
+            runChildUpdate: true,
+        })
+        let enemy = new Enemy(this, centerX + 300, centerY, playerAtlas, 50, 'sprite5');
+        this.enemyGroup.add(enemy);
         //ANIMATIONS
         //Animations for the different animation states of the player
         //Left, Right, Up, Down movement, as well as playing a note.
@@ -91,6 +97,9 @@ class Game extends Phaser.Scene {
             this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
                 return object1.canCollide && !object2.canCollideParent ? true : false;
             }, this);
+            this.physics.world.collide(this.player.weapon, this.enemyGroup, (object1, object2) => {
+                object2.health -= 1;
+            }, null, this);
         }
     }
 
@@ -100,6 +109,7 @@ class Game extends Phaser.Scene {
     damagePlayer(object1, object2) {
         console.assert(debugFlags.enemyFlag, 'Collision with projectile');
         let heart = this.healthBar.pop();
+        this.playerCam.shake(500, 0.003, false);
         heart.destroy();
         //Check if player has hit 0 health
         if (this.healthBar.length == 0) {
@@ -190,6 +200,15 @@ class Game extends Phaser.Scene {
                 {frame: 'sprite5'},
             ],
             duration: 2000,
+        });
+
+        this.anims.create({
+            key: 'melee',
+            defaultTextureKey: playerAtlas,
+            frames: [
+                {frame: 'sprite5'},
+            ],
+            duration: 500,
         });
     }
 
