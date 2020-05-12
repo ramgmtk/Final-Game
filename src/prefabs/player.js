@@ -14,9 +14,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.canCollide = true;
 
         //add listeners for music playing
+        this.scene.controls.h.addListener('down', this.playMusic, this);
         this.scene.controls.j.addListener('down', this.playMusic, this);
         this.scene.controls.k.addListener('down', this.playMusic, this);
         this.scene.controls.l.addListener('down', this.playMusic, this);
+        this.scene.controls.i.addListener('down', this.playMusic, this);
 
         //notebar setup
         this.noteBar = [];
@@ -69,6 +71,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     weaponMovement() {
+        //Source code referenced for weapon placement:
+        //https://codepen.io/samme/pen/ExYGRyo?editors=0010
+        //Courtesy of user: samme https://phaser.discourse.group/t/arcade-physics-create-one-sprite-with-multiple-collision-bodies-compounded-sprite/3773
         if (Phaser.Input.Keyboard.JustDown(this.scene.controls.f)) {
             console.assert(debugFlags.playerFlag, 'Performing melee attack');
             this.weaponOffsetX = 0;
@@ -101,6 +106,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         console.assert(debugFlags.playerFlag, 'Entered music note callback');
         this.anims.play('play');
         switch(musicalNote.keyCode) {
+            case Phaser.Input.Keyboard.KeyCodes.H:
+                this.addNotes('h');
+                break;
             case Phaser.Input.Keyboard.KeyCodes.J:
                 this.scene.musicalNoteOne.play();
                 this.addNotes('j');
@@ -112,6 +120,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             case Phaser.Input.Keyboard.KeyCodes.L:
                 this.scene.musicalNoteThree.play();
                 this.addNotes('l');
+                break;
+            case Phaser.Input.Keyboard.KeyCodes.I:
+                this.addNotes('i');
                 break;
         }
     }

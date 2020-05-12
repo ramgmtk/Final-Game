@@ -35,9 +35,11 @@ class Game extends Phaser.Scene {
             s: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S),
             d: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D),
             f: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.F),
+            h: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.H),
             j: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J),
             k: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K),
             l: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.L),
+            i: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I),
             space: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
         };
         this.player = new Player(this, centerX, centerY, playerAtlas, 'sprite5');
