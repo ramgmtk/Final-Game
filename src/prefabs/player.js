@@ -30,6 +30,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.weaponOffsetX = 0;
         this.weaponOffsetY = 0;
         this.isAttacking = false;
+        this.canShrink = true;
     }
 
     update() {
@@ -110,21 +111,23 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.anims.play('play');
         switch(musicalNote.keyCode) {
             case Phaser.Input.Keyboard.KeyCodes.H:
+                this.scene.musicalNoteE.play();
                 this.addNotes('h');
                 break;
             case Phaser.Input.Keyboard.KeyCodes.J:
-                this.scene.musicalNoteOne.play();
+                this.scene.musicalNoteF.play();
                 this.addNotes('j');
                 break;
             case Phaser.Input.Keyboard.KeyCodes.K:
-                this.scene.musicalNoteTwo.play();
+                this.scene.musicalNoteG.play();
                 this.addNotes('k');
                 break;
             case Phaser.Input.Keyboard.KeyCodes.L:
-                this.scene.musicalNoteThree.play();
+                this.scene.musicalNoteA.play();
                 this.addNotes('l');
                 break;
             case Phaser.Input.Keyboard.KeyCodes.I:
+                this.scene.musicalNoteFS.play();
                 this.addNotes('i');
                 break;
         }

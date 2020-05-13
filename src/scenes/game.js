@@ -16,6 +16,8 @@ class Game extends Phaser.Scene {
         this.load.audio('E', 'sounds/Short_E.wav');
         this.load.audio('F', 'sounds/Short_F.wav');
         this.load.audio('G', 'sounds/Short_G.wav');
+        this.load.audio('F_Sharp', 'sounds/Short_F_Sharp.wav');
+        this.load.audio('A', 'sounds/Short_A.wav')
     }
     create() {
         //misc
@@ -118,6 +120,9 @@ class Game extends Phaser.Scene {
         heart.destroy();
         //Check if player has hit 0 health
         if (this.healthBar.length == 0) {
+            this.time.removeAllEvents(); //clears the event calls
+            this.enemyGroup.clear(true, true);
+            this.projectileGroup.clear(true, true);
             this.gameOver = true;
         } else {
             //SHOULD FIX add player blinking effect here
@@ -150,9 +155,24 @@ class Game extends Phaser.Scene {
         }
         //add code below to string compare which combo to play
         if (noteCombo == 'jkl') {
-            console.log('bingus');
+            console.assert(debugFlags.playerFlag, 'Reverse');
             for(let i = 0; i < this.projectileGroup.children.entries.length; i++) {
                 this.projectileGroup.children.entries[i].redirect();
+            }
+        } else if (noteCombo == 'hij') { //MUST FIX, WHAT IF PLAYER RESIZES INTO A NARROW ENTRANCE?
+            console.assert(debugFlags.playerFlag, 'Shrink');
+            if (this.player.canShrink) {
+                this.player.setScale(0.5);
+                this.player.canShrink = false;
+                this.time.addEvent({
+                    delay: 3000,
+                    callback: () => {
+                        this.player.setScale(1.0);
+                        this.player.canShrink = true;
+                    },
+                    callbackScope: this,
+                    loop: false,
+                });
             }
         }
         //Reset the bar
@@ -218,25 +238,40 @@ class Game extends Phaser.Scene {
     }
 
     createSound() {
-        this.musicalNoteOne = this.sound.add('E', {
+        this.musicalNoteE = this.sound.add('E', {
             mute: false,
             volume: 0.3,
             rate: 1.0,
             loop: false,
         });
 
-        this.musicalNoteTwo = this.sound.add('F', {
+        this.musicalNoteF = this.sound.add('F', {
             mute: false,
             volume: 0.3,
             rate: 1.0,
             loop: false,
         });
 
-        this.musicalNoteThree = this.sound.add('G', {
+        this.musicalNoteG = this.sound.add('G', {
             mute: false,
             volume: 0.3,
             rate: 1.0,
             loop: false,
         });
+
+        this.musicalNoteA = this.sound.add('A', {
+            mute: false,
+            volume: 0.3,
+            rate: 1.0,
+            loop: false,
+        });
+
+        this.musicalNoteFS = this.sound.add('F_Sharp', {
+            mute: false,
+            volume: 0.3,
+            rate: 1.0,
+            loop: false,
+        });
+
     }
 }
