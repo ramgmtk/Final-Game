@@ -31,10 +31,20 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.weaponOffsetY = 0;
         this.isAttacking = false;
         this.canShrink = true;
+
+        this.shield = new Phaser.Physics.Arcade.Sprite(scene, this.x, this.y, 'shield', frame = 0).setOrigin(0.5).setDepth(uiDepth - 1).setAlpha(0);
+        scene.add.existing(this.shield);
+        scene.physics.add.existing(this.shield);
+        this.shield.setAngularVelocity(100);;
+        this.shield.body.setCircle(scene.playerSpriteInfo.width);
+        this.shield.setScale(2.0);
+        this.shield.x = this.x;
+        this.shieldActive = false;
     }
 
     update() {
         this.playerMovement();
+        this.shieldMovement();
         this.weaponMovement();
     }
 
@@ -103,6 +113,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         }
         this.weapon.body.x = this.body.x + this.body.halfWidth - this.weapon.body.halfWidth + this.weaponOffsetX;
         this.weapon.body.y = this.body.y + this.body.halfHeight - this.weapon.body.halfHeight + this.weaponOffsetY;
+    }
+
+    shieldMovement() {
+        this.shield.body.x = this.body.x + this.body.halfWidth - this.shield.body.halfWidth;
+        this.shield.body.y = this.body.y + this.body.halfHeight - this.shield.body.halfHeight;
     }
 
     //callback function for pressing jkl keys

@@ -11,6 +11,7 @@ class Game extends Phaser.Scene {
         this.load.image('bg', 'bg.png');
         this.load.image('heart', 'heart.png')
         this.load.image('projectile', 'projectile.png');
+        this.load.image('shield', 'shield.png');
 
         //sound
         this.load.audio('E', 'sounds/Short_E.wav');
@@ -80,6 +81,8 @@ class Game extends Phaser.Scene {
         })
         let enemy = new Enemy(this, centerX + 300, centerY, playerAtlas, 50, 'sprite5');
         this.enemyGroup.add(enemy);
+        this.physics.add.collider(this.player, this.enemyGroup);
+        
         //ANIMATIONS
         //Animations for the different animation states of the player
         //Left, Right, Up, Down movement, as well as playing a note.
@@ -104,7 +107,13 @@ class Game extends Phaser.Scene {
 
             if (this.player.isAttacking) {
                 this.physics.world.collide(this.player.weapon, this.enemyGroup, (object1, object2) => {
-                    object2.health -= 1;
+                    object2.damageEnemy();
+                }, null, this);
+            }
+
+            if (this.player.shieldActive) {
+                this.physics.world.collide(this.player.shield, this.projectileGroup, (object1, object2) => {
+                    object2.destroy();
                 }, null, this);
             }
         }
@@ -169,6 +178,23 @@ class Game extends Phaser.Scene {
                     callback: () => {
                         this.player.setScale(1.0);
                         this.player.canShrink = true;
+                    },
+                    callbackScope: this,
+                    loop: false,
+                });
+            }
+        } else if (noteCombo == 'khi') {
+            console.assert(debugFlags.playerFlag, 'Shield');
+            if (!this.player.shieldActive) {
+                this.player.shieldActive = true;
+                this.player.shield.setAlpha(1);
+                this.player.setMaxVelocity(playerMaxVelocity/2);
+                this.time.addEvent({
+                    delay: 2000,
+                    callback: () => {
+                        this.player.shieldActive = false;
+                        this.player.shield.setAlpha(0);
+                        this.player.setMaxVelocity(playerMaxVelocity);
                     },
                     callbackScope: this,
                     loop: false,
