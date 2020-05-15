@@ -59,14 +59,23 @@ class Game extends Phaser.Scene {
         this.playerCam.setName('Player');
 
         //UI ELEMENTS
-        
         this.healthBar = [];
         this.createHealthBar();
         console.assert(debugFlags.uiFlag, this.healthBar);
 
-        this.songBar = this.add.group({
-            scene: this,
-        });
+        this.powerChordBar = [
+            {powerChord: 'jkl',
+             name: 'Reverse',
+             unlocked: true,},
+            {powerChord: 'hij',
+             name: 'Shrink',
+             unlocked: true,},
+            {powerChord: 'khi',
+             name: 'Shield',
+             unlocked: true},
+        ];
+        this.powerChordList = new Array(this.powerChordBar.length);
+        this.updatePowerChordList();
 
         //ENEMIES
         this.projectileGroup = this.add.group({
@@ -156,6 +165,25 @@ class Game extends Phaser.Scene {
         }
     }
 
+    //update the notebar
+    updatePowerChordList() {
+        //empty the list to be recreated. Inefficient
+        for (let i = 0; i < this.powerChordList.length; i++) {
+            if (this.powerChordList[i] != null) {
+                this.powerChordList[i].destroy();
+            }  
+        }
+        //inefficient
+        let k = 0;
+        for (let i = 0; i < this.powerChordBar.length; i++) {
+            if (this.powerChordBar[i].unlocked) {
+                this.powerChordList[i] = this.add.text(this.playerCam.width - (noteQueueSize * noteSize), k * noteSize,
+                     this.powerChordBar[i].powerChord, noteTextConfig).setOrigin(0).setDepth(uiDepth).setScrollFactor(0);
+                k += 1;
+            }
+        }
+    }
+
     //used to manage the combo system.
     noteComboCheck() {
         let noteCombo = '';
@@ -163,12 +191,12 @@ class Game extends Phaser.Scene {
             noteCombo += this.player.noteBar[i].text;
         }
         //add code below to string compare which combo to play
-        if (noteCombo == 'jkl') {
+        if (noteCombo == this.powerChordBar[0].powerChord) {
             console.assert(debugFlags.playerFlag, 'Reverse');
             for(let i = 0; i < this.projectileGroup.children.entries.length; i++) {
                 this.projectileGroup.children.entries[i].redirect();
             }
-        } else if (noteCombo == 'hij') { //MUST FIX, WHAT IF PLAYER RESIZES INTO A NARROW ENTRANCE?
+        } else if (noteCombo == this.powerChordBar[1].powerChord) { //MUST FIX, WHAT IF PLAYER RESIZES INTO A NARROW ENTRANCE?
             console.assert(debugFlags.playerFlag, 'Shrink');
             if (this.player.canShrink) {
                 this.player.setScale(0.5);
@@ -183,12 +211,12 @@ class Game extends Phaser.Scene {
                     loop: false,
                 });
             }
-        } else if (noteCombo == 'khi') {
+        } else if (noteCombo == this.powerChordBar[2].powerChord) {
             console.assert(debugFlags.playerFlag, 'Shield');
             if (!this.player.shieldActive) {
                 this.player.shieldActive = true;
                 this.player.shield.setAlpha(1);
-                this.player.setMaxVelocity(playerMaxVelocity/2);
+                this.player.setMaxVelocity(playerMaxVelocity/5);
                 this.time.addEvent({
                     delay: 2000,
                     callback: () => {

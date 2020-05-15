@@ -38,7 +38,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.shield.setAngularVelocity(100);;
         this.shield.body.setCircle(scene.playerSpriteInfo.width);
         this.shield.setScale(2.0);
-        this.shield.x = this.x;
         this.shieldActive = false;
     }
 
