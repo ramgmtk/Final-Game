@@ -27,7 +27,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     update() {
         if (this.health <= 0) {
             //clear out this enemies projectiles on destruction.
-            this.destroy();
+            this.destroyObject();
         } else {
             //Note this allows other nemies projectiles to damage other enemies.
             this.scene.physics.world.collide(this, this.scene.projectileGroup, (object1, object2) => {
@@ -54,11 +54,11 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         //insert some damage indicator
     }
 
-    destroy() {
+    destroyObject() {
         console.assert(debugFlags.enemyFlag, 'Destroying Enemy');
         this.projectileGroup.clear(true, true);
         //remove the spawn timer from the scene
-        this.projectileSpawn.destroy();
+        this.projectileSpawn.remove();
         super.destroy();
     }
 } 

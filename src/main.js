@@ -15,7 +15,7 @@ let config = {
             }
         }
     },
-    scene: [Game],
+    scene: [Game, BossRoom],
 }
 
 //GLOBALS

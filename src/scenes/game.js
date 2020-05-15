@@ -90,7 +90,6 @@ class Game extends Phaser.Scene {
         })
         let enemy = new Enemy(this, centerX + 300, centerY, playerAtlas, 50, 'sprite5');
         this.enemyGroup.add(enemy);
-        this.physics.add.collider(this.player, this.enemyGroup);
         
         //ANIMATIONS
         //Animations for the different animation states of the player
@@ -99,33 +98,51 @@ class Game extends Phaser.Scene {
 
         //SOUND
         this.createSound();
+
+        //test
+
+        this.bossEntrance = new Phaser.Physics.Arcade.Sprite(this, centerX, centerY + 300, playerAtlas, 'sprite4').setDepth(uiDepth - 1);
+        this.physics.add.existing(this.bossEntrance);
+        this.add.existing(this.bossEntrance);
     }
 
     update() {
         if (!this.gameOver) {
+            //player actions
             this.player.update();
-            if (this.enemy != null){
-                this.enemy.update();
-            }
             if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
                 this.noteComboCheck();
             }
+
+            //projectile collider
             this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
                 return object1.canCollide && !object2.canCollideParent ? true : false;
             }, this);
 
+            //Player Specific action colliders.
             if (this.player.isAttacking) {
                 this.physics.world.collide(this.player.weapon, this.enemyGroup, (object1, object2) => {
                     object2.damageEnemy();
                 }, null, this);
             }
-
             if (this.player.shieldActive) {
                 this.physics.world.collide(this.player.shield, this.projectileGroup, (object1, object2) => {
                     object2.destroy();
                 }, null, this);
             }
+
+            //test collider for scene exit
+            this.physics.world.collide(this.player, this.bossEntrance, () => {
+                this.destroyObjects();
+                this.scene.start('bossScene', {test: 'testpass'});
+            }, null, this);
         }
+    }
+
+    destroyObjects() {
+        this.time.removeAllEvents(); 
+        this.enemyGroup.clear(true, true)
+        this.projectileGroup.clear(true, true);
     }
 
     //callback function for if the player gets hit by projectile
@@ -326,6 +343,5 @@ class Game extends Phaser.Scene {
             rate: 1.0,
             loop: false,
         });
-
     }
 }

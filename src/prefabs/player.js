@@ -1,44 +1,23 @@
 class Player extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, x, y, texture, frame = 0) {
         super(scene, x, y, texture, frame);
-
-        scene.add.existing(this);
-        scene.physics.add.existing(this);
-        this.setImmovable(true);
-        this.setCollideWorldBounds(true);
-        this.setMaxVelocity(playerMaxVelocity);
-        this.setOrigin(0.5);
-        this.setDepth(uiDepth - 1);
-
         this.scene = scene;
+
         this.canCollide = true;
-
-        //add listeners for music playing
-        this.scene.controls.h.addListener('down', this.playMusic, this);
-        this.scene.controls.j.addListener('down', this.playMusic, this);
-        this.scene.controls.k.addListener('down', this.playMusic, this);
-        this.scene.controls.l.addListener('down', this.playMusic, this);
-        this.scene.controls.i.addListener('down', this.playMusic, this);
-
+        
         //notebar setup
-        this.noteBar = [];
-        this.createNoteBar();
+        this.noteBar;
 
-        this.weapon = new Phaser.Physics.Arcade.Sprite(scene, this.x, this.y, texture = null, frame = 0).setOrigin(0.5).setDepth(uiDepth - 1);
-        scene.physics.add.existing(this.weapon);
-        this.weapon.body.setSize(scene.playerSpriteInfo.width/2, scene.playerSpriteInfo.height/2);
-        this.weaponOffsetX = 0;
-        this.weaponOffsetY = 0;
-        this.isAttacking = false;
-        this.canShrink = true;
+        //weapons
+        this.weapon;
+        this.weaponOffsetX;
+        this.weaponOffsetY;
+        this.isAttacking;
+        this.canShrink;
+        this.shield;
+        this.shieldActive;
 
-        this.shield = new Phaser.Physics.Arcade.Sprite(scene, this.x, this.y, 'shield', frame = 0).setOrigin(0.5).setDepth(uiDepth - 1).setAlpha(0);
-        scene.add.existing(this.shield);
-        scene.physics.add.existing(this.shield);
-        this.shield.setAngularVelocity(100);;
-        this.shield.body.setCircle(scene.playerSpriteInfo.width);
-        this.shield.setScale(2.0);
-        this.shieldActive = false;
+        this.setup();
     }
 
     update() {
@@ -160,9 +139,48 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.noteBar[0].setText(curr);
     }
 
+    addNoteListeners() {
+        this.scene.controls.h.addListener('down', this.playMusic, this);
+        this.scene.controls.j.addListener('down', this.playMusic, this);
+        this.scene.controls.k.addListener('down', this.playMusic, this);
+        this.scene.controls.l.addListener('down', this.playMusic, this);
+        this.scene.controls.i.addListener('down', this.playMusic, this);
+    }
     createNoteBar() {
+        this.noteBar = [];
         for (let i = 0; i < noteQueueSize; i++) {
             this.noteBar.push(this.scene.add.text(i * noteSize, this.scene.heartInfo.height, '',noteTextConfig).setOrigin(0).setDepth(uiDepth).setScrollFactor(0));
         }
+    }
+
+    createTools() {
+        this.weapon = new Phaser.Physics.Arcade.Sprite(this.scene, this.x, this.y, null, 0).setOrigin(0.5).setDepth(uiDepth - 1);
+        this.scene.physics.add.existing(this.weapon);
+        this.weapon.body.setSize(this.scene.playerSpriteInfo.width/2, this.scene.playerSpriteInfo.height/2);
+        this.weaponOffsetX = 0;
+        this.weaponOffsetY = 0;
+        this.isAttacking = false;
+        this.canShrink = true;
+
+        this.shield = new Phaser.Physics.Arcade.Sprite(this.scene, this.x, this.y, 'shield', 0).setOrigin(0.5).setDepth(uiDepth - 1).setAlpha(0);
+        this.scene.add.existing(this.shield);
+        this.scene.physics.add.existing(this.shield);
+        this.shield.setAngularVelocity(100);;
+        this.shield.body.setCircle(this.scene.playerSpriteInfo.width);
+        this.shield.setScale(2.0);
+        this.shieldActive = false;
+    }
+
+    setup() {
+        this.scene.add.existing(this);
+        this.scene.physics.add.existing(this);
+        this.setImmovable(true);
+        this.setCollideWorldBounds(true);
+        this.setMaxVelocity(playerMaxVelocity);
+        this.setOrigin(0.5);
+        this.setDepth(uiDepth - 1);
+        this.addNoteListeners();
+        this.createNoteBar();
+        this.createTools();
     }
 }
