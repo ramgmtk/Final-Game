@@ -18,6 +18,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.shieldActive;
 
         this.setup();
+        this.playerSet = [this, this.weapon, this.shield];
     }
 
     update() {
@@ -149,7 +150,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     createNoteBar() {
         this.noteBar = [];
         for (let i = 0; i < noteQueueSize; i++) {
-            this.noteBar.push(this.scene.add.text(i * noteSize, this.scene.heartInfo.height, '',noteTextConfig).setOrigin(0).setDepth(uiDepth).setScrollFactor(0));
+            this.noteBar.push(this.scene.add.text((i * noteSize) + uiOffset.x, uiOffset.y, '',noteTextConfig).setOrigin(0).setDepth(uiDepth));
         }
     }
 

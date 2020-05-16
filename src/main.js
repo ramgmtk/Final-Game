@@ -36,6 +36,22 @@ let noteTextConfig = {
 }
 let noteSize = parseFloat(noteTextConfig.fontSize);
 let uiDepth = 4;
+let uiOffset = {
+    x: -300,
+    y: -300,
+}
+
+powerChordBar = [
+    {powerChord: 'jkl',
+     name: 'Reverse',
+     unlocked: true,},
+    {powerChord: 'hij',
+     name: 'Shrink',
+     unlocked: true,},
+    {powerChord: 'khi',
+     name: 'Shield',
+     unlocked: true},
+];
 
 //change this to true to disable console.logs
 //ex: console.assert(debugFlag.foo, 'Your statement here');
