@@ -15,7 +15,7 @@ let config = {
             }
         }
     },
-    scene: [Game, BossRoom],
+    scene: [Menu, Game, BossRoom],
 }
 
 //GLOBALS
@@ -51,6 +51,31 @@ powerChordBar = [
     {powerChord: 'khi',
      name: 'Shield',
      unlocked: true},
+];
+
+let bossCornerSpace = 200
+let bossZoom = 0.5;
+let bossPatternPoints = [
+    {
+        x: centerX * (1/bossZoom),
+        y: centerY * (1/bossZoom),
+    },
+    {
+        x: bossCornerSpace,
+        y: bossCornerSpace,
+    },
+    {
+        x: config.width * (1/bossZoom) - bossCornerSpace,
+        y: config.height * (1/bossZoom) - bossCornerSpace, 
+    },
+    {
+        x: config.width * (1/bossZoom) - bossCornerSpace,
+        y: bossCornerSpace,
+    },
+    {
+        x: bossCornerSpace,
+        y: config.width * (1/bossZoom) - bossCornerSpace,
+    }
 ];
 
 //change this to true to disable console.logs

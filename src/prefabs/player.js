@@ -49,11 +49,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             if (!this.anims.isPlaying && (this.anims.getCurrentKey() != 'play' || this.anims.getCurrentKey() != 'melee')) {
                 this.anims.play('left', false);
             }
+            this.setFlip(true, false);
             this.setAccelerationX(-playerAccel);
         } else if (this.scene.controls.d.isDown) {
             if (!this.anims.isPlaying && (this.anims.getCurrentKey() != 'play' || this.anims.getCurrentKey() != 'melee')) {
                 this.anims.play('right', false);
             }
+            this.resetFlip();
             this.setAccelerationX(playerAccel);
         } else {
             this.setAccelerationX(0);

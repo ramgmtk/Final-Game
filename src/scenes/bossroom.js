@@ -43,6 +43,7 @@ class BossRoom extends Phaser.Scene {
             scene: this,
             runChildUpdate: true,
         });
+        this.boss = new Boss(this, bossPatternPoints[0].x, bossPatternPoints[0].y, 'bossAtlas', 'BOSSidle', this.player);
         console.assert(debugFlags.enemyFlag, this.projectileGroup);
 
         //animations
@@ -56,11 +57,12 @@ class BossRoom extends Phaser.Scene {
         this.heartCam;
         this.powerChordCam;
         this.createCams();
-        this.bossCam.setZoom(0.5);
+        this.bossCam.setZoom(bossZoom);
     }
 
     update() {
         this.player.update();
+        this.boss.update();
         if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
             this.noteComboCheck();
         }

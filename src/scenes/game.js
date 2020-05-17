@@ -1,25 +1,11 @@
 class Game extends Phaser.Scene {
     constructor() {
-        super('gameScene')
+        super('gameScene');
     }
 
-    preload() {
-        //SHOULD FIX by moving to menu preload at a later point in time.
-        //Loading placeholder variables
-        this.load.path = './assets/';
-        this.load.atlas(playerAtlas, 'PlaceholderSprites.png', 'PlaceholderSprites.json');
-        this.load.image('bg', 'bg.png');
-        this.load.image('heart', 'heart.png')
-        this.load.image('projectile', 'projectile.png');
-        this.load.image('shield', 'shield.png');
-
-        //sound
-        this.load.audio('E', 'sounds/Short_E.wav');
-        this.load.audio('F', 'sounds/Short_F.wav');
-        this.load.audio('G', 'sounds/Short_G.wav');
-        this.load.audio('F_Sharp', 'sounds/Short_F_Sharp.wav');
-        this.load.audio('A', 'sounds/Short_A.wav')
-    }
+    /*preload() {
+        //SHOULD FIX by moving to menu preload at a later point in time.   
+    }*/
     create() {
         //misc
         this.gameOver = false;
@@ -28,10 +14,11 @@ class Game extends Phaser.Scene {
         this.stageInfo = this.textures.get('bg');
         this.stageInfo = this.stageInfo.getSourceImage();
         this.heartInfo = this.textures.get('heart').getSourceImage();
-        this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height)
+        this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height);
         //PLAYER RELATED VARIABLES
         //key controls
         this.playerSpriteInfo = game.textures.getFrame(playerAtlas, 'MCidle');
+
         this.controls = {
             w: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
             a: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
