@@ -42,7 +42,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     spawnPattern() {
         for (let i = 0; i < this.spawnNumber; i++) {
-            let projectile = new Projectile(this.scene, this.x, this.y, 'projectile',this, 
+            let projectile = new Projectile(this.scene, this.x, this.y, 'Projectile', this, 
                 Math.cos(i*Math.PI/(this.spawnNumber/2)), Math.sin(i*Math.PI/(this.spawnNumber/2)));
             this.projectileGroup.add(projectile);
             this.scene.projectileGroup.add(projectile);

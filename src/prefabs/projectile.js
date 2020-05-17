@@ -1,7 +1,7 @@
 class Projectile extends Phaser.Physics.Arcade.Sprite {
     //vecX, vecY expected to make a unit vector.
-    constructor(scene, x, y, texture, parent, vecX, vecY, frame = 0) {
-        super(scene, x, y, texture, frame);
+    constructor(scene, x, y, frame = 'Projectile', parent, vecX, vecY,) {
+        super(scene, x, y, playerAtlas, frame);
 
         scene.add.existing(this);
         scene.physics.add.existing(this);

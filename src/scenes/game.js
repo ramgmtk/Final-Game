@@ -7,7 +7,7 @@ class Game extends Phaser.Scene {
         //SHOULD FIX by moving to menu preload at a later point in time.
         //Loading placeholder variables
         this.load.path = './assets/';
-        this.load.atlas(playerAtlas, 'spritesheet.png', 'sprites.json');
+        this.load.atlas(playerAtlas, 'PlaceholderSprites.png', 'PlaceholderSprites.json');
         this.load.image('bg', 'bg.png');
         this.load.image('heart', 'heart.png')
         this.load.image('projectile', 'projectile.png');
@@ -31,7 +31,7 @@ class Game extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height)
         //PLAYER RELATED VARIABLES
         //key controls
-        this.playerSpriteInfo = game.textures.getFrame(playerAtlas, 'sprite5');
+        this.playerSpriteInfo = game.textures.getFrame(playerAtlas, 'MCidle');
         this.controls = {
             w: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
             a: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
@@ -47,7 +47,7 @@ class Game extends Phaser.Scene {
         };
         
         //CREATE THE PLAYER
-        this.player = new Player(this, centerX, centerY, playerAtlas, 'sprite5');
+        this.player = new Player(this, centerX, centerY, playerAtlas, 'MCidle');
 
         //UI ELEMENTS
         this.healthBar = [];
@@ -68,7 +68,7 @@ class Game extends Phaser.Scene {
             scene: this,
             runChildUpdate: true,
         })
-        let enemy = new Enemy(this, centerX + 300, centerY, playerAtlas, 50, 'sprite5');
+        let enemy = new Enemy(this, centerX + 300, centerY, playerAtlas, 50, 'AMPidle');
         this.enemyGroup.add(enemy);
         
         //ANIMATIONS
@@ -87,7 +87,7 @@ class Game extends Phaser.Scene {
         this.createCams();
 
         //test
-        this.bossEntrance = new Phaser.Physics.Arcade.Sprite(this, centerX, centerY + 300, playerAtlas, 'sprite4').setDepth(uiDepth - 1);
+        this.bossEntrance = new Phaser.Physics.Arcade.Sprite(this, centerX, centerY + 300, playerAtlas, 'Note').setDepth(uiDepth - 1);
         this.physics.add.existing(this.bossEntrance);
         this.add.existing(this.bossEntrance);
 
@@ -271,7 +271,7 @@ class Game extends Phaser.Scene {
             key: 'left',
             defaultTextureKey: playerAtlas,
             frames: [
-                {frame: 'sprite1'},
+                {frame: 'MCrun'},
             ],
             frameRate: 48,
         });
@@ -280,7 +280,7 @@ class Game extends Phaser.Scene {
             key: 'right',
             defaultTextureKey: playerAtlas,
             frames: [
-                {frame: 'sprite2'},
+                {frame: 'MCrun'},
             ],
             frameRate: 48,
         });
@@ -289,7 +289,7 @@ class Game extends Phaser.Scene {
             key: 'up',
             defaultTextureKey: playerAtlas,
             frames: [
-                {frame: 'sprite3'},
+                {frame: 'MCidle'},
             ],
             frameRate: 48,
         });
@@ -298,7 +298,7 @@ class Game extends Phaser.Scene {
             key: 'down',
             defaultTextureKey: playerAtlas,
             frames: [
-                {frame: 'sprite4'},
+                {frame: 'MCidle'},
             ],
             frameRate: 48,
         });
@@ -307,7 +307,7 @@ class Game extends Phaser.Scene {
             key: 'play',
             defaultTextureKey: playerAtlas,
             frames: [
-                {frame: 'sprite5'},
+                {frame: 'MCplay'},
             ],
             duration: 2000,
         });
@@ -316,7 +316,7 @@ class Game extends Phaser.Scene {
             key: 'melee',
             defaultTextureKey: playerAtlas,
             frames: [
-                {frame: 'sprite5'},
+                {frame: 'MCplay'},
             ],
             duration: 500,
         });

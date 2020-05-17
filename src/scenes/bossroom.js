@@ -15,7 +15,7 @@ class BossRoom extends Phaser.Scene {
             height: game.config.height * 2,
         }
         this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height)
-        this.playerSpriteInfo = game.textures.getFrame(playerAtlas, 'sprite5');
+        this.playerSpriteInfo = game.textures.getFrame(playerAtlas, 'MCidle');
         this.controls = {
             w: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
             a: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
@@ -29,7 +29,7 @@ class BossRoom extends Phaser.Scene {
             i: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I),
             space: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
         };
-        this.player = new Player(this, centerX, centerY, playerAtlas, 'sprite5');
+        this.player = new Player(this, centerX, centerY, playerAtlas, 'MCidle');
         //UI ELEMENTS
         this.healthBar = [];
         this.createHealthBar();
@@ -180,7 +180,7 @@ class BossRoom extends Phaser.Scene {
             key: 'left',
             defaultTextureKey: playerAtlas,
             frames: [
-                {frame: 'sprite1'},
+                {frame: 'MCrun'},
             ],
             frameRate: 48,
         });
@@ -189,7 +189,7 @@ class BossRoom extends Phaser.Scene {
             key: 'right',
             defaultTextureKey: playerAtlas,
             frames: [
-                {frame: 'sprite2'},
+                {frame: 'MCrun'},
             ],
             frameRate: 48,
         });
@@ -198,7 +198,7 @@ class BossRoom extends Phaser.Scene {
             key: 'up',
             defaultTextureKey: playerAtlas,
             frames: [
-                {frame: 'sprite3'},
+                {frame: 'MCidle'},
             ],
             frameRate: 48,
         });
@@ -207,7 +207,7 @@ class BossRoom extends Phaser.Scene {
             key: 'down',
             defaultTextureKey: playerAtlas,
             frames: [
-                {frame: 'sprite4'},
+                {frame: 'MCidle'},
             ],
             frameRate: 48,
         });
@@ -216,7 +216,7 @@ class BossRoom extends Phaser.Scene {
             key: 'play',
             defaultTextureKey: playerAtlas,
             frames: [
-                {frame: 'sprite5'},
+                {frame: 'MCplay'},
             ],
             duration: 2000,
         });
@@ -225,7 +225,7 @@ class BossRoom extends Phaser.Scene {
             key: 'melee',
             defaultTextureKey: playerAtlas,
             frames: [
-                {frame: 'sprite5'},
+                {frame: 'MCplay'},
             ],
             duration: 500,
         });
