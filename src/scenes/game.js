@@ -64,7 +64,14 @@ class Game extends Phaser.Scene {
         this.createAnimations();
 
         //SOUND
+        this.bgm;
+        this.musicalNoteA;
+        this.musicalNoteE;
+        this.musicalNoteF;
+        this.musicalNoteFS;
+        this.musicalNoteG;
         this.createSound();
+        this.bgm.play();
 
         //CAMERA SETUP
         this.playerCam;
@@ -345,5 +352,11 @@ class Game extends Phaser.Scene {
             loop: false,
         });
 
+        this.bgm = this.sound.add('gameMusic', {
+            mute: false,
+            volume: 0.5,
+            rate: 1.0,
+            loop: true,
+        });
     }
 }

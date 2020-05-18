@@ -18,6 +18,7 @@ class Menu extends Phaser.Scene {
         this.load.audio('G', 'sounds/Short_G.wav');
         this.load.audio('F_Sharp', 'sounds/Short_F_Sharp.wav');
         this.load.audio('A', 'sounds/Short_A.wav')
+        this.load.audio('gameMusic', 'sounds/main_theme.wav');
     }
 
     create() {
