@@ -9,6 +9,7 @@ class BossRoom extends Phaser.Scene {
     }
 
     create() {
+        this.gameOver = false;
         this.heartInfo = this.textures.get('heart').getSourceImage();
         this.stageInfo = {
             width: game.config.width * 2,
@@ -61,16 +62,48 @@ class BossRoom extends Phaser.Scene {
     }
 
     update() {
-        this.player.update();
-        this.boss.update();
-        if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
-            this.noteComboCheck();
+        if (!this.gameOver) {
+            this.player.update();
+            this.boss.update();
+            //projectile collider
+            this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
+                return object1.canCollide && !object2.canCollideParent ? true : false;
+            }, this);
+            if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
+                this.noteComboCheck();
+            }
+            if (this.player.shieldActive) {
+                this.physics.world.collide(this.player.shield, this.projectileGroup, (object1, object2) => {
+                    object2.destroy();
+                }, null, this);
+            }
         }
-        if (this.player.shieldActive) {
-            this.physics.world.collide(this.player.shield, this.projectileGroup, (object1, object2) => {
-                object2.destroy();
-            }, null, this);
+    }
+
+    damagePlayer(object1, object2) {
+        console.assert(debugFlags.enemyFlag, 'Collision with projectile');
+        let heart = this.healthBar.pop();
+        this.bossCam.shake(500, 0.003, false);
+        heart.destroy();
+        //Check if player has hit 0 health
+        if (this.healthBar.length == 0) {
+            this.time.removeAllEvents(); //clears the event calls
+            this.projectileGroup.clear(true, true);
+            this.gameOver = true;
+        } else {
+            //SHOULD FIX add player blinking effect here
+            object1.canCollide = false;
+            object2.destroy();
+            this.time.addEvent({
+                delay: 2000,
+                callback: () => {
+                    this.player.canCollide = true;
+                },
+                callbackScope: this,
+                loop: false
+            });
         }
+        
     }
 
     //used to manage the combo system.

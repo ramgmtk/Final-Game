@@ -21,10 +21,27 @@ class Menu extends Phaser.Scene {
     }
 
     create() {
-        
+        this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+        let menuConfig = {
+            fontFamily: 'Courier',
+            fontSize: '28px',
+            backgroundColor: '#F3B141',
+            color: '#843605',
+            align: 'right',
+            padding: {
+                top: 5,
+                bottom: 5,
+            },
+            fixedWidth: 0
+        }
+        this.add.text(centerX , centerY - 32, 'Final Game Prototype' , menuConfig).setOrigin(.5);
+        this.add.text(centerX, centerY, 'WASD to move, F melee attack, hijkl note keys', menuConfig).setOrigin(0.5);
+        this.add.text(centerX, centerY + 32, 'Press SPACE to start', menuConfig).setOrigin(0.5);
     }
 
     update() {
-        this.scene.start('gameScene') 
+        if (Phaser.Input.Keyboard.JustDown(this.space)) {
+            this.scene.start('gameScene')
+        } 
     }
 }

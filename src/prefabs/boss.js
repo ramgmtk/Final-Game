@@ -55,6 +55,10 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             this.moveTo(bossPatternPoints[this.availableMoves[randPoint]]);
             this.availableMoves.splice(this.availableMoves.indexOf(this.currPos), 1)
         }
+        if (this.body.checkWorldBounds()) {
+            console.assert(debugFlags.enemyFlag, 'Enemy out of bounds');
+            this.destroyObject();
+        }
     }
 
     spawnPattern() {
@@ -100,5 +104,13 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         slope.y = slope.y/magnitude;
         this.setVelocityX(slope.x * 400);
         this.setVelocityY(slope.y * 400);
+    }
+
+    destroyObject() {
+        console.assert(debugFlags.enemyFlag, 'Destroying Enemy');
+        this.projectileGroup.clear(true, true);
+        //remove the spawn timer from the scene
+        this.projectileSpawn.remove();
+        super.destroy();
     }
 }
