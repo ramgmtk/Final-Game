@@ -1,5 +1,5 @@
 class Player extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, texture, frame = 0) {
+    constructor(scene, x, y, texture, frame = 0, particleFrame = 0) {
         super(scene, x, y, texture, frame);
         this.scene = scene;
 
@@ -16,6 +16,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.canShrink;
         this.shield;
         this.shieldActive;
+
+        //efx
+        this.particleManager;
+        this.noteEfx;
 
         this.setup();
         this.playerSet = [this, this.weapon, this.shield];
@@ -104,6 +108,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     //callback function for pressing jkl keys
     playMusic(musicalNote) {
         console.assert(debugFlags.playerFlag, 'Entered music note callback');
+        this.noteEfx.explode(5, this.x, this.y);
         this.anims.play('play');
         switch(musicalNote.keyCode) {
             case Phaser.Input.Keyboard.KeyCodes.H:
@@ -174,6 +179,18 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.shieldActive = false;
     }
 
+    createEFX() {
+        this.particleManager = this.scene.add.particles(playerAtlas, 'Note');
+        this.noteEfx = this.particleManager.createEmitter({
+            speed: 50,
+            frequency: -1,
+            alpha: {start: 1, end: 0},
+            start: {start: 0.1, end: 1},
+            lifespan: 2000,
+        });
+        this.noteEfx.startFollow(this);
+    }
+
     setup() {
         this.scene.add.existing(this);
         this.scene.physics.add.existing(this);
@@ -185,5 +202,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.addNoteListeners();
         this.createNoteBar();
         this.createTools();
+        this.createEFX();
     }
 }

@@ -34,7 +34,7 @@ class Game extends Phaser.Scene {
         };
         
         //CREATE THE PLAYER
-        this.player = new Player(this, centerX, centerY, playerAtlas, 'MCidle');
+        this.player = new Player(this, centerX, centerY, playerAtlas, 'MCidle', 'Note');
 
         //UI ELEMENTS
         this.healthBar = [];
@@ -116,6 +116,7 @@ class Game extends Phaser.Scene {
             //test collider for scene exit
             this.physics.world.collide(this.player, this.bossEntrance, () => {
                 this.destroyObjects();
+                this.bgm.mute = true;
                 this.scene.start('bossScene', {test: this.player});
             }, null, this);
         }
