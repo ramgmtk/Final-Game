@@ -26,7 +26,6 @@ let playerAtlas = 'foo';
 let playerAccel = 5000; //note at values this high, might be better off working with velocity alone.
 let playerMaxVelocity = 700;
 let playerDrag = playerAccel * 1.5;
-let playerHealth = 3;
 let projectileVelocity = 100;
 
 let noteQueueSize = 3;
@@ -84,6 +83,34 @@ let debugFlags = {
     playerFlag: false,
     uiFlag: false,
     enemyFlag: false,
+};
+
+function createCams(scene, heartCam, noteCam, powerChordCam, gameCam) {
+    heartCam = scene.cameras.add(0, 0, 200, 200);
+    heartCam.setViewport(0, 0, scene.heartInfo.width * 3, scene.heartInfo.height);
+    heartCam.setScroll(uiOffset.x, uiOffset.y);
+    heartCam.ignore([scene.player.noteBar, scene.powerChordList]);
+
+    noteCam = scene.cameras.add(0, 0, 200, 200);
+    noteCam.setViewport(scene.heartInfo.width, 0, noteSize * noteQueueSize, noteSize);
+    noteCam.setScroll(uiOffset.x, uiOffset.y);
+    noteCam.ignore([scene.player.healthBar, scene.powerChordList]);
+
+    powerChordCam = scene.cameras.add(0, 0, 200, 200);
+    powerChordCam.setViewport(game.config.width - (noteQueueSize * noteSize), 0, noteSize * noteQueueSize, noteSize * powerChordBar.length);
+    powerChordCam.setScroll(uiOffset.x, uiOffset.y)
+    powerChordCam.ignore([scene.player.healthBar, scene.player.noteBar]);
+    //How far the camera can go within the world.p
+    gameCam = scene.cameras.main.setBounds(0, 0, scene.stageInfo.width, scene.stageInfo.height);
+    //The actual lens through which we see the game.
+    gameCam.setViewport(0, 0, game.config.width, game.config.height);
+    gameCam.startFollow(scene.player, true, 1.0, 1.0);
+    //wiggle room for the camera
+    gameCam.setDeadzone(scene.playerSpriteInfo.width * 2, scene.playerSpriteInfo.height * 2);
+    gameCam.setName('Player');
+    gameCam.ignore([scene.player.healthBar, scene.player.noteBar, scene.powerChordList]);
+
+    return [heartCam, noteCam, powerChordCam, gameCam];
 }
 
 let game = new Phaser.Game(config);

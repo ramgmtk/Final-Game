@@ -8,6 +8,10 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         //notebar setup
         this.noteBar;
 
+        //health
+        this.healthBar = [];
+        this.health;
+
         //weapons
         this.weapon;
         this.weaponOffsetX;
@@ -161,6 +165,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
+    createHealthBar() {
+        this.health = new Health(this.scene, uiOffset.x, 0 + uiOffset.y, 'healthAtlas', 'health4')
+        this.healthBar.push(this.health.health);
+    }
+
     createTools() {
         this.weapon = new Phaser.Physics.Arcade.Sprite(this.scene, this.x, this.y, null, 0).setOrigin(0.5).setDepth(uiDepth - 1);
         this.scene.physics.add.existing(this.weapon);
@@ -179,7 +188,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.shieldActive = false;
     }
 
-    createEFX() {
+    createEFX(zoom = 1) {
         this.particleManager = this.scene.add.particles(playerAtlas, 'Note');
         this.noteEfx = this.particleManager.createEmitter({
             speed: 50,
@@ -201,6 +210,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.setDepth(uiDepth - 1);
         this.addNoteListeners();
         this.createNoteBar();
+        this.createHealthBar();
         this.createTools();
         this.createEFX();
     }

@@ -94,7 +94,6 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     }
 
     moveTo(destination) {
-        console.log(destination);
         let slope = {
             x: destination.x - this.x,
             y: destination.y - this.y,
@@ -109,6 +108,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     destroyObject() {
         console.assert(debugFlags.enemyFlag, 'Destroying Enemy');
         this.projectileGroup.clear(true, true);
+        this.movementGroup.clear(true, true);
         //remove the spawn timer from the scene
         this.projectileSpawn.remove();
         super.destroy();

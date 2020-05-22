@@ -13,7 +13,7 @@ class Game extends Phaser.Scene {
         let bg = this.add.image(0, 0, 'bg').setOrigin(0);
         this.stageInfo = this.textures.get('bg');
         this.stageInfo = this.stageInfo.getSourceImage();
-        this.heartInfo = this.textures.get('heart').getSourceImage();
+        this.heartInfo = game.textures.getFrame('healthAtlas', 'health4');
         this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height);
         //PLAYER RELATED VARIABLES
         //key controls
@@ -37,10 +37,6 @@ class Game extends Phaser.Scene {
         this.player = new Player(this, centerX, centerY, playerAtlas, 'MCidle', 'Note');
 
         //UI ELEMENTS
-        this.healthBar = [];
-        this.createHealthBar();
-        console.assert(debugFlags.uiFlag, this.healthBar);
-
         this.powerChordList = new Array(powerChordBar.length);
         this.updatePowerChordList();
 
@@ -71,14 +67,18 @@ class Game extends Phaser.Scene {
         this.musicalNoteFS;
         this.musicalNoteG;
         this.createSound();
-        this.bgm.play();
+        //this.bgm.play();
 
         //CAMERA SETUP
         this.playerCam;
         this.noteCam;
         this.heartCam;
         this.powerChordCam;
-        this.createCams();
+        let cams = createCams(this, this.heartCam, this.noteCam, this.powerChordCam, this.playerCam);
+        this.heartCam = cams[0];
+        this.noteCam = cams[1];
+        this.powerChordCam = cams[2];
+        this.playerCam = cams[3];
 
         //test
         this.bossEntrance = new Phaser.Physics.Arcade.Sprite(this, centerX, centerY + 300, playerAtlas, 'Note').setDepth(uiDepth - 1);
@@ -133,11 +133,11 @@ class Game extends Phaser.Scene {
     //object2 is the projectile that has hit the player
     damagePlayer(object1, object2) {
         console.assert(debugFlags.enemyFlag, 'Collision with projectile');
-        let heart = this.healthBar.pop();
         this.playerCam.shake(500, 0.003, false);
-        heart.destroy();
         //Check if player has hit 0 health
-        if (this.healthBar.length == 0) {
+        if (this.player.health.healthNum == 0) {
+            let health = this.player.healthBar.pop();
+            health.destroy();
             this.time.removeAllEvents(); //clears the event calls
             this.enemyGroup.clear(true, true);
             this.projectileGroup.clear(true, true);
@@ -146,6 +146,7 @@ class Game extends Phaser.Scene {
             //SHOULD FIX add player blinking effect here
             object1.canCollide = false;
             object2.destroy();
+            this.player.health.updateHealth();
             this.time.addEvent({
                 delay: 2000,
                 callback: () => {
@@ -156,13 +157,6 @@ class Game extends Phaser.Scene {
             });
         }
         
-    }
-
-    //Initial setup of the healthbar
-    createHealthBar() {
-        for (let i = 0; i < playerHealth; i++) {
-            this.healthBar.push(this.add.image(i * this.heartInfo.width + uiOffset.x, 0 + uiOffset.y, 'heart').setOrigin(0).setDepth(uiDepth));//.setScrollFactor(0));
-        }
     }
 
     //update the notebar
@@ -235,32 +229,6 @@ class Game extends Phaser.Scene {
         }
     }
 
-    createCams() {
-        this.heartCam = this.cameras.add(0, 0, 200, 200);
-        this.heartCam.setViewport(0, 0, this.heartInfo.width * 3, this.heartInfo.height);
-        this.heartCam.setScroll(uiOffset.x, uiOffset.y);
-        this.heartCam.ignore([this.player.noteBar, this.powerChordList]);
-
-        this.noteCam = this.cameras.add(0, 0, 200, 200);
-        this.noteCam.setViewport(0, this.heartInfo.height, noteSize * noteQueueSize, noteSize);
-        this.noteCam.setScroll(uiOffset.x, uiOffset.y);
-        this.noteCam.ignore([this.healthBar, this.powerChordList]);
-
-        this.powerChordCam = this.cameras.add(0, 0, 200, 200);
-        this.powerChordCam.setViewport(game.config.width - (noteQueueSize * noteSize), 0, noteSize * noteQueueSize, noteSize * powerChordBar.length);
-        this.powerChordCam.setScroll(uiOffset.x, uiOffset.y)
-        this.powerChordCam.ignore([this.healthBar, this.player.noteBar]);
-        //How far the camera can go within the world.p
-        this.playerCam = this.cameras.main.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height);
-        //The actual lens through which we see the game.
-        this.playerCam.setViewport(0, 0, game.config.width, game.config.height);
-        this.playerCam.startFollow(this.player, true, 1.0, 1.0);
-        //wiggle room for the camera
-        this.playerCam.setDeadzone(this.playerSpriteInfo.width * 2, this.playerSpriteInfo.height * 2);
-        this.playerCam.setName('Player');
-        this.playerCam.ignore([this.healthBar, this.player.noteBar, this.powerChordList]);
-
-    }
     createAnimations() {
         this.anims.create({
             key: 'left',

@@ -4,9 +4,11 @@ class Menu extends Phaser.Scene {
     }
     
     preload() {
+        this.load.path = './assets/atlas/';
+        this.load.atlas(playerAtlas, 'PlaceholderSprites.png', 'PlaceholderSprites.json');
+        this.load.atlas('bossAtlas', 'BossSprite.png', 'BossSprite.json');
+        this.load.atlas('healthAtlas', 'health.png', 'health.json')
         this.load.path = './assets/';
-        this.load.atlas(playerAtlas, 'atlas/PlaceholderSprites.png', 'atlas/PlaceholderSprites.json');
-        this.load.atlas('bossAtlas', 'atlas/BossSprite.png', 'atlas/BossSprite.json');
         this.load.image('bg', 'bg.png');
         this.load.image('heart', 'heart.png')
         this.load.image('projectile', 'projectile.png');
