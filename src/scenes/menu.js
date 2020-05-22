@@ -10,8 +10,6 @@ class Menu extends Phaser.Scene {
         this.load.atlas('healthAtlas', 'health.png', 'health.json')
         this.load.path = './assets/';
         this.load.image('bg', 'bg.png');
-        this.load.image('heart', 'heart.png')
-        this.load.image('projectile', 'projectile.png');
         this.load.image('shield', 'shield.png');
 
         //sound

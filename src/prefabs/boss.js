@@ -34,33 +34,28 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.availableMoves = [];
         this.currPos = 0;
         this.createMovementGroup();
+
+        this.healthBar = new bossHealth(this.scene, this.health);
     }
 
     update() {
-        if (this.isMoving) {
-            this.scene.physics.world.collide(this, this.movementGroup, (object1, object2) => {
-                object2.canCollide = false;
-                object1.isMoving = false;
-                object1.setVelocityX(0);
-                object2.setVelocityY(0);
-            }, (object1, object2)=> {
-                return object2.canCollide;
-            }, this);
-        } else {
-            let randPoint = Phaser.Math.Between(0, this.availableMoves.length - 1); //can result in the point boss is currently on
-            this.availableMoves.push(this.currPos);
-            this.currPos = this.availableMoves[randPoint];
-            this.movementGroup.children.entries[this.availableMoves[randPoint]].canCollide = true;
-            this.isMoving = true;
-            this.moveTo(bossPatternPoints[this.availableMoves[randPoint]]);
-            this.availableMoves.splice(this.availableMoves.indexOf(this.currPos), 1)
-        }
+        this.bossMovementPattern_test();
         if (this.body.checkWorldBounds()) {
             console.assert(debugFlags.enemyFlag, 'Enemy out of bounds');
             this.destroyObject();
         }
+        this.scene.physics.world.collide(this, this.scene.projectileGroup, (object1, object2) => {
+            object1.damageEnemy();
+            object2.destroy();
+        }, (object1, object2) => {
+            return object2.canCollideParent;
+        }, this);
     }
 
+    damageEnemy() {
+        this.health -= 1;
+        this.healthBar.decrease();
+    }
     spawnPattern() {
         //calculate unit vec
         let slope = {
@@ -109,8 +104,31 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         console.assert(debugFlags.enemyFlag, 'Destroying Enemy');
         this.projectileGroup.clear(true, true);
         this.movementGroup.clear(true, true);
+        this.healthBar.healthBar.destroy();
+        this.healthBar = null;
         //remove the spawn timer from the scene
         this.projectileSpawn.remove();
         super.destroy();
+    }
+
+    bossMovementPattern_test() {
+        if (this.isMoving) {
+            this.scene.physics.world.collide(this, this.movementGroup, (object1, object2) => {
+                object2.canCollide = false;
+                object1.isMoving = false;
+                object1.setVelocityX(0);
+                object2.setVelocityY(0);
+            }, (object1, object2)=> {
+                return object2.canCollide;
+            }, this);
+        } else {
+            let randPoint = Phaser.Math.Between(0, this.availableMoves.length - 1); //can result in the point boss is currently on
+            this.availableMoves.push(this.currPos);
+            this.currPos = this.availableMoves[randPoint];
+            this.movementGroup.children.entries[this.availableMoves[randPoint]].canCollide = true;
+            this.isMoving = true;
+            this.moveTo(bossPatternPoints[this.availableMoves[randPoint]]);
+            this.availableMoves.splice(this.availableMoves.indexOf(this.currPos), 1)
+        }
     }
 }

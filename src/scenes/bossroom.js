@@ -50,16 +50,11 @@ class BossRoom extends Phaser.Scene {
         //camera setup
         //CAMERA SETUP
         this.bossCam;
+        this.bossHealthCam;
         this.noteCam;
         this.heartCam;
         this.powerChordCam;
-        let cams = createCams(this, this.heartCam, this.noteCam, this.powerChordCam, this.playerCam);
-        this.heartCam = cams[0];
-        this.noteCam = cams[1];
-        this.powerChordCam = cams[2];
-        this.bossCam = cams[3];
-        this.bossCam.setZoom(bossZoom);
-        this.player.createEFX(bossZoom);
+        this.createCams();
     }
 
     update() {
@@ -178,6 +173,23 @@ class BossRoom extends Phaser.Scene {
         }
     }
     
+    createCams() {
+        let cams = createCams(this, this.heartCam, this.noteCam, this.powerChordCam, this.playerCam);
+        this.heartCam = cams[0];
+        this.noteCam = cams[1];
+        this.powerChordCam = cams[2];
+        this.bossCam = cams[3];
+        this.heartCam.ignore([this.boss.healthBar.healthBar]);
+        this.noteCam.ignore([this.boss.healthBar.healthBar]);
+        this.powerChordCam.ignore([this.boss.healthBar.healthBar]);
+        //this.bossCam.ignore([this.boss.healthBar.healthBar]); leaving in just in case to see if a potential overlap with scene and offscreen elements occures
+        this.bossHealthCam = this.cameras.add(0, 0, centerX, 200);
+        this.bossHealthCam.setViewport(centerX / 2, 0, centerX, 50);
+        this.bossHealthCam.setScroll(uiOffset.x, uiOffset.y);
+        this.bossHealthCam.ignore([this.player.healthBar, this.powerChordList, this.player.noteBar]);
+        this.bossCam.setZoom(bossZoom);
+    }
+
     createAnimations() {
         this.anims.create({
             key: 'left',
