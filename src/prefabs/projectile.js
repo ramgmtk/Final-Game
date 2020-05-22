@@ -1,6 +1,6 @@
 class Projectile extends Phaser.Physics.Arcade.Sprite {
     //vecX, vecY expected to make a unit vector.
-    constructor(scene, x, y, frame = 'Projectile', parent, vecX, vecY,) {
+    constructor(scene, x, y, frame = 'Projectile', parent, vecX, vecY, velocity) {
         super(scene, x, y, playerAtlas, frame);
 
         scene.add.existing(this);
@@ -10,6 +10,7 @@ class Projectile extends Phaser.Physics.Arcade.Sprite {
         this.setDepth(uiDepth - 1);
 
         this.canCollideParent = false;
+        this.projectileVelocity = velocity;
         this.setPath(vecX, vecY);
         this.parent = parent;
     }
@@ -23,8 +24,8 @@ class Projectile extends Phaser.Physics.Arcade.Sprite {
 
     setPath(xBar, yBar) {
         //SHOULD FIX REDO MATH
-        this.setVelocityX(xBar * projectileVelocity);
-        this.setVelocityY(yBar * projectileVelocity);
+        this.setVelocityX(xBar * this.projectileVelocity);
+        this.setVelocityY(yBar * this.projectileVelocity);
     }
 
     redirect() {

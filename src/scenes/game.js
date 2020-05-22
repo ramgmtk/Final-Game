@@ -188,7 +188,9 @@ class Game extends Phaser.Scene {
         if (noteCombo == powerChordBar[0].powerChord) {
             console.assert(debugFlags.playerFlag, 'Reverse');
             for(let i = 0; i < this.projectileGroup.children.entries.length; i++) {
-                this.projectileGroup.children.entries[i].redirect();
+                if (this.projectileGroup.children.entries[i].canCollideParent == false) {
+                    this.projectileGroup.children.entries[i].redirect();
+                }
             }
         } else if (noteCombo == powerChordBar[1].powerChord) { //MUST FIX, WHAT IF PLAYER RESIZES INTO A NARROW ENTRANCE?
             console.assert(debugFlags.playerFlag, 'Shrink');
@@ -326,6 +328,13 @@ class Game extends Phaser.Scene {
             volume: 0.5,
             rate: 1.0,
             loop: true,
+        });
+
+        this.enemySound = this.sound.add('AmpAttack', {
+            mute: false,
+            volume: 0.3,
+            rate: 1.0,
+            loop: false,
         });
     }
 }

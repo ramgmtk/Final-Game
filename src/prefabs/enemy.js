@@ -17,7 +17,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         this.spawnNumber = 16;
         this.projectileSpawn = scene.time.addEvent({
-            delay: 3000,
+            delay: 1500,
             callback: this.spawnPattern,
             callbackScope: this,
             loop: true,
@@ -41,9 +41,28 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
 
     spawnPattern() {
-        for (let i = 0; i < this.spawnNumber; i++) {
-            let projectile = new Projectile(this.scene, this.x, this.y, 'Projectile', this, 
-                Math.cos(i*Math.PI/(this.spawnNumber/2)), Math.sin(i*Math.PI/(this.spawnNumber/2)));
+        let slope = {
+            x: this.scene.player.x - this.x,
+            y: this.scene.player.y - this.y,
+        };
+        let magnitude = Math.sqrt((slope.x * slope.x) + (slope.y * slope.y));
+        slope.x = slope.x/magnitude;
+        slope.y = slope.y/magnitude;
+        let theta = Math.acos(slope.x);
+        let dTheta = 10 * Math.PI / 180;
+        if (theta > (2*Math.PI/3)) {
+            this.setFrame('AMPrun');
+            this.resetFlip();
+        } else if (theta < Math.PI / 3) {
+            this.setFrame('AMPrun');
+            this.setFlip(true, false);
+        } else {
+            this.setFrame('AMPidle');
+            this.resetFlip();
+        }
+        for (let i = -1; i < 2; i++) {
+            let angle = theta + (i * dTheta);
+            let projectile = new Projectile(this.scene, this.x, this.y, 'Projectile', this, Math.cos(angle), Math.sin(angle), projectileVelocity);
             this.projectileGroup.add(projectile);
             this.scene.projectileGroup.add(projectile);
         }

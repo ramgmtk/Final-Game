@@ -13,12 +13,14 @@ class Menu extends Phaser.Scene {
         this.load.image('shield', 'shield.png');
 
         //sound
-        this.load.audio('E', 'sounds/Short_E.wav');
-        this.load.audio('F', 'sounds/Short_F.wav');
-        this.load.audio('G', 'sounds/Short_G.wav');
-        this.load.audio('F_Sharp', 'sounds/Short_F_Sharp.wav');
-        this.load.audio('A', 'sounds/Short_A.wav')
-        this.load.audio('gameMusic', 'sounds/main_theme.wav');
+        this.load.path = './assets/sounds/';
+        this.load.audio('E', 'Short_E.wav');
+        this.load.audio('F', 'Short_F.wav');
+        this.load.audio('G', 'Short_G.wav');
+        this.load.audio('F_Sharp', 'Short_F_Sharp.wav');
+        this.load.audio('A', 'Short_A.wav')
+        this.load.audio('gameMusic', 'main_theme.wav');
+        this.load.audio('AmpAttack', 'AmpAttackMod.wav')
     }
 
     create() {

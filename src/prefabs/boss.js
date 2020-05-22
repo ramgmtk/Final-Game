@@ -12,6 +12,8 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.player = player;
         this.health = 1000;
         this.isMoving = false;
+        this.spawnNumber = 16;
+        this.thetaVariance = 0;
         this.destination = {
             x: 0,
             y: 0,
@@ -23,7 +25,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         });
         this.projectileSpawn = this.scene.time.addEvent({
             delay: 3000,
-            callback: this.spawnPattern,
+            callback: this.spawnPatternCircle,
             callbackScope: this,
             loop: true
         });
@@ -39,7 +41,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     }
 
     update() {
-        this.bossMovementPattern_test();
+        //this.bossMovementPattern_test();
         if (this.body.checkWorldBounds()) {
             console.assert(debugFlags.enemyFlag, 'Enemy out of bounds');
             this.destroyObject();
@@ -56,7 +58,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.health -= 1;
         this.healthBar.decrease();
     }
-    spawnPattern() {
+    spawnPatternWave() {
         //calculate unit vec
         let slope = {
             x: this.player.x - this.x,
@@ -67,16 +69,28 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         slope.y = slope.y/magnitude;
         let theta = Math.atan(slope.y/slope.x);
         let tanInverseAdjust = 0;
+        //this is compensating for the range of tan^-1
         if ((this.y > this.player.y && this.x > this.player.x) || (this.y < this.player.y && this.x > this.player.x)) { //SHOULD FIX INCREDIBLY HARD CODED.
             tanInverseAdjust += Math.PI;
         }
         let dTheta = 10 * Math.PI / 180;
         for (let i = -1; i < 2; i++) {
             let angle = theta + (i * dTheta) +  tanInverseAdjust;
-            let projectile = new Projectile(this.scene, this.x, this.y, 'BossProjectile', this, Math.cos(angle), Math.sin(angle));
+            let projectile = new Projectile(this.scene, this.x, this.y, 'BossProjectile', this, Math.cos(angle), Math.sin(angle), projectileVelocity * 4);
             this.projectileGroup.add(projectile);
             this.scene.projectileGroup.add(projectile);
         }
+    }
+
+    spawnPatternCircle() {
+        let theta = (Math.PI/(this.spawnNumber/2)) + this.thetaVariance;
+        for (let i = 0; i < this.spawnNumber; i++) {
+            let projectile = new Projectile(this.scene, this.x, this.y, 'BossProjectile', this, 
+                Math.cos(i*theta), Math.sin(i*theta), projectileVelocity * 4);
+            this.projectileGroup.add(projectile);
+            this.scene.projectileGroup.add(projectile);
+        }
+        this.thetaVariance = this.thetaVariance > 0 ? 0 : Math.PI/ 12;
     }
 
     createMovementGroup() {
