@@ -81,6 +81,9 @@ class BossRoom extends Phaser.Scene {
                     object2.destroy();
                 }, null, this);
             }
+        } else {
+            this.sound.stopAll();
+            this.scene.start('gameOverScene');
         }
     }
 

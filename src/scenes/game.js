@@ -119,6 +119,10 @@ class Game extends Phaser.Scene {
                 this.sound.stopAll();
                 this.scene.start('bossScene', {test: this.player});
             }, null, this);
+        } else {
+            this.destroyObjects();
+            this.sound.stopAll();
+            this.scene.start('gameOverScene');
         }
     }
 
