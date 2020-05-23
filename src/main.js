@@ -81,8 +81,8 @@ let bossPatternPoints = [
 //change this to true to disable console.logs
 //ex: console.assert(debugFlag.foo, 'Your statement here');
 let debugFlags = {
-    playerFlag: false,
-    uiFlag: false,
+    playerFlag: true,
+    uiFlag: true,
     enemyFlag: false,
 };
 

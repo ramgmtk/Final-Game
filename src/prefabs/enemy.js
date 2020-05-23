@@ -7,7 +7,6 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         this.setImmovable(true);
         this.setDepth(uiDepth - 1);
         this.setOrigin(0.5);
-
         this.scene = scene;
         this.health = health;
         this.projectileGroup = scene.add.group ({

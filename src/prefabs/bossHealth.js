@@ -1,3 +1,4 @@
+//https://phaser.io/examples/v3/view/game-objects/graphics/health-bars-demo
 class bossHealth {
     constructor(scene, totalHealth) {
         this.healthBar = new Phaser.GameObjects.Graphics(scene);
@@ -12,7 +13,7 @@ class bossHealth {
     }
 
     decrease() {
-        this.currHealth -= 1;
+        this.currHealth -= 10;
         this.draw();
     }
 
@@ -20,16 +21,15 @@ class bossHealth {
         this.healthBar.clear();
         //border
         this.healthBar.fillStyle(0x00ff00);
-        this.healthBar.fillRect(uiOffset.x, uiOffset.y, centerX, 50);
+        this.healthBar.fillRect(uiOffset.x, uiOffset.y, centerX * bossZoom, (50* bossZoom));
         //actual bar
         this.healthBar.fillStyle(0xffffff);
         this.healthBar.fillRect(uiOffset.x + this.borderOffset, uiOffset.y + this.borderOffset, 
-            centerX - (this.borderOffset * 2), 50 - (this.borderOffset*2));
+            (centerX * bossZoom) - (this.borderOffset * 2) , (50 * bossZoom) - (this.borderOffset*2));
         
         this.healthBar.fillStyle(0xff0000);
         let adjustedHealth = Math.floor(this.percentPerPixel * this.currHealth);
-        console.log(adjustedHealth);
         this.healthBar.fillRect(uiOffset.x + this.borderOffset, uiOffset.y + this.borderOffset,
-            adjustedHealth, 50 - (this.borderOffset * 2));
+            (adjustedHealth * bossZoom), (50 * bossZoom) - (this.borderOffset * 2));
     }
 }

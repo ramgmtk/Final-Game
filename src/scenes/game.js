@@ -67,7 +67,7 @@ class Game extends Phaser.Scene {
         this.musicalNoteFS;
         this.musicalNoteG;
         this.createSound();
-        //this.bgm.play();
+        this.bgm.play();
 
         //CAMERA SETUP
         this.playerCam;
@@ -116,7 +116,7 @@ class Game extends Phaser.Scene {
             //test collider for scene exit
             this.physics.world.collide(this.player, this.bossEntrance, () => {
                 this.destroyObjects();
-                this.bgm.mute = true;
+                this.sound.stopAll();
                 this.scene.start('bossScene', {test: this.player});
             }, null, this);
         }
@@ -172,7 +172,7 @@ class Game extends Phaser.Scene {
         for (let i = 0; i < powerChordBar.length; i++) {
             if (powerChordBar[i].unlocked) {
                 this.powerChordList[i] = this.add.text(0 + uiOffset.x, (k * noteSize) + uiOffset.y,
-                     powerChordBar[i].powerChord, noteTextConfig).setOrigin(0).setDepth(uiDepth);
+                     `${powerChordBar[i].powerChord}:${powerChordBar[i].name}`, noteTextConfig).setOrigin(0).setDepth(uiDepth);
                 k += 1;
             }
         }

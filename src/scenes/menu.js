@@ -21,6 +21,7 @@ class Menu extends Phaser.Scene {
         this.load.audio('A', 'Short_A.wav')
         this.load.audio('gameMusic', 'main_theme.wav');
         this.load.audio('AmpAttack', 'AmpAttackMod.wav')
+        this.load.audio('bossTheme', 'Boss_theme.wav');
     }
 
     create() {

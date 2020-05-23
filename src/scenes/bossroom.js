@@ -55,8 +55,14 @@ class BossRoom extends Phaser.Scene {
         this.heartCam;
         this.powerChordCam;
         this.createCams();
-    }
 
+        //audio example
+        /*this.testNoise.play();
+        this.testNoise.once('complete', () => {
+            this.bossTheme.play();
+        }, this);*/
+        this.bossTheme.play();
+    }
     update() {
         if (!this.gameOver) {
             this.player.update();
@@ -169,7 +175,7 @@ class BossRoom extends Phaser.Scene {
         for (let i = 0; i < powerChordBar.length; i++) {
             if (powerChordBar[i].unlocked) {
                 this.powerChordList[i] = this.add.text(0 + uiOffset.x, (k * noteSize) + uiOffset.y,
-                     powerChordBar[i].powerChord, noteTextConfig).setOrigin(0).setDepth(uiDepth);
+                     `${powerChordBar[i].powerChord}:${powerChordBar[i].name}`, noteTextConfig).setOrigin(0).setDepth(uiDepth);
                 k += 1;
             }
         }
@@ -185,8 +191,8 @@ class BossRoom extends Phaser.Scene {
         this.noteCam.ignore([this.boss.healthBar.healthBar]);
         this.powerChordCam.ignore([this.boss.healthBar.healthBar]);
         //this.bossCam.ignore([this.boss.healthBar.healthBar]); leaving in just in case to see if a potential overlap with scene and offscreen elements occures
-        this.bossHealthCam = this.cameras.add(0, 0, centerX, 200);
-        this.bossHealthCam.setViewport(centerX / 2, 0, centerX, 50);
+        this.bossHealthCam = this.cameras.add(0, 0, centerX * bossZoom, 50);
+        this.bossHealthCam.setViewport(centerX * 0.65, 0, centerX, 50);
         this.bossHealthCam.setScroll(uiOffset.x, uiOffset.y);
         this.bossHealthCam.ignore([this.player.healthBar, this.powerChordList, this.player.noteBar]);
         this.bossCam.setZoom(bossZoom);
@@ -282,6 +288,21 @@ class BossRoom extends Phaser.Scene {
             volume: 0.3,
             rate: 1.0,
             loop: false,
+        });
+
+        this.bossTheme = this.sound.add('bossTheme', {
+            mute: false,
+            volume: 0.3,
+            rate: 1.0,
+            loop: false,
+        });
+
+        this.testNoise = this.sound.add('F_Sharp', {
+            mute: false,
+            volume: 0.3,
+            rate: 1.0,
+            loop: false,
+            delay: 10000,
         });
     }
 }
