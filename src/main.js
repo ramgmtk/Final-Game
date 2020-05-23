@@ -5,6 +5,7 @@ let config = {
     scale: {
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
+    pixelArt: true,
     physics: {
         default: 'arcade',
         arcade: {
@@ -53,7 +54,7 @@ powerChordBar = [
 ];
 
 let bossCornerSpace = 200
-let bossZoom = 0.5;
+let bossZoom = 0.75;
 let bossPatternPoints = [
     {
         x: centerX * (1/bossZoom),

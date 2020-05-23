@@ -41,6 +41,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
 
     spawnPattern() {
+        this.scene.enemySound.play();
         let slope = {
             x: this.scene.player.x - this.x,
             y: this.scene.player.y - this.y,

@@ -12,8 +12,8 @@ class BossRoom extends Phaser.Scene {
         this.gameOver = false;
         this.heartInfo = this.textures.get('heart').getSourceImage();
         this.stageInfo = {
-            width: game.config.width * 2,
-            height: game.config.height * 2,
+            width: game.config.width * (1/bossZoom),
+            height: game.config.height * (1/bossZoom),
         }
         this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height)
         this.playerSpriteInfo = game.textures.getFrame(playerAtlas, 'MCidle');
