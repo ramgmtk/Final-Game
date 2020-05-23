@@ -4,7 +4,6 @@ class BossRoom extends Phaser.Scene {
     }
 
     init(data) {
-        console.log('entered bossScene');
         this.gameData = data;
     }
 
@@ -17,6 +16,9 @@ class BossRoom extends Phaser.Scene {
         }
         this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height)
         this.playerSpriteInfo = game.textures.getFrame(playerAtlas, 'MCidle');
+        this.bossProjectileInfo = game.textures.getFrame(playerAtlas, 'BossProjectile');
+        this.bpms = 325;
+        console.log(this.bossProjectileInfo);
         this.controls = {
             w: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
             a: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),

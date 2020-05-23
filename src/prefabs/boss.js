@@ -16,6 +16,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.healthBar = new bossHealth(this.scene, this.maxHealth);
         this.isMoving = false;
         this.spawnNumber = 16;
+        this.waveAmount = 3;
         this.thetaVariance = 0;
         this.availableMoves = [];
         this.currPos = 0;
@@ -25,7 +26,11 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         }
 
         //projectile pattern holder
+        this.projectilePreviews = new Phaser.GameObjects.Graphics(this.scene);
+        this.scene.add.existing(this.projectilePreviews);
+        this.projectileSetup = [];
         this.projectileSpawnTypes = [];
+        this.projectileDelay = [];
         this.createProjectileSpawnList();
         //Groups
         this.projectileGroup;
@@ -43,6 +48,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         if (this.health < (this.maxHealth - (this.maxHealth * 0.3 * this.phase))) {
             this.phase += 1;
             this.projectileSpawnActive.callback = this.projectileSpawnTypes[this.phase - 1];
+            this.projectileSpawnActive.delay =  this.projectileDelay[this.phase - 1];
             console.assert(debugFlags.enemyFlag, 'NEXT PHASE STARTED');
         }
         if (this.body.checkWorldBounds()) {
@@ -80,6 +86,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.movementGroup.clear(true, true);
         this.healthBar.healthBar.destroy();
         this.healthBar = null;
+        this.projectilePreviews.clear();
         //remove the spawn timer from the scene
         for (let i = 0; i < this.timerArray.length; i++) {
             this.timerArray[i].remove();
@@ -89,7 +96,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     createProjectileSpawnList() {
         this.projectileSpawnTypes.push(this.spawnPatternCircle);
+        this.projectileDelay.push(this.scene.bpms * 9);
         this.projectileSpawnTypes.push(this.spawnPatternLine);
+        this.projectileDelay.push(this.scene.bpms * 18);
     }
     createGroups() {
         this.projectileGroup = this.scene.add.group({
@@ -105,15 +114,14 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     createTimers() {
         this.projectileSpawnActive = this.scene.time.addEvent({
-            delay: 3000,
+            delay: this.projectileDelay[this.phase - 1],
             callback: this.projectileSpawnTypes[this.phase - 1],
             callbackScope: this,
             loop: true,
         });
         this.timerArray.push(this.projectileSpawnActive);
-        console.log(this.projectileSpawnActive);
         this.projectileSpawnPassive = this.scene.time.addEvent({
-            delay: 325,
+            delay: this.scene.bpms,
             callback: this.spawnPatternWave,
             callbackScope: this,
             loop: true,
@@ -167,40 +175,84 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             tanInverseAdjust += Math.PI;
         }
         let dTheta = 20 * Math.PI / 180;
-        for (let i = -1; i < 2; i++) {
+        for (let i = -1; i < -1 + this.waveAmount; i++) {
             let angle = theta + (i * dTheta) +  tanInverseAdjust;
-            let projectile = new Projectile(this.scene, this.x, this.y, 'BossProjectile', this, Math.cos(angle), Math.sin(angle), projectileVelocity * 4);
+            let projectile = new Projectile(this.scene, this.x, this.y, 'BossProjectile', this, Math.cos(angle), Math.sin(angle), projectileVelocity * 2);
             this.projectileGroup.add(projectile);
             this.scene.projectileGroup.add(projectile);
         }
     }
 
+    //ISSUE WITH THIS IS THAT EVEN THOUGH PROJECTILES ARE DESTROYED OFFSCREEN, THE ARRAY STILL NEEDS TO BE CLEARED ON 1 RUN THROUGH.
     spawnPatternCircle() {
-        let theta = (Math.PI/(this.spawnNumber/2)) + this.thetaVariance;
-        for (let i = 0; i < this.spawnNumber; i++) {
-            let projectile = new Projectile(this.scene, this.x, this.y, 'BossProjectile', this, 
-                Math.cos(i*theta), Math.sin(i*theta), projectileVelocity * 2);
-            this.projectileGroup.add(projectile);
-            this.scene.projectileGroup.add(projectile);
+        this.projectilePreviews.clear();
+        this.projectilePreviews.fillStyle(0xff0000);
+        if (this.projectileSetup.length == 0) {
+            this.projectilePreviews.fillCircle(this.x, this.y, 200).setDepth(uiDepth - 1).setAlpha(0.5);
+            this.scene.time.addEvent({
+                delay: this.scene.bpms * 3,
+                callback: () => {
+                    this.projectilePreviews.clear();
+                    let theta = (Math.PI/(this.spawnNumber/2)) + this.thetaVariance;
+                    for (let i = 0; i < this.spawnNumber; i++) {
+                        let projectile = new Projectile(this.scene, this.x, this.y, 'BossProjectile', this, 
+                            Math.cos(i*theta), Math.sin(i*theta), projectileVelocity * 4);
+                        this.projectileSetup.push(projectile)
+                    }
+                    this.projectileGroup.addMultiple(this.projectileSetup);
+                    this.scene.projectileGroup.addMultiple(this.projectileSetup);
+                    this.thetaVariance = this.thetaVariance > 0 ? 0 : Math.PI/ 12;
+                },
+                callbackScope: this,
+                loop: false,
+            });
+        } else {
+            for (let i = 0; i < this.projectileSetup.length; i++) {
+                this.projectileSetup[i].destroy();
+            }
+            this.projectileSetup = [];
         }
-        this.thetaVariance = this.thetaVariance > 0 ? 0 : Math.PI/ 12;
     }
 
     //INCREDIBLY TAXING METHOD TO CREATE A WALL, SHOULD FIX
     spawnPatternLine() {
-        let projectileSetup = [];
-        let direction;
-        let spawnCols = 4; //number of columns of projectiles
-        for (let i = 0; i < spawnCols; i++) {
-            let spawnPoint = Phaser.Math.Between(i * this.scene.stageInfo.width/spawnCols, (i + 1) * (this.scene.stageInfo.width/spawnCols));
-            direction = i % 2 == 0 ? 1 : -1;
-            for (let j = 0; j < this.scene.stageInfo.height; j+= this.scene.playerSpriteInfo.height) {
-                let projectile = new Projectile(this.scene, spawnPoint, j, 'BossProjectile', this,
-                0, direction, projectileVelocity);
-                projectileSetup.push(projectile);
+        this.projectilePreviews.clear();
+        this.projectilePreviews.fillStyle(0xff0000);
+        if (this.projectileSetup.length == 0) {
+            let spawnPArr = [];
+            let vec;
+            let spawnCols = 4; //number of columns of projectiles
+            for (let i = 0; i < spawnCols; i++) {
+                let spawnPoint = Phaser.Math.Between((i * this.scene.stageInfo.width/spawnCols) + this.scene.bossProjectileInfo.width/2, 
+                    ((i + 1) * (this.scene.stageInfo.width/spawnCols)) - this.scene.bossProjectileInfo.width/2);
+                vec = i % 2 == 0 ? 1 : -1;
+                spawnPArr.push({spawn: spawnPoint, direction: vec});
+                this.projectilePreviews.fillRect(spawnPoint - (this.scene.bossProjectileInfo.width/2), 0, 
+                    this.scene.bossProjectileInfo.width, game.config.height * (1/bossZoom)).setDepth(uiDepth - 1).setAlpha(0.5);
             }
+            this.scene.time.addEvent({
+                delay: this.scene.bpms * 3,
+                callback: (spawnPArr) => {
+                    this.projectilePreviews.clear();
+                    for (let i = 0; i < spawnCols; i++) {
+                        for (let j = 0; j < this.scene.stageInfo.height; j+= this.scene.bossProjectileInfo.height) {
+                            let projectile = new Projectile(this.scene, spawnPArr[i].spawn, j, 'BossProjectile', this,
+                                0, spawnPArr[i].direction, projectileVelocity);
+                            this.projectileSetup.push(projectile);
+                        }
+                    }
+                    this.projectileGroup.addMultiple(this.projectileSetup);
+                    this.scene.projectileGroup.addMultiple(this.projectileSetup);
+                },
+                callbackScope: this,
+                args: [spawnPArr],
+                loop: false,
+            });
+        } else {
+            for (let i = 0; i < this.projectileSetup.length; i++) {
+                this.projectileSetup[i].destroy();
+            }
+            this.projectileSetup = [];
         }
-        this.projectileGroup.addMultiple(projectileSetup);
-        this.scene.projectileGroup.addMultiple(projectileSetup);
     }
 }
