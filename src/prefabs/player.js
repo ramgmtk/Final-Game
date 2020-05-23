@@ -24,6 +24,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         //efx
         this.particleManager;
         this.noteEfx;
+        this.particleManager = new efxEmitter(this.scene, this, playerAtlas, 'Note')
 
         this.setup();
         this.playerSet = [this, this.weapon, this.shield];
@@ -112,7 +113,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     //callback function for pressing jkl keys
     playMusic(musicalNote) {
         console.assert(debugFlags.playerFlag, 'Entered music note callback');
-        this.noteEfx.explode(5, this.x, this.y);
+        //this.noteEfx.explode(5, this.x, this.y);
+        this.particleManager.generateParticles();
         this.anims.play('play');
         switch(musicalNote.keyCode) {
             case Phaser.Input.Keyboard.KeyCodes.H:
@@ -212,6 +214,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.createNoteBar();
         this.createHealthBar();
         this.createTools();
-        this.createEFX();
+        //this.createEFX();
     }
 }
