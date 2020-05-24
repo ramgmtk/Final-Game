@@ -17,6 +17,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.weaponOffsetX;
         this.weaponOffsetY;
         this.isAttacking;
+        this.normalBody;
         this.canShrink;
         this.shield;
         this.shieldActive;
@@ -34,6 +35,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.playerMovement();
         this.shieldMovement();
         this.weaponMovement();
+        this.normalBodyMovement();
     }
 
     //handles the players basic movement
@@ -110,6 +112,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.shield.body.y = this.body.y + this.body.halfHeight - this.shield.body.halfHeight;
     }
 
+    normalBodyMovement() {
+        this.normalBody.body.x = this.body.x + this.body.halfWidth - this.normalBody.body.halfHeight;
+        this.normalBody.body.y = this.body.y + this.body.halfHeight - this.normalBody.body.halfHeight;
+    }
+
     //callback function for pressing jkl keys
     playMusic(musicalNote) {
         console.assert(debugFlags.playerFlag, 'Entered music note callback');
@@ -179,7 +186,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.weaponOffsetX = 0;
         this.weaponOffsetY = 0;
         this.isAttacking = false;
-        this.canShrink = true;
 
         this.shield = new Phaser.Physics.Arcade.Sprite(this.scene, this.x, this.y, 'shield', 0).setOrigin(0.5).setDepth(uiDepth - 1).setAlpha(0);
         this.scene.add.existing(this.shield);
@@ -188,6 +194,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.shield.body.setCircle(this.scene.playerSpriteInfo.width);
         this.shield.setScale(2.0);
         this.shieldActive = false;
+
+        this.normalBody = new Phaser.Physics.Arcade.Sprite(this.scene, this.x, this.y, null, 0).setOrigin(0.5).setDepth(uiDepth - 1);
+        this.scene.physics.add.existing(this.normalBody);
+        this.normalBody.body.setSize(this.scene.playerSpriteInfo.width, this.scene.playerSpriteInfo.height);
+        this.normalBody.setImmovable(true);
+        this.normalBody.setDebugBodyColor(0x0000ff);
+        this.canShrink = true;
     }
 
     createEFX(zoom = 1) {

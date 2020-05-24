@@ -9,6 +9,7 @@ class Game extends Phaser.Scene {
     create() {
         //misc
         this.gameOver = false;
+        this.shrinkDuration = 0;;
         //BACKGROUND
         let bg = this.add.image(0, 0, 'bg').setOrigin(0);
         this.stageInfo = this.textures.get('bg');
@@ -203,10 +204,7 @@ class Game extends Phaser.Scene {
                 this.player.canShrink = false;
                 this.time.addEvent({
                     delay: 3000,
-                    callback: () => {
-                        this.player.setScale(1.0);
-                        this.player.canShrink = true;
-                    },
+                    callback: this.shrinkCallback,
                     callbackScope: this,
                     loop: false,
                 });
@@ -232,6 +230,36 @@ class Game extends Phaser.Scene {
         //Reset the bar
         for (let i = 0; i < this.player.noteBar.length; i++) {
             this.player.noteBar[i].setText('');
+        }
+    }
+
+    //SHOULD FIX, IT IS POSSIBLE TO CRASH THE GAME IF THE PLAYERS BODY REMAINS IN A TIGHT SPACE;
+    //TEMPORARY FIX IS SENDING PLAYER BACK TO SPAWN IF THEY REMAIN FOR TOO LONG.
+    shrinkCallback() {
+        //THE CURRENT STRUCTURE ASSUMS THAT CENTERX CENTERY WILL NOT HAVE ANYTHING THE PLAYER CAN COLLIDE WITH.
+        if (this.shrinkDuration > 12000) {
+            this.player.x = centerX;
+            this.player.y = centerY;
+            this.shrinkDuration = 0;
+            this.player.setScale(1.0);
+            this.player.canShrink = true;
+            return;
+        } else if (this.physics.world.overlap(this.player.normalBody, this.enemyGroup, () => {
+            this.shrinkDuration += 3000;
+            this.time.addEvent({
+                delay: 3000,
+                callback: this.shrinkCallback,
+                callbackScope: this,
+                loop: false,
+            })
+        }, () => {
+            return !this.player.canShrink;
+        }, this)) {
+            console.assert(debugFlags.playerFlag, 'Bodies overlapping')
+        } else {
+            this.shrinkDuration = 0;
+            this.player.setScale(1.0);
+            this.player.canShrink = true;
         }
     }
 
