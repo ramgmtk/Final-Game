@@ -223,6 +223,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.setMaxVelocity(playerMaxVelocity);
         this.setOrigin(0.5);
         this.setDepth(uiDepth - 1);
+        //
+        
         this.addNoteListeners();
         this.createNoteBar();
         this.createHealthBar();

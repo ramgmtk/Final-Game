@@ -2,13 +2,13 @@ class Game extends Phaser.Scene {
     constructor() {
         super('gameScene');
     }
-
     /*preload() {
         //SHOULD FIX by moving to menu preload at a later point in time.   
     }*/
     create() {
         //misc
         this.gameOver = false;
+        this.exitWorld = false;
         this.shrinkDuration = 0;
         this.canRevert = true;
         //BACKGROUND
@@ -49,7 +49,7 @@ class Game extends Phaser.Scene {
             i: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I),
             space: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
         };
-        
+
         //CREATE THE PLAYER
         this.pSpawn = map.findObject('Object_Layer',  (obj) => obj.name === 'pSpawn')
         this.player = new Player(this, this.pSpawn.x, this.pSpawn.y, playerAtlas, 'MCidle', 'Note');
@@ -87,11 +87,6 @@ class Game extends Phaser.Scene {
             let enemy = new Enemy(this, eSpawn.x, eSpawn.y, playerAtlas, 10, 'AMPidle');
             this.enemyGroup.add(enemy);
         }
-        
-        //ANIMATIONS
-        //Animations for the different animation states of the player
-        //Left, Right, Up, Down movement, as well as playing a note.
-        this.createAnimations();
 
         //SOUND
         this.bgm;
@@ -118,13 +113,14 @@ class Game extends Phaser.Scene {
         const bEnt = map.findObject('Object_Layer', (obj) => obj.name === 'bEntrance');
         this.bossEntrance = new Phaser.Physics.Arcade.Sprite(this, bEnt.x, bEnt.y, playerAtlas, 'Note').setDepth(uiDepth - 1);
         this.physics.add.existing(this.bossEntrance);
+        this.bossEntrance.setImmovable(true);
         this.add.existing(this.bossEntrance);
 
         console.log(this.levelLayer);
     }
 
     update() {
-        if (!this.gameOver) {
+        if (!this.exitWorld) {
             //player actions
             this.player.update();
             if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
@@ -150,14 +146,17 @@ class Game extends Phaser.Scene {
 
             //test collider for scene exit
             this.physics.world.collide(this.player, this.bossEntrance, () => {
-                this.destroyObjects();
-                this.sound.stopAll();
-                this.scene.start('bossScene', {test: this.player});
+                this.exitWorld = true;
             }, null, this);
         } else {
             this.destroyObjects();
-            this.sound.stopAll();
-            this.scene.start('gameOverScene');
+            if (this.gameOver) {
+                this.scene.start('gameOverScene');
+                
+            } else {
+                this.scene.start('bossScene');
+            }
+            this.scene.remove('gameScene');
         }
     }
 
@@ -165,6 +164,8 @@ class Game extends Phaser.Scene {
         this.time.removeAllEvents(); 
         this.enemyGroup.clear(true, true)
         this.projectileGroup.clear(true, true);
+        this.sound.stopAll();
+        this.player.destroy();
     }
 
     //callback function for if the player gets hit by projectile
@@ -177,10 +178,8 @@ class Game extends Phaser.Scene {
         if (this.player.health.healthNum == 0) {
             let health = this.player.healthBar.pop();
             health.destroy();
-            this.time.removeAllEvents(); //clears the event calls
-            this.enemyGroup.clear(true, true);
-            this.projectileGroup.clear(true, true);
             this.gameOver = true;
+            this.exitWorld = true;
         } else {
             //SHOULD FIX add player blinking effect here
             object1.canCollide = false;
@@ -299,86 +298,6 @@ class Game extends Phaser.Scene {
             this.player.canShrink = true;
             this.canRevert = true;
         }
-        /*if (this.shrinkDuration > 12000) {
-            this.player.x = this.pSpawn.x
-            this.player.y = this.pSpawn.y
-            this.shrinkDuration = 0;
-            this.player.setScale(1.0);
-            this.player.canShrink = true;
-            this.canRevert = true;
-            return;
-        } 
-        if (!this.canRevert) {
-            this.shrinkDuration += 3000;
-            this.time.addEvent({
-                delay: 3000,
-                callback: this.shrinkCallback,
-                callbackScope: this,
-                loop: false,
-            });
-            this.canRevert = true;
-        } else {
-            this.shrinkDuration = 0;
-            this.player.setScale(1.0);
-            this.player.canShrink = true;
-            this.canRevert = true;
-        }*/
-    }
-
-    createAnimations() {
-        this.anims.create({
-            key: 'left',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCrun'},
-            ],
-            frameRate: 48,
-        });
-
-        this.anims.create({
-            key: 'right',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCrun'},
-            ],
-            frameRate: 48,
-        });
-
-        this.anims.create({
-            key: 'up',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCidle'},
-            ],
-            frameRate: 48,
-        });
-
-        this.anims.create({
-            key: 'down',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCidle'},
-            ],
-            frameRate: 48,
-        });
-
-        this.anims.create({
-            key: 'play',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCplay'},
-            ],
-            duration: 2000,
-        });
-
-        this.anims.create({
-            key: 'melee',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCplay'},
-            ],
-            duration: 500,
-        });
     }
 
     createSound() {

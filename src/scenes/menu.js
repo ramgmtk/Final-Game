@@ -2,7 +2,6 @@ class Menu extends Phaser.Scene {
     constructor() {
         super('menuScene');
     }
-    
     preload() {
         //image data
         this.load.path = './assets/atlas/';
@@ -29,6 +28,7 @@ class Menu extends Phaser.Scene {
     }
 
     create() {
+        this.createAnimations();
         this.space = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
         let menuConfig = {
             fontFamily: 'Courier',
@@ -49,7 +49,66 @@ class Menu extends Phaser.Scene {
 
     update() {
         if (Phaser.Input.Keyboard.JustDown(this.space)) {
-            this.scene.start('gameScene')
-        } 
+            this.scene.add('gameScene', Game);
+            this.scene.add('bossScene', BossRoom);
+            this.scene.start('gameScene');
+        }
     }
+
+    createAnimations() {
+        this.anims.create({
+            key: 'left',
+            defaultTextureKey: playerAtlas,
+            frames: [
+                {frame: 'MCrun'},
+            ],
+            frameRate: 48,
+        });
+
+        this.anims.create({
+            key: 'right',
+            defaultTextureKey: playerAtlas,
+            frames: [
+                {frame: 'MCrun'},
+            ],
+            frameRate: 48,
+        });
+
+        this.anims.create({
+            key: 'up',
+            defaultTextureKey: playerAtlas,
+            frames: [
+                {frame: 'MCidle'},
+            ],
+            frameRate: 48,
+        });
+
+        this.anims.create({
+            key: 'down',
+            defaultTextureKey: playerAtlas,
+            frames: [
+                {frame: 'MCidle'},
+            ],
+            frameRate: 48,
+        });
+
+        this.anims.create({
+            key: 'play',
+            defaultTextureKey: playerAtlas,
+            frames: [
+                {frame: 'MCplay'},
+            ],
+            duration: 2000,
+        });
+
+        this.anims.create({
+            key: 'melee',
+            defaultTextureKey: playerAtlas,
+            frames: [
+                {frame: 'MCplay'},
+            ],
+            duration: 500,
+        });
+    }
+
 }

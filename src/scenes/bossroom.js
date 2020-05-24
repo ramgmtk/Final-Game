@@ -45,8 +45,7 @@ class BossRoom extends Phaser.Scene {
         this.boss = new Boss(this, bossPatternPoints[0].x, bossPatternPoints[0].y, 'bossAtlas', 'BOSSidle', this.player);
         console.assert(debugFlags.enemyFlag, this.projectileGroup);
 
-        //animations
-        this.createAnimations();
+        //sound
         this.createSound();
 
         //camera setup
@@ -82,9 +81,18 @@ class BossRoom extends Phaser.Scene {
                 }, null, this);
             }
         } else {
-            this.sound.stopAll();
+            this.destroyObjects();
             this.scene.start('gameOverScene');
+            this.scene.remove('bossScene');
         }
+    }
+
+    destroyObjects() {
+        this.time.removeAllEvents(); 
+        this.projectileGroup.clear(true, true);
+        this.boss.destroy();
+        this.sound.stopAll();
+        this.player.destroy();
     }
 
     damagePlayer(object1, object2) {
@@ -201,62 +209,6 @@ class BossRoom extends Phaser.Scene {
         this.bossHealthCam.setScroll(uiOffset.x, uiOffset.y);
         this.bossHealthCam.ignore([this.player.healthBar, this.powerChordList, this.player.noteBar]);
         this.bossCam.setZoom(bossZoom);
-    }
-
-    createAnimations() {
-        this.anims.create({
-            key: 'left',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCrun'},
-            ],
-            frameRate: 48,
-        });
-
-        this.anims.create({
-            key: 'right',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCrun'},
-            ],
-            frameRate: 48,
-        });
-
-        this.anims.create({
-            key: 'up',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCidle'},
-            ],
-            frameRate: 48,
-        });
-
-        this.anims.create({
-            key: 'down',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCidle'},
-            ],
-            frameRate: 48,
-        });
-
-        this.anims.create({
-            key: 'play',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCplay'},
-            ],
-            duration: 2000,
-        });
-
-        this.anims.create({
-            key: 'melee',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCplay'},
-            ],
-            duration: 500,
-        });
     }
 
     createSound() {
