@@ -9,13 +9,29 @@ class Game extends Phaser.Scene {
     create() {
         //misc
         this.gameOver = false;
-        this.shrinkDuration = 0;;
+        this.shrinkDuration = 0;
+        this.canRevert = true;
         //BACKGROUND
-        let bg = this.add.image(0, 0, 'bg').setOrigin(0);
-        this.stageInfo = this.textures.get('bg');
-        this.stageInfo = this.stageInfo.getSourceImage();
+        const map = this.add.tilemap('tutorial_map');
+        const tileset = map.addTilesetImage('tutorial_level', 'tutorial_tile');
+
+        //const backgroundLayer = map.createStaticLayer('Background_Layer', tileset, 0, 0);
+        const levelLayer = map.createStaticLayer('Wall_Layer', tileset, 0, 0);
+        this.levelLayer = levelLayer;
+        this.stageInfo = {
+            width: map.widthInPixels,
+            height: map.heightInPixels,
+        }
         this.heartInfo = game.textures.getFrame('healthAtlas', 'health4');
         this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height);
+
+        levelLayer.setCollisionByProperty({collides: true});
+        const debugGraphics = this.add.graphics().setAlpha(0.75)
+        /*levelLayer.renderDebug(debugGraphics, {
+            tileColor: new Phaser.Display.Color(125, 125, 240, 255),
+            collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255),
+
+        });*/
         //PLAYER RELATED VARIABLES
         //key controls
         this.playerSpriteInfo = game.textures.getFrame(playerAtlas, 'MCidle');
@@ -35,7 +51,15 @@ class Game extends Phaser.Scene {
         };
         
         //CREATE THE PLAYER
-        this.player = new Player(this, centerX, centerY, playerAtlas, 'MCidle', 'Note');
+        this.pSpawn = map.findObject('Object_Layer',  (obj) => obj.name === 'pSpawn')
+        this.player = new Player(this, this.pSpawn.x, this.pSpawn.y, playerAtlas, 'MCidle', 'Note');
+
+        this.physics.add.collider(this.player, levelLayer);
+        /*this.physics.add.overlap(this.player.normalBody, levelLayer, () => {
+            this.canRevert = false;
+        }, (object1, object2) => {
+            return object2.collides == true && !this.canShrink;
+        }, this);*/
 
         //UI ELEMENTS
         this.powerChordList = new Array(powerChordBar.length);
@@ -47,13 +71,22 @@ class Game extends Phaser.Scene {
             runChildUpdate: true,
         });
         console.assert(debugFlags.enemyFlag, this.projectileGroup);
+        this.physics.add.collider(this.projectileGroup, levelLayer, (object1, object2) => {
+            object1.destroy();
+        }, null, this);
         
         this.enemyGroup = this.add.group({
             scene: this,
             runChildUpdate: true,
-        })
-        let enemy = new Enemy(this, centerX + 300, centerY, playerAtlas, 50, 'AMPidle');
-        this.enemyGroup.add(enemy);
+        });
+        let eSpawnString = 'eSpawn0';
+        for (let i = 0; i < 3; i++) {
+            eSpawnString = eSpawnString.slice(0, -1);
+            eSpawnString = eSpawnString + (i + 1).toString();
+            let eSpawn = map.findObject('Object_Layer', (obj) => obj.name == eSpawnString);
+            let enemy = new Enemy(this, eSpawn.x, eSpawn.y, playerAtlas, 10, 'AMPidle');
+            this.enemyGroup.add(enemy);
+        }
         
         //ANIMATIONS
         //Animations for the different animation states of the player
@@ -82,11 +115,12 @@ class Game extends Phaser.Scene {
         this.playerCam = cams[3];
 
         //test
-        this.bossEntrance = new Phaser.Physics.Arcade.Sprite(this, centerX, centerY + 300, playerAtlas, 'Note').setDepth(uiDepth - 1);
+        const bEnt = map.findObject('Object_Layer', (obj) => obj.name === 'bEntrance');
+        this.bossEntrance = new Phaser.Physics.Arcade.Sprite(this, bEnt.x, bEnt.y, playerAtlas, 'Note').setDepth(uiDepth - 1);
         this.physics.add.existing(this.bossEntrance);
         this.add.existing(this.bossEntrance);
 
-        
+        console.log(this.levelLayer);
     }
 
     update() {
@@ -236,31 +270,59 @@ class Game extends Phaser.Scene {
     //SHOULD FIX, IT IS POSSIBLE TO CRASH THE GAME IF THE PLAYERS BODY REMAINS IN A TIGHT SPACE;
     //TEMPORARY FIX IS SENDING PLAYER BACK TO SPAWN IF THEY REMAIN FOR TOO LONG.
     shrinkCallback() {
+        console.log(this.shrinkDuration);
         //THE CURRENT STRUCTURE ASSUMS THAT CENTERX CENTERY WILL NOT HAVE ANYTHING THE PLAYER CAN COLLIDE WITH.
         if (this.shrinkDuration > 12000) {
-            this.player.x = centerX;
-            this.player.y = centerY;
+            this.player.x = this.pSpawn.x
+            this.player.y = this.pSpawn.y
             this.shrinkDuration = 0;
             this.player.setScale(1.0);
             this.player.canShrink = true;
+            this.canRevert = true;
             return;
-        } else if (this.physics.world.overlap(this.player.normalBody, this.enemyGroup, () => {
+        } else if (this.physics.world.overlap(this.player.normalBody, this.levelLayer, () => {
+            this.canRevert = false;
+        }, (object1, object2) => {
+            return object2.collides == true && !this.canShrink;
+        }, this)) {
+            console.assert(debugFlags.playerFlag, 'Bodies overlapping')
             this.shrinkDuration += 3000;
             this.time.addEvent({
                 delay: 3000,
                 callback: this.shrinkCallback,
                 callbackScope: this,
                 loop: false,
-            })
-        }, () => {
-            return !this.player.canShrink;
-        }, this)) {
-            console.assert(debugFlags.playerFlag, 'Bodies overlapping')
+            });
         } else {
             this.shrinkDuration = 0;
             this.player.setScale(1.0);
             this.player.canShrink = true;
+            this.canRevert = true;
         }
+        /*if (this.shrinkDuration > 12000) {
+            this.player.x = this.pSpawn.x
+            this.player.y = this.pSpawn.y
+            this.shrinkDuration = 0;
+            this.player.setScale(1.0);
+            this.player.canShrink = true;
+            this.canRevert = true;
+            return;
+        } 
+        if (!this.canRevert) {
+            this.shrinkDuration += 3000;
+            this.time.addEvent({
+                delay: 3000,
+                callback: this.shrinkCallback,
+                callbackScope: this,
+                loop: false,
+            });
+            this.canRevert = true;
+        } else {
+            this.shrinkDuration = 0;
+            this.player.setScale(1.0);
+            this.player.canShrink = true;
+            this.canRevert = true;
+        }*/
     }
 
     createAnimations() {

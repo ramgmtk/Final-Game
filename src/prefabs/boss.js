@@ -45,6 +45,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     }
 
     update() {
+        if (this.health <= 0) {
+            this.scene.gameOver = true;
+        }
         if (this.health < (this.maxHealth - (this.maxHealth * 0.3 * this.phase))) {
             this.phase += 1;
             this.projectileSpawnActive.callback = this.projectileSpawnTypes[this.phase - 1];
@@ -98,7 +101,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.projectileSpawnTypes.push(this.spawnPatternCircle);
         this.projectileDelay.push(this.scene.bpms * 9);
         this.projectileSpawnTypes.push(this.spawnPatternLine);
-        this.projectileDelay.push(this.scene.bpms * 18);
+        this.projectileDelay.push(this.scene.bpms * 12);
     }
     createGroups() {
         this.projectileGroup = this.scene.add.group({

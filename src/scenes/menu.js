@@ -4,10 +4,14 @@ class Menu extends Phaser.Scene {
     }
     
     preload() {
+        //image data
         this.load.path = './assets/atlas/';
         this.load.atlas(playerAtlas, 'PlaceholderSprites.png', 'PlaceholderSprites.json');
         this.load.atlas('bossAtlas', 'BossSprite.png', 'BossSprite.json');
-        this.load.atlas('healthAtlas', 'health.png', 'health.json')
+        this.load.atlas('healthAtlas', 'health.png', 'health.json');
+        this.load.path = './assets/tilemap/';
+        this.load.image('tutorial_tile', 'Tile Sheet.png');
+        this.load.tilemapTiledJSON('tutorial_map', 'Tutorial.json')
         this.load.path = './assets/';
         this.load.image('bg', 'bg.png');
         this.load.image('shield', 'shield.png');
@@ -40,7 +44,7 @@ class Menu extends Phaser.Scene {
         }
         this.add.text(centerX , centerY - 32, 'Final Game Prototype' , menuConfig).setOrigin(.5);
         this.add.text(centerX, centerY, 'WASD to move, F melee attack, hijkl note keys', menuConfig).setOrigin(0.5);
-        this.add.text(centerX, centerY + 32, 'Press SPACE to start', menuConfig).setOrigin(0.5);
+        this.add.text(centerX, centerY + 32, 'Press SPACE to play song / start', menuConfig).setOrigin(0.5);
     }
 
     update() {
