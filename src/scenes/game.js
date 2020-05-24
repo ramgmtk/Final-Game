@@ -210,7 +210,7 @@ class Game extends Phaser.Scene {
         for (let i = 0; i < powerChordBar.length; i++) {
             if (powerChordBar[i].unlocked) {
                 this.powerChordList[i] = this.add.text(0 + uiOffset.x, (k * noteSize) + uiOffset.y,
-                     `${powerChordBar[i].powerChord}:${powerChordBar[i].name}`, noteTextConfig).setOrigin(0).setDepth(uiDepth);
+                     `${powerChordBar[i].powerChord}`, noteTextConfig).setOrigin(0).setDepth(uiDepth);
                 k += 1;
             }
         }
