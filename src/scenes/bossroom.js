@@ -18,7 +18,7 @@ class BossRoom extends Phaser.Scene {
         this.playerSpriteInfo = game.textures.getFrame(playerAtlas, 'MCidle');
         this.bossProjectileInfo = game.textures.getFrame(playerAtlas, 'BossProjectile');
         this.bpms = 325;
-        console.log(this.bossProjectileInfo);
+        this.sceneTimeDelay = 3.000333;
         this.controls = {
             w: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
             a: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A),
@@ -111,14 +111,9 @@ class BossRoom extends Phaser.Scene {
             object1.canCollide = false;
             object2.destroy();
             this.player.health.updateHealth();
-            this.time.addEvent({
-                delay: 2000,
-                callback: () => {
-                    this.player.canCollide = true;
-                },
-                callbackScope: this,
-                loop: false
-            });
+            this.time.delayedCall(2000, () => {
+                this.player.canCollide = true;
+            }, null, this);
         }
         
     }
@@ -142,15 +137,10 @@ class BossRoom extends Phaser.Scene {
             if (this.player.canShrink) {
                 this.player.setScale(0.5);
                 this.player.canShrink = false;
-                this.time.addEvent({
-                    delay: 3000,
-                    callback: () => {
-                        this.player.setScale(1.0);
-                        this.player.canShrink = true;
-                    },
-                    callbackScope: this,
-                    loop: false,
-                });
+                this.time.delayedCall(3000, () => {
+                    this.player.setScale(1.0);
+                    this.player.canShrink = true;
+                }, null, this);
             }
         } else if (noteCombo == powerChordBar[2].powerChord) {
             console.assert(debugFlags.playerFlag, 'Shield');
@@ -158,16 +148,11 @@ class BossRoom extends Phaser.Scene {
                 this.player.shieldActive = true;
                 this.player.shield.setAlpha(1);
                 this.player.setMaxVelocity(playerMaxVelocity/5);
-                this.time.addEvent({
-                    delay: 2000,
-                    callback: () => {
-                        this.player.shieldActive = false;
-                        this.player.shield.setAlpha(0);
-                        this.player.setMaxVelocity(playerMaxVelocity);
-                    },
-                    callbackScope: this,
-                    loop: false,
-                });
+                this.time.delayedCall(2000, () => {
+                    this.player.shieldActive = false;
+                    this.player.shield.setAlpha(0);
+                    this.player.setMaxVelocity(playerMaxVelocity);
+                }, null, this);
             }
         }
         //Reset the bar
@@ -188,7 +173,7 @@ class BossRoom extends Phaser.Scene {
         for (let i = 0; i < powerChordBar.length; i++) {
             if (powerChordBar[i].unlocked) {
                 this.powerChordList[i] = this.add.text(0 + uiOffset.x, (k * noteSize) + uiOffset.y,
-                     `${powerChordBar[i].powerChord}:${powerChordBar[i].name}`, noteTextConfig).setOrigin(0).setDepth(uiDepth);
+                     `${powerChordBar[i].powerChord}`, noteTextConfig).setOrigin(0).setDepth(uiDepth);
                 k += 1;
             }
         }

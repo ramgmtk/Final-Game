@@ -115,8 +115,6 @@ class Game extends Phaser.Scene {
         this.physics.add.existing(this.bossEntrance);
         this.bossEntrance.setImmovable(true);
         this.add.existing(this.bossEntrance);
-
-        console.log(this.levelLayer);
     }
 
     update() {
@@ -185,14 +183,9 @@ class Game extends Phaser.Scene {
             object1.canCollide = false;
             object2.destroy();
             this.player.health.updateHealth();
-            this.time.addEvent({
-                delay: 2000,
-                callback: () => {
-                    this.player.canCollide = true;
-                },
-                callbackScope: this,
-                loop: false
-            });
+            this.time.delayedCall(2000, () => {
+                this.player.canCollide = true;
+            }, null, this);
         }
         
     }
@@ -235,12 +228,7 @@ class Game extends Phaser.Scene {
             if (this.player.canShrink) {
                 this.player.setScale(0.5);
                 this.player.canShrink = false;
-                this.time.addEvent({
-                    delay: 3000,
-                    callback: this.shrinkCallback,
-                    callbackScope: this,
-                    loop: false,
-                });
+                this.time.delayedCall(3000, this.shrinkCallback, null, this);
             }
         } else if (noteCombo == powerChordBar[2].powerChord) {
             console.assert(debugFlags.playerFlag, 'Shield');
@@ -248,16 +236,11 @@ class Game extends Phaser.Scene {
                 this.player.shieldActive = true;
                 this.player.shield.setAlpha(1);
                 this.player.setMaxVelocity(playerMaxVelocity/5);
-                this.time.addEvent({
-                    delay: 2000,
-                    callback: () => {
-                        this.player.shieldActive = false;
-                        this.player.shield.setAlpha(0);
-                        this.player.setMaxVelocity(playerMaxVelocity);
-                    },
-                    callbackScope: this,
-                    loop: false,
-                });
+                this.time.delayedCall(2000, () => {
+                    this.player.shieldActive = false;
+                    this.player.shield.setAlpha(0);
+                    this.player.setMaxVelocity(playerMaxVelocity);
+                }, null, this);
             }
         }
         //Reset the bar
@@ -269,7 +252,6 @@ class Game extends Phaser.Scene {
     //SHOULD FIX, IT IS POSSIBLE TO CRASH THE GAME IF THE PLAYERS BODY REMAINS IN A TIGHT SPACE;
     //TEMPORARY FIX IS SENDING PLAYER BACK TO SPAWN IF THEY REMAIN FOR TOO LONG.
     shrinkCallback() {
-        console.log(this.shrinkDuration);
         //THE CURRENT STRUCTURE ASSUMS THAT CENTERX CENTERY WILL NOT HAVE ANYTHING THE PLAYER CAN COLLIDE WITH.
         if (this.shrinkDuration > 12000) {
             this.player.x = this.pSpawn.x
@@ -286,12 +268,7 @@ class Game extends Phaser.Scene {
         }, this)) {
             console.assert(debugFlags.playerFlag, 'Bodies overlapping')
             this.shrinkDuration += 3000;
-            this.time.addEvent({
-                delay: 3000,
-                callback: this.shrinkCallback,
-                callbackScope: this,
-                loop: false,
-            });
+            this.time.delayedCall(3000, this.shrinkCallback, null, this);
         } else {
             this.shrinkDuration = 0;
             this.player.setScale(1.0);
