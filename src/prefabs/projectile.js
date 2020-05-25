@@ -30,6 +30,8 @@ class Projectile extends Phaser.Physics.Arcade.Sprite {
 
     redirect() {
         this.canCollideParent = true;
+        this.setFrame(null);
+        this.setTexture('invertedProjectile');
         let xvalue = this.parent.x - this.x;
         let yvalue = this.parent.y - this.y;
         let magnitude = Math.sqrt((xvalue*xvalue) + (yvalue*yvalue));

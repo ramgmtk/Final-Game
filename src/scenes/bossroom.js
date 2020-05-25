@@ -172,8 +172,8 @@ class BossRoom extends Phaser.Scene {
         let k = 0;
         for (let i = 0; i < powerChordBar.length; i++) {
             if (powerChordBar[i].unlocked) {
-                this.powerChordList[i] = this.add.text(0 + uiOffset.x, (k * noteSize) + uiOffset.y,
-                     `${powerChordBar[i].powerChord}`, noteTextConfig).setOrigin(0).setDepth(uiDepth);
+                this.powerChordList[i] = this.add.image(uiOffset.x, (k * noteSize) + uiOffset.y,
+                     'powerAtlas', powerChordBar[i].powerChord).setOrigin(0).setDepth(uiDepth);
                 k += 1;
             }
         }

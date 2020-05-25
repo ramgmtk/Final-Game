@@ -8,12 +8,14 @@ class Menu extends Phaser.Scene {
         this.load.atlas(playerAtlas, 'PlaceholderSprites.png', 'PlaceholderSprites.json');
         this.load.atlas('bossAtlas', 'BossSprite.png', 'BossSprite.json');
         this.load.atlas('healthAtlas', 'health.png', 'health.json');
+        this.load.atlas('powerAtlas', 'powerchords.png', 'powerchords.json');
         this.load.path = './assets/tilemap/';
         this.load.image('tutorial_tile', 'Tile Sheet.png');
         this.load.tilemapTiledJSON('tutorial_map', 'Tutorial.json')
         this.load.path = './assets/';
         this.load.image('bg', 'bg.png');
         this.load.image('shield', 'shield.png');
+        this.load.image('invertedProjectile', 'invertedProjectile.png')
 
         //sound
         this.load.path = './assets/sounds/';
