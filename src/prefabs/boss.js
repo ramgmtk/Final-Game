@@ -50,27 +50,29 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     update() {
         if (this.health <= 0) {
             this.scene.gameOver = true;
+        } else {
+            if (this.health < (this.maxHealth - (this.maxHealth * 0.3 * this.phase))) {
+                this.phase += 1;
+                this.projectileSpawnActive.callback = this.projectileSpawnTypes[this.phase - 1];
+                this.projectileSpawnActive.delay =  this.projectileDelay[this.phase - 1];
+                this.movement = this.movementType[1]; //REPLACE WITH THIS.PHASE - 1 NEED TO FIX
+                console.assert(debugFlags.bossFlag, 'NEXT PHASE STARTED');
+            }
+            //SHOULD FIX WILL CRASH ON NEXT PHASE REACH
+            this.movement();
+            this.scene.physics.world.collide(this, this.scene.projectileGroup, (object1, object2) => {
+                object1.damageEnemy();
+                object2.destroy();
+            }, (object1, object2) => {
+                return object2.canCollideParent;
+            }, this);
         }
-        if (this.health < (this.maxHealth - (this.maxHealth * 0.3 * this.phase))) {
-            this.phase += 1;
-            this.projectileSpawnActive.callback = this.projectileSpawnTypes[this.phase - 1];
-            this.projectileSpawnActive.delay =  this.projectileDelay[this.phase - 1];
-            this.movement = this.movementType[1]; //REPLACE WITH THIS.PHASE - 1 NEED TO FIX
-            console.assert(debugFlags.enemyFlag, 'NEXT PHASE STARTED');
-        }
-        //SHOULD FIX WILL CRASH ON NEXT PHASE REACH
-        this.movement();
         if (this.body.checkWorldBounds()) {
-            console.assert(debugFlags.enemyFlag, 'Enemy out of bounds');
+            console.assert(debugFlags.bossFlag, 'Enemy out of bounds');
+            this.health = 0;
             this.destroyObject();
         }
-        this.scene.physics.world.collide(this, this.scene.projectileGroup, (object1, object2) => {
-            object1.damageEnemy();
-            object2.destroy();
-        }, (object1, object2) => {
-            return object2.canCollideParent;
-        }, this);
-    }
+}
 
     damageEnemy() {
         this.health -= 10;
@@ -78,6 +80,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     }
 
     moveTo(destination) {
+        console.assert(debugFlags.bossFlag, `Move to: ${destination.x}, ${destination.y}`);
         let slope = {
             x: destination.x - this.x,
             y: destination.y - this.y,
@@ -90,7 +93,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     }
 
     destroyObject() {
-        console.assert(debugFlags.enemyFlag, 'Destroying Enemy');
+        console.assert(debugFlags.bossFlag, 'Destroying Enemy');
         this.projectileGroup.clear(true, true);
         this.movementGroup.clear(true, true);
         this.healthBar.healthBar.destroy();
@@ -136,7 +139,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             delay: this.scene.bpms,
             callback: this.spawnPatternWave,
             callbackScope: this,
-            loop: true,
+            loop: false,
         });
         this.timerArray.push(this.projectileSpawnPassive);
     }
@@ -144,6 +147,8 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     createMovementGroup() {
         for (let i = 0; i < bossPatternPoints.length; i++) {
             let box = new collisionPoint(this.scene, bossPatternPoints[i].x, bossPatternPoints[i].y);
+            console.log(`x: ${box.x}, y: ${box.y}, (${bossPatternPoints[i].x},${bossPatternPoints[i].y})`);
+            console.log(`body: ${box.body.x}, y: ${box.body.y}`);
             this.movementGroup.add(box);
             this.availableMoves.push(i);
         }
@@ -160,11 +165,13 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 object2.canCollide = false;
                 object1.isMoving = false;
                 this.elapsedTime = (this.scene.time.now - this.elapsedTime) / this.scene.sceneTimeDelay;
-                console.log(this.elapsedTime);
+                console.assert(debugFlags.bossFlag, 'Reached collision Point');
                 object1.setVelocityX(0);
                 object1.setVelocityY(0);
                 object1.x = object2.x;
                 object1.y = object2.y;
+                console.assert(debugFlags.bossFlag,`Boss: ${this.x}, ${this.y}`);
+                console.log('');
             }, (object1, object2)=> {
                 return object2.canCollide;
             }, this);
@@ -180,7 +187,6 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 callbackScope: this,
                 args: [bossPatternPoints[this.availableMoves[randPoint]]]
             });
-            console.log((this.scene.bpms * 8) - this.elapsedTime),
             this.elapsedTime = this.scene.time.now
             this.availableMoves.splice(this.availableMoves.indexOf(this.currPos), 1)
         }
@@ -235,7 +241,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             });
         } else {
             for (let i = 0; i < this.projectileSetup.length; i++) {
-                this.projectileSetup[i].destroy();
+                if (!this.projectileSetup[i].canCollideParent) {
+                    this.projectileSetup[i].destroy();
+                }
             }
             this.projectileSetup = [];
         }
@@ -277,7 +285,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             });
         } else {
             for (let i = 0; i < this.projectileSetup.length; i++) {
-                this.projectileSetup[i].destroy();
+                if (!this.projectileSetup[i].canCollideParent) {
+                    this.projectileSetup[i].destroy();
+                }
             }
             this.projectileSetup = [];
         }

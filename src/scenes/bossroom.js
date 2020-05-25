@@ -69,9 +69,9 @@ class BossRoom extends Phaser.Scene {
             this.player.update();
             this.boss.update();
             //projectile collider
-            this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
+            /*this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
                 return object1.canCollide && !object2.canCollideParent ? true : false;
-            }, this);
+            }, this);*/ //COMMENTED OUT FOR GOD MODE
             if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
                 this.noteComboCheck();
             }

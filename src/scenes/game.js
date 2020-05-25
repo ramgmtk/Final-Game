@@ -261,7 +261,7 @@ class Game extends Phaser.Scene {
             this.player.canShrink = true;
             this.canRevert = true;
             return;
-        } else if (this.physics.world.overlap(this.player.normalBody, this.levelLayer, () => {
+        } else if (this.physics.world.overlap(this.player.normalBody, this.levelLayer, () => { //LOOK INTO BODY onWall() , onCeiling() SHOULD FIX
             this.canRevert = false;
         }, (object1, object2) => {
             return object2.collides == true && !this.canShrink;
