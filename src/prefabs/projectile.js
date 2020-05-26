@@ -8,6 +8,7 @@ class Projectile extends Phaser.Physics.Arcade.Sprite {
         }
         scene.add.existing(this);
         scene.physics.add.existing(this);
+        this.scene = scene;
         this.setImmovable(true);
         this.setOrigin(0.5);
         this.setDepth(uiDepth - 1);
@@ -17,11 +18,14 @@ class Projectile extends Phaser.Physics.Arcade.Sprite {
         this.projectileVelocity = velocity;
         this.setPath(vecX, vecY);
         this.parent = parent;
+
+        this.scene.projectilesFired += 1;
     }
 
     update() {
         if (this.body.checkWorldBounds()) {
             console.assert(debugFlags.enemyFlag, 'Projectile out of bounds');
+            this.scene.projectilesDestroyed += 1;
             this.destroy();
         }
     }
@@ -33,6 +37,7 @@ class Projectile extends Phaser.Physics.Arcade.Sprite {
     }
 
     redirect() {
+        this.scene.projectilesDestroyed += 1;
         this.canCollideParent = true;
         this.setFrame(null);
         this.setTexture('invertedProjectile');

@@ -115,6 +115,10 @@ class Game extends Phaser.Scene {
         this.physics.add.existing(this.bossEntrance);
         this.bossEntrance.setImmovable(true);
         this.add.existing(this.bossEntrance);
+
+        //test vars
+        this.projectilesFired = 0;
+        this.projectilesDestroyed = 0;
     }
 
     update() {

@@ -9,6 +9,7 @@ class BossRoom extends Phaser.Scene {
 
     create() {
         this.gameOver = false;
+        this.finalPhase = false
         this.heartInfo = this.textures.get('heart').getSourceImage();
         this.stageInfo = {
             width: game.config.width * (1/bossZoom),
@@ -42,9 +43,7 @@ class BossRoom extends Phaser.Scene {
             scene: this,
             runChildUpdate: true,
         });
-        this.boss = new Boss(this, centerX * 1/bossZoom, centerY * 1/bossZoom, 'bossAtlas', 'BOSSidle', this.player);
-        console.assert(debugFlags.enemyFlag, this.projectileGroup);
-
+        this.boss = new Boss(this, centerX * 1/bossZoom, centerY * 1/bossZoom, 'bossAtlas', 'BOSSidle', this.player, true);
         //sound
         this.createSound();
 
@@ -63,11 +62,18 @@ class BossRoom extends Phaser.Scene {
             this.bossTheme.play();
         }, this);*/
         this.bossTheme.play();
+
+        //test vars
+        this.projectilesFired = 0;
+        this.projectilesDestroyed = 0;
     }
     update() {
+        if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
+            console.log(`${this.projectilesFired}, ${this.projectilesDestroyed}`);
+        }
         if (!this.gameOver) {
             this.player.update();
-            //if (this.boss.health > 0) {
+            if (this.boss.health > 0) {
                 this.boss.update();
                 //projectile collider
                 /*this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
@@ -81,21 +87,29 @@ class BossRoom extends Phaser.Scene {
                         object2.destroy();
                     }, null, this);
                 }
-            //}
-            /*this.finalPhase = true;
-                console.log("in else");
-                this.clearEvents();
+                if (this.player.isAttacking) {
+                    this.physics.world.collide(this.player.weapon, this.boss, (object1, object2) => {
+                        object2.damageEnemy();
+                    }, null, this);
+                }
+            } else if (!this.finalPhase) {
+                this.finalPhase = true;
+                this.boss.clearEvents();
                 this.player.canMove = false;
-                this.player.setVelocityX(0);
-                this.player.setVelocityY(0);
-                this.setVelocityX(0);
-                this.setVelocityY(0);
-                this.player.x = centerX;
-                this.player.x = centerY;
-                this.player.set
+                this.player.setDrag(0);
+                this.player.setAcceleration(0);
+                this.player.setVelocity(0);
+                this.boss.setVelocity(0);
+                this.player.x = centerX * 1/bossZoom;
+                this.player.y = centerY * 1/bossZoom + 200;
+                this.player.setDrag(0);
+                this.player.setAcceleration(0);
+                this.boss.x = this.player.x;
+                this.boss.y = this.player.y - 400;
                 console.log(`${centerX}, ${centerY}`);
-                this.x = centerX + 200;
-                this.y = centerY + 200;*/
+            } else {
+                //console.log('setup done');
+            }
         } else {
             this.destroyObjects();
             this.scene.start('gameOverScene');
@@ -204,13 +218,13 @@ class BossRoom extends Phaser.Scene {
         this.powerChordCam = cams[2];
         this.bossCam = cams[3];
         this.heartCam.ignore([this.boss.healthBar.healthBar]);
-        this.noteCam.ignore([this.boss.healthBar.healthBar]);
-        this.powerChordCam.ignore([this.boss.healthBar.healthBar]);
+        this.noteCam.ignore([this.boss.healthBar.healthBar, this.projectileGroup]);
+        this.powerChordCam.ignore([this.boss.healthBar.healthBar, this.projectileGroup]);
         //this.bossCam.ignore([this.boss.healthBar.healthBar]); leaving in just in case to see if a potential overlap with scene and offscreen elements occures
         this.bossHealthCam = this.cameras.add(0, 0, centerX * bossZoom, 50);
         this.bossHealthCam.setViewport(centerX * 0.65, 0, centerX, 50);
         this.bossHealthCam.setScroll(uiOffset.x, uiOffset.y);
-        this.bossHealthCam.ignore([this.player.healthBar, this.powerChordList, this.player.noteBar]);
+        this.bossHealthCam.ignore([this.player.healthBar, this.powerChordList, this.player.noteBar, this.projectileGroup]);
         this.bossCam.setZoom(bossZoom);
     }
 

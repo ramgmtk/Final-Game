@@ -70,7 +70,6 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 //SHOULD FIX WILL CRASH ON NEXT PHASE REACH
                 this.movement();
                 this.scene.physics.world.collide(this, this.scene.projectileGroup, (object1, object2) => {
-                    console.log('taking damage');
                     object1.damageEnemy();
                     object2.destroy();
                 }, (object1, object2) => {
@@ -112,6 +111,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         if (this.spawnTimer != null) {
             this.spawnTimer.destroy();
         }
+        this.scene.projectilesDestroyed +=  this.projectileGroup.children.entries.length;
         this.projectileGroup.clear(true, true);
         this.movementGroup.clear(true, true);
         if (this.healthBar != null) {
@@ -269,7 +269,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 let theta = (Math.PI/(this.spawnNumber/2)) + this.thetaVariance;
                 for (let i = 0; i < this.spawnNumber; i++) {
                     let projectile = new Projectile(this.scene, this.x, this.y, 'Projectile', this, 
-                        Math.cos(i*theta), Math.sin(i*theta), projectileVelocity * 4,);
+                        Math.cos(i*theta), Math.sin(i*theta), projectileVelocity * 4, false);
                     this.projectileSetup.push(projectile)
                 }
                 this.projectileGroup.addMultiple(this.projectileSetup);
