@@ -12,8 +12,8 @@ class bossHealth {
         scene.add.existing(this.healthBar);
     }
 
-    decrease() {
-        this.currHealth -= 10;
+    decrease(damage) {
+        this.currHealth -= damage;
         this.draw();
     }
 

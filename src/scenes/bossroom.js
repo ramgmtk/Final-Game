@@ -68,9 +68,6 @@ class BossRoom extends Phaser.Scene {
         this.projectilesDestroyed = 0;
     }
     update() {
-        if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
-            console.log(`${this.projectilesFired}, ${this.projectilesDestroyed}`);
-        }
         if (!this.gameOver) {
             this.player.update();
             if (this.boss.health > 0) {
@@ -80,6 +77,7 @@ class BossRoom extends Phaser.Scene {
                     return object1.canCollide && !object2.canCollideParent ? true : false;
                 }, this);*/ //COMMENTED OUT FOR GOD MODE
                 if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
+                    console.log(`${this.projectilesFired}, ${this.projectilesDestroyed}`);
                     this.noteComboCheck();
                 }
                 if (this.player.shieldActive) {
@@ -90,7 +88,7 @@ class BossRoom extends Phaser.Scene {
                 if (this.player.isAttacking) {
                     this.physics.world.collide(this.player.weapon, this.boss, (object1, object2) => {
                         this.player.hasAttacked = true
-                        object2.damageEnemy();
+                        object2.damageEnemy(100);
                     }, () => {
                         return !this.player.hasAttacked;
                     }, this);
@@ -111,7 +109,9 @@ class BossRoom extends Phaser.Scene {
                 this.boss.y = this.player.y - 400;
                 console.log(`${centerX}, ${centerY}`);
             } else {
-                //console.log('setup done');
+                if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
+                    console.log(`${this.projectilesFired}, ${this.projectilesDestroyed}`);
+                }
             }
         } else {
             this.destroyObjects();

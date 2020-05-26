@@ -85,7 +85,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     damageEnemy(damage = 10) {
         this.health -= damage;
-        this.healthBar.decrease();
+        this.healthBar.decrease(damage);
     }
 
     moveTo(destination) {
