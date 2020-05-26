@@ -4,6 +4,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.scene = scene;
 
         this.canCollide = true;
+        this.canMove = true;
         
         //notebar setup
         this.noteBar;
@@ -32,7 +33,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     update() {
-        this.playerMovement();
+        if (this.canMove) {
+            this.playerMovement();
+        }
         this.shieldMovement();
         this.weaponMovement();
         this.normalBodyMovement();

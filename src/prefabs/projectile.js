@@ -1,14 +1,18 @@
 class Projectile extends Phaser.Physics.Arcade.Sprite {
     //vecX, vecY expected to make a unit vector.
-    constructor(scene, x, y, frame = 'Projectile', parent, vecX, vecY, velocity) {
+    constructor(scene, x, y, frame, parent, vecX, vecY, velocity, reverseable = true) {
         super(scene, x, y, playerAtlas, frame);
-
+        this.reverseable = reverseable;
+        if (!this.reverseable) {
+            this.setFrame('BossProjectile')
+        }
         scene.add.existing(this);
         scene.physics.add.existing(this);
         this.setImmovable(true);
         this.setOrigin(0.5);
         this.setDepth(uiDepth - 1);
 
+        this.reverseable = reverseable;
         this.canCollideParent = false;
         this.projectileVelocity = velocity;
         this.setPath(vecX, vecY);

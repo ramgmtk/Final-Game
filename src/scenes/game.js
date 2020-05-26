@@ -219,7 +219,8 @@ class Game extends Phaser.Scene {
         if (noteCombo == powerChordBar[0].powerChord) {
             console.assert(debugFlags.playerFlag, 'Reverse');
             for(let i = 0; i < this.projectileGroup.children.entries.length; i++) {
-                if (this.projectileGroup.children.entries[i].canCollideParent == false) {
+                if (!this.projectileGroup.children.entries[i].canCollideParent && 
+                    this.projectileGroup.children.entries[i].reverseable) {
                     this.projectileGroup.children.entries[i].redirect();
                 }
             }

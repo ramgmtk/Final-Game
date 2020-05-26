@@ -1,5 +1,5 @@
 class Boss extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, texture, frame, player) {
+    constructor(scene, x, y, texture, frame, player, uniqueEncounter = false) {
         super(scene, x, y, texture, frame);
         scene.add.existing(this);
         scene.physics.add.existing(this);
@@ -15,6 +15,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.phase = 1;
         this.healthBar = new bossHealth(this.scene, this.maxHealth);
         this.isMoving = false;
+        this.uniqueEncounter = uniqueEncounter;
         this.spawnNumber = 16;
         this.waveAmount = 3;
         this.thetaVariance = 0;
@@ -38,10 +39,12 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         //Groups
         this.projectileGroup;
         this.movementGroup;
+        this.bossPatternPoints
         this.createGroups();
 
         //Timer
         this.timerArray = [];
+        this.movementTimer;
         this.projectileSpawnActive;
         this.projectileSpawnPassive;
         this.createTimers();
@@ -49,9 +52,12 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     update() {
         if (this.health <= 0) {
-            this.scene.gameOver = true;
+            if (!this.uniqueEncounter) {
+                this.uniqueEncounter = true;
+                this.destroyObject();
+            }
         } else {
-            if (this.health < (this.maxHealth - (this.maxHealth * 0.3 * this.phase))) {
+            if (this.health < (this.maxHealth - (this.maxHealth * 0.5 * this.phase))) {
                 this.phase += 1;
                 this.projectileSpawnActive.callback = this.projectileSpawnTypes[this.phase - 1];
                 this.projectileSpawnActive.delay =  this.projectileDelay[this.phase - 1];
@@ -61,21 +67,21 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             //SHOULD FIX WILL CRASH ON NEXT PHASE REACH
             this.movement();
             this.scene.physics.world.collide(this, this.scene.projectileGroup, (object1, object2) => {
+                console.log('taking damage');
                 object1.damageEnemy();
                 object2.destroy();
             }, (object1, object2) => {
                 return object2.canCollideParent;
             }, this);
+            if (this.body.checkWorldBounds()) {
+                console.assert(debugFlags.bossFlag, 'Enemy out of bounds');
+                this.destroyObject();
+            }
         }
-        if (this.body.checkWorldBounds()) {
-            console.assert(debugFlags.bossFlag, 'Enemy out of bounds');
-            this.health = 0;
-            this.destroyObject();
-        }
-}
+    }
 
-    damageEnemy() {
-        this.health -= 10;
+    damageEnemy(damage = 10) {
+        this.health -= damage;
         this.healthBar.decrease();
     }
 
@@ -92,17 +98,22 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.setVelocityY(slope.y * playerMaxVelocity);
     }
 
-    destroyObject() {
-        console.assert(debugFlags.bossFlag, 'Destroying Enemy');
+    clearEvents() {
+        for (let i = 0; i < this.timerArray.length; i++) {
+            this.timerArray[i].remove();
+        };
+        if (this.movementTimer != null) {  
+            this.movementTimer.destroy();
+        }
         this.projectileGroup.clear(true, true);
         this.movementGroup.clear(true, true);
         this.healthBar.healthBar.destroy();
         this.healthBar = null;
         this.projectilePreviews.clear();
-        //remove the spawn timer from the scene
-        for (let i = 0; i < this.timerArray.length; i++) {
-            this.timerArray[i].remove();
-        };
+    }
+    destroyObject() {
+        console.assert(debugFlags.bossFlag, 'Destroying Enemy');
+        this.clearEvents();
         super.destroy();
     }
 
@@ -139,16 +150,36 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             delay: this.scene.bpms,
             callback: this.spawnPatternWave,
             callbackScope: this,
-            loop: false,
+            loop: true,
         });
         this.timerArray.push(this.projectileSpawnPassive);
     }
 
     createMovementGroup() {
-        for (let i = 0; i < bossPatternPoints.length; i++) {
-            let box = new collisionPoint(this.scene, bossPatternPoints[i].x, bossPatternPoints[i].y);
-            console.log(`x: ${box.x}, y: ${box.y}, (${bossPatternPoints[i].x},${bossPatternPoints[i].y})`);
-            console.log(`body: ${box.body.x}, y: ${box.body.y}`);
+        this.bossPatternPoints = [
+            {
+                x: centerX * (1/bossZoom),
+                y: centerY * (1/bossZoom),
+            },
+            {
+                x: bossCornerSpace,
+                y: bossCornerSpace,
+            },
+            {
+                x: config.width * (1/bossZoom) - bossCornerSpace,
+                y: config.height * (1/bossZoom) - bossCornerSpace, 
+            },
+            {
+                x: config.width * (1/bossZoom) - bossCornerSpace,
+                y: bossCornerSpace,
+            },
+            {
+                x: bossCornerSpace,
+                y: config.width * (1/bossZoom) - bossCornerSpace,
+            }
+        ];
+        for (let i = 0; i < this.bossPatternPoints.length; i++) {
+            let box = new collisionPoint(this.scene, this.bossPatternPoints[i].x, this.bossPatternPoints[i].y);
             this.movementGroup.add(box);
             this.availableMoves.push(i);
         }
@@ -181,12 +212,14 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             this.currPos = this.availableMoves[randPoint];
             this.movementGroup.children.entries[this.availableMoves[randPoint]].canCollide = true;
             this.isMoving = true;
-            this.scene.time.addEvent({
+            /*this.movementTimer = this.scene.time.addEvent({
                 delay: (this.scene.bpms * 8) - this.elapsedTime,
                 callback: this.moveTo,
                 callbackScope: this,
-                args: [bossPatternPoints[this.availableMoves[randPoint]]]
-            });
+                args: [this.bossPatternPoints[this.availableMoves[randPoint]]]
+            });*/
+            this.movementTimer = this.scene.time.delayedCall((this.scene.bpms * 8) - this.elapsedTime, this.moveTo,
+                [this.bossPatternPoints[this.availableMoves[randPoint]]], this);
             this.elapsedTime = this.scene.time.now
             this.availableMoves.splice(this.availableMoves.indexOf(this.currPos), 1)
         }
@@ -210,7 +243,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         let dTheta = 20 * Math.PI / 180;
         for (let i = -1; i < -1 + this.waveAmount; i++) {
             let angle = theta + (i * dTheta) +  tanInverseAdjust;
-            let projectile = new Projectile(this.scene, this.x, this.y, 'BossProjectile', this, Math.cos(angle), Math.sin(angle), projectileVelocity * 2);
+            let projectile = new Projectile(this.scene, this.x, this.y, 'Projectile', this, Math.cos(angle), Math.sin(angle), projectileVelocity * 2);
             this.projectileGroup.add(projectile);
             this.scene.projectileGroup.add(projectile);
         }
@@ -228,8 +261,8 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                     this.projectilePreviews.clear();
                     let theta = (Math.PI/(this.spawnNumber/2)) + this.thetaVariance;
                     for (let i = 0; i < this.spawnNumber; i++) {
-                        let projectile = new Projectile(this.scene, this.x, this.y, 'BossProjectile', this, 
-                            Math.cos(i*theta), Math.sin(i*theta), projectileVelocity * 4);
+                        let projectile = new Projectile(this.scene, this.x, this.y, 'Projectile', this, 
+                            Math.cos(i*theta), Math.sin(i*theta), projectileVelocity * 4, false);
                         this.projectileSetup.push(projectile)
                     }
                     this.projectileGroup.addMultiple(this.projectileSetup);
@@ -271,8 +304,8 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                     this.projectilePreviews.clear();
                     for (let i = 0; i < spawnCols; i++) {
                         for (let j = 0; j < this.scene.stageInfo.height; j+= this.scene.bossProjectileInfo.height) {
-                            let projectile = new Projectile(this.scene, spawnPArr[i].spawn, j, 'BossProjectile', this,
-                                0, spawnPArr[i].direction, projectileVelocity);
+                            let projectile = new Projectile(this.scene, spawnPArr[i].spawn, j, 'Projectile', this,
+                                0, spawnPArr[i].direction, projectileVelocity, false);
                             this.projectileSetup.push(projectile);
                         }
                     }

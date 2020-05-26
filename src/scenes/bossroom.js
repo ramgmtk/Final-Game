@@ -42,7 +42,7 @@ class BossRoom extends Phaser.Scene {
             scene: this,
             runChildUpdate: true,
         });
-        this.boss = new Boss(this, bossPatternPoints[0].x, bossPatternPoints[0].y, 'bossAtlas', 'BOSSidle', this.player);
+        this.boss = new Boss(this, centerX * 1/bossZoom, centerY * 1/bossZoom, 'bossAtlas', 'BOSSidle', this.player);
         console.assert(debugFlags.enemyFlag, this.projectileGroup);
 
         //sound
@@ -67,19 +67,37 @@ class BossRoom extends Phaser.Scene {
     update() {
         if (!this.gameOver) {
             this.player.update();
-            this.boss.update();
-            //projectile collider
-            /*this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
-                return object1.canCollide && !object2.canCollideParent ? true : false;
-            }, this);*/ //COMMENTED OUT FOR GOD MODE
-            if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
-                this.noteComboCheck();
-            }
-            if (this.player.shieldActive) {
-                this.physics.world.collide(this.player.shield, this.projectileGroup, (object1, object2) => {
-                    object2.destroy();
-                }, null, this);
-            }
+            //if (this.boss.health > 0) {
+                if (this.boss.active) {
+                    this.boss.update();
+                }
+                //projectile collider
+                /*this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
+                    return object1.canCollide && !object2.canCollideParent ? true : false;
+                }, this);*/ //COMMENTED OUT FOR GOD MODE
+                if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
+                    this.noteComboCheck();
+                }
+                if (this.player.shieldActive) {
+                    this.physics.world.collide(this.player.shield, this.projectileGroup, (object1, object2) => {
+                        object2.destroy();
+                    }, null, this);
+                }
+            //}
+            /*this.finalPhase = true;
+                console.log("in else");
+                this.clearEvents();
+                this.player.canMove = false;
+                this.player.setVelocityX(0);
+                this.player.setVelocityY(0);
+                this.setVelocityX(0);
+                this.setVelocityY(0);
+                this.player.x = centerX;
+                this.player.x = centerY;
+                this.player.set
+                console.log(`${centerX}, ${centerY}`);
+                this.x = centerX + 200;
+                this.y = centerY + 200;*/
         } else {
             this.destroyObjects();
             this.scene.start('gameOverScene');
@@ -93,6 +111,7 @@ class BossRoom extends Phaser.Scene {
         this.boss.destroy();
         this.sound.stopAll();
         this.player.destroy();
+        this.destroy();
     }
 
     damagePlayer(object1, object2) {
@@ -128,7 +147,8 @@ class BossRoom extends Phaser.Scene {
         if (noteCombo == powerChordBar[0].powerChord) {
             console.assert(debugFlags.playerFlag, 'Reverse');
             for(let i = 0; i < this.projectileGroup.children.entries.length; i++) {
-                if (this.projectileGroup.children.entries[i].canCollideParent == false) {
+                if (!this.projectileGroup.children.entries[i].canCollideParent && 
+                    this.projectileGroup.children.entries[i].reverseable) {
                     this.projectileGroup.children.entries[i].redirect();
                 }
             }
