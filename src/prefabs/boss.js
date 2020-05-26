@@ -45,37 +45,41 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         //Timer
         this.timerArray = [];
         this.movementTimer;
+        this.spawnTimer;
         this.projectileSpawnActive;
         this.projectileSpawnPassive;
         this.createTimers();
     }
 
     update() {
-        if (this.health <= 0) {
-            if (!this.uniqueEncounter) {
-                this.uniqueEncounter = true;
-                this.destroyObject();
-            }
-        } else {
-            if (this.health < (this.maxHealth - (this.maxHealth * 0.5 * this.phase))) {
-                this.phase += 1;
-                this.projectileSpawnActive.callback = this.projectileSpawnTypes[this.phase - 1];
-                this.projectileSpawnActive.delay =  this.projectileDelay[this.phase - 1];
-                this.movement = this.movementType[1]; //REPLACE WITH THIS.PHASE - 1 NEED TO FIX
-                console.assert(debugFlags.bossFlag, 'NEXT PHASE STARTED');
-            }
-            //SHOULD FIX WILL CRASH ON NEXT PHASE REACH
-            this.movement();
-            this.scene.physics.world.collide(this, this.scene.projectileGroup, (object1, object2) => {
-                console.log('taking damage');
-                object1.damageEnemy();
-                object2.destroy();
-            }, (object1, object2) => {
-                return object2.canCollideParent;
-            }, this);
-            if (this.body.checkWorldBounds()) {
-                console.assert(debugFlags.bossFlag, 'Enemy out of bounds');
-                this.destroyObject();
+        if (this.active) {
+            if (this.health <= 0) {
+                if (!this.uniqueEncounter) {
+                    this.uniqueEncounter = true;
+                    this.destroyObject();
+                }
+            } else {
+                if (this.health < (this.maxHealth - (this.maxHealth * 0.5 * this.phase))) {
+                    this.phase += 1;
+                    this.projectileSetup = [];
+                    this.projectileSpawnActive.callback = this.projectileSpawnTypes[this.phase - 1];
+                    this.projectileSpawnActive.delay =  this.projectileDelay[this.phase - 1];
+                    this.movement = this.movementType[1]; //REPLACE WITH THIS.PHASE - 1 NEED TO FIX
+                    console.assert(debugFlags.bossFlag, 'NEXT PHASE STARTED');
+                }
+                //SHOULD FIX WILL CRASH ON NEXT PHASE REACH
+                this.movement();
+                this.scene.physics.world.collide(this, this.scene.projectileGroup, (object1, object2) => {
+                    console.log('taking damage');
+                    object1.damageEnemy();
+                    object2.destroy();
+                }, (object1, object2) => {
+                    return object2.canCollideParent;
+                }, this);
+                if (this.body.checkWorldBounds()) {
+                    console.assert(debugFlags.bossFlag, 'Enemy out of bounds');
+                    this.destroyObject();
+                }
             }
         }
     }
@@ -105,16 +109,21 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         if (this.movementTimer != null) {  
             this.movementTimer.destroy();
         }
+        if (this.spawnTimer != null) {
+            this.spawnTimer.destroy();
+        }
         this.projectileGroup.clear(true, true);
         this.movementGroup.clear(true, true);
-        this.healthBar.healthBar.destroy();
-        this.healthBar = null;
+        if (this.healthBar != null) {
+            this.healthBar.healthBar.destroy();
+            this.healthBar = null;
+        }
         this.projectilePreviews.clear();
     }
     destroyObject() {
         console.assert(debugFlags.bossFlag, 'Destroying Enemy');
         this.clearEvents();
-        super.destroy();
+        this.destroy();
     }
 
     createProjectileSpawnList() {
@@ -255,23 +264,18 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.projectilePreviews.fillStyle(0xff0000);
         if (this.projectileSetup.length == 0) {
             this.projectilePreviews.fillCircle(this.x, this.y, 200).setDepth(uiDepth - 1).setAlpha(0.5);
-            this.scene.time.addEvent({
-                delay: this.scene.bpms * 3,
-                callback: () => {
-                    this.projectilePreviews.clear();
-                    let theta = (Math.PI/(this.spawnNumber/2)) + this.thetaVariance;
-                    for (let i = 0; i < this.spawnNumber; i++) {
-                        let projectile = new Projectile(this.scene, this.x, this.y, 'Projectile', this, 
-                            Math.cos(i*theta), Math.sin(i*theta), projectileVelocity * 4, false);
-                        this.projectileSetup.push(projectile)
-                    }
-                    this.projectileGroup.addMultiple(this.projectileSetup);
-                    this.scene.projectileGroup.addMultiple(this.projectileSetup);
-                    this.thetaVariance = this.thetaVariance > 0 ? 0 : Math.PI/ 12;
-                },
-                callbackScope: this,
-                loop: false,
-            });
+            this.spawnTimer = this.scene.time.delayedCall(this.scene.bpms * 3, () => {
+                this.projectilePreviews.clear();
+                let theta = (Math.PI/(this.spawnNumber/2)) + this.thetaVariance;
+                for (let i = 0; i < this.spawnNumber; i++) {
+                    let projectile = new Projectile(this.scene, this.x, this.y, 'Projectile', this, 
+                        Math.cos(i*theta), Math.sin(i*theta), projectileVelocity * 4,);
+                    this.projectileSetup.push(projectile)
+                }
+                this.projectileGroup.addMultiple(this.projectileSetup);
+                this.scene.projectileGroup.addMultiple(this.projectileSetup);
+                this.thetaVariance = this.thetaVariance > 0 ? 0 : Math.PI/ 12;
+            }, null, this);
         } else {
             for (let i = 0; i < this.projectileSetup.length; i++) {
                 if (!this.projectileSetup[i].canCollideParent) {
@@ -298,24 +302,18 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 this.projectilePreviews.fillRect(spawnPoint - (this.scene.bossProjectileInfo.width/2), 0, 
                     this.scene.bossProjectileInfo.width, game.config.height * (1/bossZoom)).setDepth(uiDepth - 1).setAlpha(0.5);
             }
-            this.scene.time.addEvent({
-                delay: this.scene.bpms * 3,
-                callback: (spawnPArr) => {
-                    this.projectilePreviews.clear();
-                    for (let i = 0; i < spawnCols; i++) {
-                        for (let j = 0; j < this.scene.stageInfo.height; j+= this.scene.bossProjectileInfo.height) {
-                            let projectile = new Projectile(this.scene, spawnPArr[i].spawn, j, 'Projectile', this,
-                                0, spawnPArr[i].direction, projectileVelocity, false);
-                            this.projectileSetup.push(projectile);
-                        }
+            this.spawnTimer = this.scene.time.delayedCall(this.scene.bpms * 3, () => {
+                this.projectilePreviews.clear();
+                for (let i = 0; i < spawnCols; i++) {
+                    for (let j = 0; j < this.scene.stageInfo.height; j+= this.scene.bossProjectileInfo.height) {
+                        let projectile = new Projectile(this.scene, spawnPArr[i].spawn, j, 'Projectile', this,
+                            0, spawnPArr[i].direction, projectileVelocity, false);
+                        this.projectileSetup.push(projectile);
                     }
-                    this.projectileGroup.addMultiple(this.projectileSetup);
-                    this.scene.projectileGroup.addMultiple(this.projectileSetup);
-                },
-                callbackScope: this,
-                args: [spawnPArr],
-                loop: false,
-            });
+                }
+                this.projectileGroup.addMultiple(this.projectileSetup);
+                this.scene.projectileGroup.addMultiple(this.projectileSetup);
+            }, [spawnPArr], this);
         } else {
             for (let i = 0; i < this.projectileSetup.length; i++) {
                 if (!this.projectileSetup[i].canCollideParent) {

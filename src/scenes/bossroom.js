@@ -68,9 +68,7 @@ class BossRoom extends Phaser.Scene {
         if (!this.gameOver) {
             this.player.update();
             //if (this.boss.health > 0) {
-                if (this.boss.active) {
-                    this.boss.update();
-                }
+                this.boss.update();
                 //projectile collider
                 /*this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
                     return object1.canCollide && !object2.canCollideParent ? true : false;
@@ -108,7 +106,7 @@ class BossRoom extends Phaser.Scene {
     destroyObjects() {
         this.time.removeAllEvents(); 
         this.projectileGroup.clear(true, true);
-        this.boss.destroy();
+        this.boss.destroyObjects();
         this.sound.stopAll();
         this.player.destroy();
         this.destroy();
