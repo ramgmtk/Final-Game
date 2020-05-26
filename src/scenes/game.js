@@ -137,8 +137,11 @@ class Game extends Phaser.Scene {
             //Player Specific action colliders.
             if (this.player.isAttacking) {
                 this.physics.world.collide(this.player.weapon, this.enemyGroup, (object1, object2) => {
-                    object2.damageEnemy();
-                }, null, this);
+                    this.player.hasAttacked = true
+                    object2.damageEnemy(3);
+                }, () => {
+                    return !this.player.hasAttacked;
+                }, this);
             }
             if (this.player.shieldActive) {
                 this.physics.world.collide(this.player.shield, this.projectileGroup, (object1, object2) => {

@@ -111,7 +111,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         if (this.spawnTimer != null) {
             this.spawnTimer.destroy();
         }
-        this.scene.projectilesDestroyed +=  this.projectileGroup.children.entries.length;
+        this.scene.projectilesDestroyed +=  this.projectileGroup.children.entries.length; //NEED TO REMOVE
         this.projectileGroup.clear(true, true);
         this.movementGroup.clear(true, true);
         if (this.healthBar != null) {
