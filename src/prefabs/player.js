@@ -18,6 +18,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.weaponOffsetX;
         this.weaponOffsetY;
         this.isAttacking;
+        this.attackDirection;
         this.hasAttacked;
         this.normalBody;
         this.canShrink;
@@ -49,11 +50,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             if (!this.anims.isPlaying && (this.anims.getCurrentKey() != 'play' || this.anims.getCurrentKey() != 'melee')) {
                 this.anims.play('up', false);
             }
+            this.attackDirection = 'w';
             this.setAccelerationY(-playerAccel);
         } else if (this.scene.controls.s.isDown) {
             if (!this.anims.isPlaying && (this.anims.getCurrentKey() != 'play' || this.anims.getCurrentKey() != 'melee')) {
                 this.anims.play('down', false);
             }
+            this.attackDirection = 's';
             this.setAccelerationY(playerAccel);
         } else {
             this.setAccelerationY(0);
@@ -65,11 +68,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
                 this.anims.play('left', false);
             }
             this.setFlip(true, false);
+            this.attackDirection = 'a';
             this.setAccelerationX(-playerAccel);
         } else if (this.scene.controls.d.isDown) {
             if (!this.anims.isPlaying && (this.anims.getCurrentKey() != 'play' || this.anims.getCurrentKey() != 'melee')) {
                 this.anims.play('right', false);
             }
+            this.attackDirection = 'd';
             this.resetFlip();
             this.setAccelerationX(playerAccel);
         } else {
@@ -89,13 +94,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.weaponOffsetX = 0;
             this.weaponOffsetY = 0
             this.anims.play('melee');
-            if (this.scene.controls.w.isDown) {
+            if (this.attackDirection == 'w') {
                 this.weapon.body.setSize(this.scene.playerSpriteInfo.width*2, this.scene.playerSpriteInfo.height);
                 this.weaponOffsetY = -this.scene.playerSpriteInfo.height
-            } else if (this.scene.controls.s.isDown) {
+            } else if (this.attackDirection == 's') {
                 this.weapon.body.setSize(this.scene.playerSpriteInfo.width*2, this.scene.playerSpriteInfo.height);
                 this.weaponOffsetY = this.scene.playerSpriteInfo.height;
-            } else if (this.scene.controls.a.isDown) {
+            } else if (this.attackDirection == 'a') {
                 this.weapon.body.setSize(this.scene.playerSpriteInfo.width, this.scene.playerSpriteInfo.height*2);
                 this.weaponOffsetX = -this.scene.playerSpriteInfo.width;
             } else {
@@ -190,6 +195,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.weapon.body.setSize(this.scene.playerSpriteInfo.width/2, this.scene.playerSpriteInfo.height/2);
         this.weaponOffsetX = 0;
         this.weaponOffsetY = 0;
+        this.attackDirection = 'd';
         this.isAttacking = false;
         this.hasAttacked = false;
 

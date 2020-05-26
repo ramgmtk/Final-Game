@@ -88,7 +88,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.healthBar.decrease(damage);
     }
 
-    moveTo(destination) {
+    moveTo(destination, velocity = playerMaxVelocity) {
         console.assert(debugFlags.bossFlag, `Move to: ${destination.x}, ${destination.y}`);
         let slope = {
             x: destination.x - this.x,
@@ -97,8 +97,8 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         let magnitude = Math.sqrt((slope.x * slope.x) + (slope.y * slope.y));
         slope.x = slope.x/magnitude;
         slope.y = slope.y/magnitude;
-        this.setVelocityX(slope.x * playerMaxVelocity);
-        this.setVelocityY(slope.y * playerMaxVelocity);
+        this.setVelocityX(slope.x * velocity);
+        this.setVelocityY(slope.y * velocity);
     }
 
     clearEvents() {
@@ -128,9 +128,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     createProjectileSpawnList() {
         this.projectileSpawnTypes.push(this.spawnPatternCircle);
-        this.projectileDelay.push(this.scene.bpms * 9);
+        this.projectileDelay.push(this.scene.bpms * 8);
         this.projectileSpawnTypes.push(this.spawnPatternLine);
-        this.projectileDelay.push(this.scene.bpms * 12);
+        this.projectileDelay.push(this.scene.bpms * 8);
 
         this.movementType.push(this.bossPatternMovement_Static);
         this.movementType.push(this.bossMovementPattern_test);
@@ -221,14 +221,8 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             this.currPos = this.availableMoves[randPoint];
             this.movementGroup.children.entries[this.availableMoves[randPoint]].canCollide = true;
             this.isMoving = true;
-            /*this.movementTimer = this.scene.time.addEvent({
-                delay: (this.scene.bpms * 8) - this.elapsedTime,
-                callback: this.moveTo,
-                callbackScope: this,
-                args: [this.bossPatternPoints[this.availableMoves[randPoint]]]
-            });*/
             this.movementTimer = this.scene.time.delayedCall((this.scene.bpms * 8) - this.elapsedTime, this.moveTo,
-                [this.bossPatternPoints[this.availableMoves[randPoint]]], this);
+                [this.bossPatternPoints[this.availableMoves[randPoint]], playerMaxVelocity * 1.5], this);
             this.elapsedTime = this.scene.time.now
             this.availableMoves.splice(this.availableMoves.indexOf(this.currPos), 1)
         }
@@ -302,7 +296,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 this.projectilePreviews.fillRect(spawnPoint - (this.scene.bossProjectileInfo.width/2), 0, 
                     this.scene.bossProjectileInfo.width, game.config.height * (1/bossZoom)).setDepth(uiDepth - 1).setAlpha(0.5);
             }
-            this.spawnTimer = this.scene.time.delayedCall(this.scene.bpms * 3, () => {
+            this.spawnTimer = this.scene.time.delayedCall(this.scene.bpms * 3, (spawnPArr, spawnCols) => {
                 this.projectilePreviews.clear();
                 for (let i = 0; i < spawnCols; i++) {
                     for (let j = 0; j < this.scene.stageInfo.height; j+= this.scene.bossProjectileInfo.height) {
@@ -313,7 +307,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 }
                 this.projectileGroup.addMultiple(this.projectileSetup);
                 this.scene.projectileGroup.addMultiple(this.projectileSetup);
-            }, [spawnPArr], this);
+            }, [spawnPArr, spawnCols], this);
         } else {
             for (let i = 0; i < this.projectileSetup.length; i++) {
                 if (!this.projectileSetup[i].canCollideParent) {

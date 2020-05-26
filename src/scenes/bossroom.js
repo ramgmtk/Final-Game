@@ -9,7 +9,9 @@ class BossRoom extends Phaser.Scene {
 
     create() {
         this.gameOver = false;
-        this.finalPhase = false
+        this.winner = false;
+        this.finalPhase = false;
+        this.bossHit = false;
         this.heartInfo = this.textures.get('heart').getSourceImage();
         this.stageInfo = {
             width: game.config.width * (1/bossZoom),
@@ -64,6 +66,7 @@ class BossRoom extends Phaser.Scene {
         this.bossTheme.play();
 
         //test vars
+        this.finalPhaseDuration = 30000;
         this.projectilesFired = 0;
         this.projectilesDestroyed = 0;
     }
@@ -73,9 +76,9 @@ class BossRoom extends Phaser.Scene {
             if (this.boss.health > 0) {
                 this.boss.update();
                 //projectile collider
-                /*this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
+                this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
                     return object1.canCollide && !object2.canCollideParent ? true : false;
-                }, this);*/ //COMMENTED OUT FOR GOD MODE
+                }, this); //COMMENTED OUT FOR GOD MODE
                 if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
                     console.log(`${this.projectilesFired}, ${this.projectilesDestroyed}`);
                     this.noteComboCheck();
@@ -94,24 +97,20 @@ class BossRoom extends Phaser.Scene {
                     }, this);
                 }
             } else if (!this.finalPhase) {
-                this.finalPhase = true;
-                this.boss.clearEvents();
-                this.player.canMove = false;
-                this.player.setDrag(0);
-                this.player.setAcceleration(0);
-                this.player.setVelocity(0);
-                this.boss.setVelocity(0);
-                this.player.x = centerX * 1/bossZoom;
-                this.player.y = centerY * 1/bossZoom + 200;
-                this.player.setDrag(0);
-                this.player.setAcceleration(0);
-                this.boss.x = this.player.x;
-                this.boss.y = this.player.y - 400;
-                console.log(`${centerX}, ${centerY}`);
+                this.finalPhaseSetup();
             } else {
-                if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
-                    console.log(`${this.projectilesFired}, ${this.projectilesDestroyed}`);
-                }
+                if (!this.winner) {
+                    if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
+                        console.log(`${this.projectilesFired}, ${this.projectilesDestroyed}`);
+                    }
+                    if (!this.bossHit) {
+                        this.boss.moveTo({x: this.player.x, y: this.player.y}, playerMaxVelocity/2);
+                    }
+                } else {
+                    this.destroyObjects();
+                    this.scene.start('gameOverScene'); //replace with winner screen MUST FIX
+                    this.scene.remove('bossScene');
+                }   
             }
         } else {
             this.destroyObjects();
@@ -123,23 +122,19 @@ class BossRoom extends Phaser.Scene {
     destroyObjects() {
         this.time.removeAllEvents(); 
         this.projectileGroup.clear(true, true);
-        this.boss.destroyObjects();
+        this.boss.destroyObject();
         this.sound.stopAll();
         this.player.destroy();
-        this.destroy();
     }
 
     damagePlayer(object1, object2) {
         console.assert(debugFlags.enemyFlag, 'Collision with projectile');
-        this.bossCam.shake(500, 0.003, false);
+        this.bossCam.shake(500, 0.003 * 1/bossZoom, false);
         //Check if player has hit 0 health
         if (this.player.health.healthNum == 0) {
+            this.gameOver = true;
             let health = this.player.healthBar.pop();
             health.destroy();
-            this.time.removeAllEvents(); //clears the event calls
-            this.boss.destroyObject();
-            this.projectileGroup.clear(true, true);
-            this.gameOver = true;
         } else {
             //SHOULD FIX add player blinking effect here
             object1.canCollide = false;
@@ -150,6 +145,62 @@ class BossRoom extends Phaser.Scene {
             }, null, this);
         }
         
+    }
+
+    finalPhaseSetup() {
+        this.finalPhase = true;
+        this.boss.clearEvents();
+        this.player.canMove = false;
+        this.player.attackDirection = 'w';
+        this.boss.setImmovable(false);
+        //this.player.setImmovable(false);
+        this.player.setDrag(0);
+        this.player.setAcceleration(0);
+        this.player.setVelocity(0);
+        this.boss.setVelocity(0);
+        this.player.x = centerX * 1/bossZoom;
+        this.player.y = centerY * 1/bossZoom + 200;
+        this.player.setDrag(0);
+        this.player.setAcceleration(0);
+        this.boss.x = this.player.x;
+        this.boss.y = this.player.y - 400;
+        this.boss.setCollideWorldBounds(true);
+        //this.boss.setBounceY(1);
+
+        this.physics.add.collider(this.player, this.boss, (object1, object2) => {
+            this.bossCam.shake(500, 0.003 * 1/bossZoom, false);
+            //Check if player has hit 0 health
+            if (this.player.health.healthNum == 0) {
+                this.gameOver = true;
+                let health = this.player.healthBar.pop();
+                health.destroy();
+            } else {
+                //SHOULD FIX add player blinking effect here
+                object1.canCollide = false;
+                this.player.health.updateHealth();
+                this.time.delayedCall(2000, () => {
+                    this.player.canCollide = true;
+                }, null, this);
+            }
+        }, (object1, object2) => {
+            return object1.canCollide;
+        }, this);
+        
+        this.physics.add.collider(this.player.weapon, this.boss, () => {
+            this.player.hasAttacked = true;
+            this.boss.y = this.player.weapon.y - 200;
+            this.boss.setVelocity(0);
+            this.bossHit = true;
+            this.time.delayedCall(this.bpms / 2, () => {
+                this.bossHit = false;
+            }, null, this);
+        }, () => {
+            return !this.player.hasAttacked;
+        }, this.x);
+
+        this.time.delayedCall(this.finalPhaseDuration, () => {
+            this.winner = true;
+        }, null, this);
     }
 
     //used to manage the combo system.
@@ -213,7 +264,7 @@ class BossRoom extends Phaser.Scene {
             }
         }
     }
-    
+
     createCams() {
         let cams = createCams(this, this.heartCam, this.noteCam, this.powerChordCam, this.playerCam);
         this.heartCam = cams[0];

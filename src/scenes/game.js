@@ -157,6 +157,7 @@ class Game extends Phaser.Scene {
             this.destroyObjects();
             if (this.gameOver) {
                 this.scene.start('gameOverScene');
+                this.scene.remove('bossScene');
                 
             } else {
                 this.scene.start('bossScene');
