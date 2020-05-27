@@ -1,5 +1,5 @@
 class efxEmitter {
-    constructor(scene, player, texture = 'foo', frame = 'Note') {
+    constructor(scene, player, texture = playerAtlas, frame = 'Note') {
         this.scene = scene;
         this.player = player;
         this.frame = frame;

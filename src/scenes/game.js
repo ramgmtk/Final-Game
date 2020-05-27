@@ -62,7 +62,8 @@ class Game extends Phaser.Scene {
         }, this);*/
 
         //UI ELEMENTS
-        this.powerChordList = new Array(powerChordBar.length);
+        //this.powerChordList = new Array(powerChordBar.length);
+        this.powerChordList = [];
         this.updatePowerChordList();
 
         //ENEMIES
@@ -210,9 +211,14 @@ class Game extends Phaser.Scene {
         let k = 0;
         for (let i = 0; i < powerChordBar.length; i++) {
             if (powerChordBar[i].unlocked) {
-                this.powerChordList[i] = this.add.image(uiOffset.x, (k * noteSize) + uiOffset.y,
+                /*this.powerChordList[k] = this.add.image(uiOffset.x, (k * noteSize) + uiOffset.y,
                      'powerAtlas', powerChordBar[i].powerChord).setOrigin(0).setDepth(uiDepth);
-                k += 1;
+                k += 1;*/
+                this.powerChordList[i] = this.add.image(uiOffset.x, (i * noteSize) + uiOffset.y,
+                     'powerAtlas', powerChordBar[i].powerChord).setOrigin(0).setDepth(uiDepth);
+            } else {
+                this.powerChordList[i] = this.add.image(uiOffset.x, (k * noteSize) + uiOffset.y,
+                     null, null).setOrigin(0).setDepth(uiDepth).setAlpha(0);
             }
         }
     }

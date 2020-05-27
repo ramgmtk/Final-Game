@@ -51,6 +51,9 @@ powerChordBar = [
     {powerChord: 'khi',
      name: 'Shield',
      unlocked: true},
+    {powerChord: 'lkj',
+     name: 'Dunder',
+     unlocked: false,},
 ];
 
 let bossCornerSpace = 200
