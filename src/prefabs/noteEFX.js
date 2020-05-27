@@ -1,7 +1,7 @@
 class efxEmitter {
     constructor(scene, player, texture = playerAtlas, frame = 'Note') {
         this.scene = scene;
-        this.player = player;
+        this.parent = player;
         this.frame = frame;
         this.texture = texture;
         this.particleDistance = 50;
@@ -15,8 +15,8 @@ class efxEmitter {
 
     generateParticles() {
         for (let i = 0; i < this.xArr.length; i++) {
-            let notefx = new efxParticle(this.scene, this.player.x, 
-                this.player.y, this.texture, this.frame).setDepth(uiDepth - 1).setOrigin(0.5);
+            let notefx = new efxParticle(this.scene, this.parent.x, 
+                this.parent.y, this.texture, this.frame).setDepth(uiDepth - 1).setOrigin(0.5);
             let noteTween = this.scene.tweens.add({
                 targets: notefx,
                 alpha: {from: 0, to: 1},
@@ -35,7 +35,7 @@ class efxEmitter {
     }
 
     generateParticles_v2() {
-        let notefx = new efxParticle(this.scene, this.player.x, this.player.y,
+        let notefx = new efxParticle(this.scene, this.parent.x, this.parent.y,
             'reverse', 0).setScale(0).setDepth(uiDepth -1).setOrigin(0.5);
         this.noteGroup.add(notefx);
         let noteTween = this.scene.tweens.add({

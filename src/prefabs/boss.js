@@ -211,7 +211,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 object1.x = object2.x;
                 object1.y = object2.y;
                 console.assert(debugFlags.bossFlag,`Boss: ${this.x}, ${this.y}`);
-                console.log('');
+                console.assert(debugFlags.enemyFlag, '');
             }, (object1, object2)=> {
                 return object2.canCollide;
             }, this);

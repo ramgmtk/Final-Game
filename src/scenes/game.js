@@ -55,16 +55,19 @@ class Game extends Phaser.Scene {
         this.player = new Player(this, this.pSpawn.x, this.pSpawn.y, playerAtlas, 'MCidle', 'Note');
 
         this.physics.add.collider(this.player, levelLayer);
-        /*this.physics.add.overlap(this.player.normalBody, levelLayer, () => {
-            this.canRevert = false;
-        }, (object1, object2) => {
-            return object2.collides == true && !this.canShrink;
-        }, this);*/
+
+        let pChord = new PowerChord(this, this.pSpawn.x + 100, this.pSpawn.y, 'invertedProjectile', null, 'hij');
+
+        this.physics.add.collider(this.player, pChord, (obj1, obj2) => {
+            obj2.unlockPowerChord();
+        }, (obj1, obj2) => {
+            return !obj2.collected;
+        }, this);
 
         //UI ELEMENTS
         //this.powerChordList = new Array(powerChordBar.length);
         this.powerChordList = [];
-        this.updatePowerChordList();
+        this.createPowerChordList();
 
         //ENEMIES
         this.projectileGroup = this.add.group({
@@ -181,15 +184,16 @@ class Game extends Phaser.Scene {
     damagePlayer(object1, object2) {
         console.assert(debugFlags.enemyFlag, 'Collision with projectile');
         this.playerCam.shake(500, 0.003, false);
+        object1.canCollide = false;
         //Check if player has hit 0 health
         if (this.player.health.healthNum == 0) {
             this.gameOver = true;
             this.exitWorld = true;
             let health = this.player.healthBar.pop();
+            //THERE ARE CASES WHERE THIS IS CALLED TWICE I THINK. SHOULD FIX. LIKELY CAUSE IT DAMAGE PLAYER GETTING CALLED TWICE
             health.destroy();
         } else {
             //SHOULD FIX add player blinking effect here
-            object1.canCollide = false;
             object2.destroy();
             this.player.health.updateHealth();
             this.time.delayedCall(2000, () => {
@@ -199,8 +203,14 @@ class Game extends Phaser.Scene {
         
     }
 
-    //update the notebar
     updatePowerChordList() {
+        this.createPowerChordList();
+        this.heartCam.ignore([this.powerChordList]);
+        this.noteCam.ignore([this.powerChordList]);
+        this.playerCam.ignore([this.powerChordList]);
+    }
+    //update the notebar
+    createPowerChordList() {
         //empty the list to be recreated. Inefficient
         for (let i = 0; i < this.powerChordList.length; i++) {
             if (this.powerChordList[i] != null) {

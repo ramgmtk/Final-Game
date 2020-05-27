@@ -38,7 +38,7 @@ class BossRoom extends Phaser.Scene {
         this.player = new Player(this, centerX, centerY, playerAtlas, 'MCidle', 'Note');
         //UI ELEMENTS
         this.powerChordList = new Array(powerChordBar.length);
-        this.updatePowerChordList();
+        this.createPowerChordList();
 
         //ENEMIES
         this.projectileGroup = this.add.group({
@@ -130,14 +130,15 @@ class BossRoom extends Phaser.Scene {
     damagePlayer(object1, object2) {
         console.assert(debugFlags.enemyFlag, 'Collision with projectile');
         this.bossCam.shake(500, 0.003 * 1/bossZoom, false);
+        object1.canCollide = false;
         //Check if player has hit 0 health
         if (this.player.health.healthNum == 0) {
+            console.log('destroy player')
             this.gameOver = true;
             let health = this.player.healthBar.pop();
             health.destroy();
         } else {
-            //SHOULD FIX add player blinking effect here
-            object1.canCollide = false;
+        //SHOULD FIX add player blinking effect here
             object2.destroy();
             this.player.health.updateHealth();
             this.time.delayedCall(2000, () => {
@@ -254,7 +255,7 @@ class BossRoom extends Phaser.Scene {
         }
     }
     //update the notebar
-    updatePowerChordList() {
+    createPowerChordList() {
         //empty the list to be recreated. Inefficient
         for (let i = 0; i < this.powerChordList.length; i++) {
             if (this.powerChordList[i] != null) {

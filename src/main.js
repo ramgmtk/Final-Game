@@ -47,7 +47,7 @@ powerChordBar = [
      unlocked: true,},
     {powerChord: 'hij',
      name: 'Shrink',
-     unlocked: true,},
+     unlocked: false,},
     {powerChord: 'khi',
      name: 'Shield',
      unlocked: true},
