@@ -16,6 +16,7 @@ class Menu extends Phaser.Scene {
         this.load.image('bg', 'bg.png');
         this.load.image('shield', 'shield.png');
         this.load.image('invertedProjectile', 'invertedProjectile.png')
+        this.load.image('reverse', 'reverse.png');
 
         //sound
         this.load.path = './assets/sounds/';

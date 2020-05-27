@@ -29,7 +29,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
             this.destroyObject();
         } else {
             //Note this allows other nemies projectiles to damage other enemies.
-            this.scene.physics.world.collide(this, this.scene.projectileGroup, (object1, object2) => {
+            this.scene.physics.world.overlap(this, this.scene.projectileGroup, (object1, object2) => {
                 object1.damageEnemy(3);
                 object2.destroy();
             }, (object1, object2) => {

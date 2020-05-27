@@ -69,7 +69,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 }
                 //SHOULD FIX WILL CRASH ON NEXT PHASE REACH
                 this.movement();
-                this.scene.physics.world.collide(this, this.scene.projectileGroup, (object1, object2) => {
+                this.scene.physics.world.overlap(this, this.scene.projectileGroup, (object1, object2) => {
                     object1.damageEnemy();
                     object2.destroy();
                 }, (object1, object2) => {

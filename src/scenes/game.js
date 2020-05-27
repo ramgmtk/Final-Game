@@ -144,7 +144,7 @@ class Game extends Phaser.Scene {
                 }, this);
             }
             if (this.player.shieldActive) {
-                this.physics.world.collide(this.player.shield, this.projectileGroup, (object1, object2) => {
+                this.physics.world.overlap(this.player.shield, this.projectileGroup, (object1, object2) => {
                     object2.destroy();
                 }, null, this);
             }
@@ -182,10 +182,10 @@ class Game extends Phaser.Scene {
         this.playerCam.shake(500, 0.003, false);
         //Check if player has hit 0 health
         if (this.player.health.healthNum == 0) {
-            let health = this.player.healthBar.pop();
-            health.destroy();
             this.gameOver = true;
             this.exitWorld = true;
+            let health = this.player.healthBar.pop();
+            health.destroy();
         } else {
             //SHOULD FIX add player blinking effect here
             object1.canCollide = false;
@@ -226,12 +226,12 @@ class Game extends Phaser.Scene {
         //add code below to string compare which combo to play
         if (noteCombo == powerChordBar[0].powerChord) {
             console.assert(debugFlags.playerFlag, 'Reverse');
-            for(let i = 0; i < this.projectileGroup.children.entries.length; i++) {
-                if (!this.projectileGroup.children.entries[i].canCollideParent && 
-                    this.projectileGroup.children.entries[i].reverseable) {
-                    this.projectileGroup.children.entries[i].redirect();
-                }
-            }
+            this.player.particleManager.generateParticles_v2();
+            this.physics.world.overlap(this.player.reverseRange, this.projectileGroup, (object1, object2) => {
+                object2.redirect();
+            }, (object1, object2) => {
+                return (!object2.canCollideParent && object2.reverseable);
+            }, this); 
         } else if (noteCombo == powerChordBar[1].powerChord) { //MUST FIX, WHAT IF PLAYER RESIZES INTO A NARROW ENTRANCE?
             console.assert(debugFlags.playerFlag, 'Shrink');
             if (this.player.canShrink) {
@@ -243,7 +243,14 @@ class Game extends Phaser.Scene {
             console.assert(debugFlags.playerFlag, 'Shield');
             if (!this.player.shieldActive) {
                 this.player.shieldActive = true;
-                this.player.shield.setAlpha(1);
+                //this.player.shield.setAlpha(1);
+                this.tweens.add({
+                    targets: this.player.shield,
+                    alpha: {from: 0, to: 0.3},
+                    scale: {from: 0, to: 1},
+                    duration: 1000,
+                    repeat: 0,
+                });
                 this.player.setMaxVelocity(playerMaxVelocity/5);
                 this.time.delayedCall(2000, () => {
                     this.player.shieldActive = false;

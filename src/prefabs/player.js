@@ -24,6 +24,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.canShrink;
         this.shield;
         this.shieldActive;
+        this.reverseRange;
 
         //efx
         this.particleManager;
@@ -41,6 +42,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.shieldMovement();
         this.weaponMovement();
         this.normalBodyMovement();
+        this.reverseRangeMovement();
     }
 
     //handles the players basic movement
@@ -127,6 +129,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.normalBody.body.y = this.body.y + this.body.halfHeight - this.normalBody.body.halfHeight;
     }
 
+    reverseRangeMovement() {
+        this.reverseRange.body.x = this.body.x + this.body.halfWidth - this.reverseRange.body.halfHeight;
+        this.reverseRange.body.y = this.body.y + this.body.halfHeight - this.reverseRange.body.halfHeight;
+    }
+
     //callback function for pressing jkl keys
     playMusic(musicalNote) {
         console.assert(debugFlags.playerFlag, 'Entered music note callback');
@@ -193,6 +200,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.weapon = new Phaser.Physics.Arcade.Sprite(this.scene, this.x, this.y, null, 0).setOrigin(0.5).setDepth(uiDepth - 1);
         this.scene.physics.add.existing(this.weapon);
         this.weapon.body.setSize(this.scene.playerSpriteInfo.width/2, this.scene.playerSpriteInfo.height/2);
+        this.weapon.setImmovable(true);
         this.weaponOffsetX = 0;
         this.weaponOffsetY = 0;
         this.attackDirection = 'd';
@@ -202,9 +210,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.shield = new Phaser.Physics.Arcade.Sprite(this.scene, this.x, this.y, 'shield', 0).setOrigin(0.5).setDepth(uiDepth - 1).setAlpha(0);
         this.scene.add.existing(this.shield);
         this.scene.physics.add.existing(this.shield);
-        this.shield.setAngularVelocity(100);;
-        this.shield.body.setCircle(this.scene.playerSpriteInfo.width);
-        this.shield.setScale(2.0);
+        //this.shield.setAngularVelocity(100);
+        this.shield.body.setCircle(this.scene.playerSpriteInfo.width * 2);
+        this.shield.setImmovable(true);
         this.shieldActive = false;
 
         this.normalBody = new Phaser.Physics.Arcade.Sprite(this.scene, this.x, this.y, null, 0).setOrigin(0.5).setDepth(uiDepth - 1);
@@ -213,6 +221,12 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.normalBody.setImmovable(true);
         this.normalBody.setDebugBodyColor(0x0000ff);
         this.canShrink = true;
+
+        this.reverseRange = new Phaser.Physics.Arcade.Sprite(this.scene, this.x, this.y, null, 0).setOrigin(0.5).setDepth(uiDepth - 1);
+        this.scene.physics.add.existing(this.reverseRange);
+        this.reverseRange.setImmovable(true);
+        this.reverseRange.body.setCircle(this.scene.playerSpriteInfo.width * 4);
+        this.reverseRange.setDebugBodyColor(0xffffff);
     }
 
     createEFX(zoom = 1) {
