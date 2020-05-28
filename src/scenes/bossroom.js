@@ -11,6 +11,7 @@ class BossRoom extends Phaser.Scene {
         this.gameOver = false;
         this.winner = false;
         this.finalPhase = false;
+        this.finalPhaseStart = false;
         this.bossHit = false;
         this.heartInfo = this.textures.get('heart').getSourceImage();
         this.stageInfo = {
@@ -71,9 +72,9 @@ class BossRoom extends Phaser.Scene {
             if (this.boss.health > 0) {
                 this.boss.update();
                 //projectile collider
-                this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
+                /*this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
                     return object1.canCollide && !object2.canCollideParent ? true : false;
-                }, this); //COMMENTED OUT FOR GOD MODE
+                }, this);*/ //COMMENTED OUT FOR GOD MODE
                 if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
                     console.log(`${this.projectilesFired}, ${this.projectilesDestroyed}`);
                     this.noteComboCheck();
@@ -93,7 +94,7 @@ class BossRoom extends Phaser.Scene {
                 }
             } else if (!this.finalPhase) {
                 this.finalPhaseSetup();
-            } else {
+            } else if (this.finalPhaseStart) {
                 if (!this.winner) {
                     if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
                         console.log(`${this.projectilesFired}, ${this.projectilesDestroyed}`);
@@ -144,8 +145,8 @@ class BossRoom extends Phaser.Scene {
     }
 
     finalPhaseSetup() {
-        this.bossTheme2.stop();
         this.finalPhase = true;
+        this.bgm.stop();
         this.boss.clearEvents();
         this.player.canMove = false;
         this.player.attackDirection = 'w';
@@ -197,7 +198,30 @@ class BossRoom extends Phaser.Scene {
 
         this.time.delayedCall(this.finalPhaseDuration, () => {
             this.winner = true;
-        }, null, this);
+        }, null, this); //MUST REMOVE CAN ADD THIS FLAG TO WHEN THE FINAL SONG FINISHES.
+
+        let fKey = new Phaser.GameObjects.Sprite(this, this.player.x, this.player.y + 200, 'keyAtlas', 'f').setAlpha(0).setOrigin(0.5).setDepth(uiDepth).setScale(2.0);
+        this.add.existing(fKey);
+        console.log(fKey);
+
+        let mashTween = this.tweens.add({
+            targets: fKey,
+            alpha: {from: 0, to: 1},
+            duration: this.bpms,
+            repeat: 0,
+            loop: 100,
+            yoyo: true,
+        });
+
+        //can add a delay have duration of transition 3.
+        this.controls.f.addListener('down', () => {
+            this.controls.f.removeListener('down');
+            console.log('bingus');
+            mashTween.remove();
+            fKey.destroy();
+            //add bgm play here
+            this.finalPhaseStart = true;
+        }, this)
     }
 
     //used to manage the combo system.
@@ -304,11 +328,23 @@ class BossRoom extends Phaser.Scene {
         this.transition1.once('complete', () => {
             this.bossTheme2.play();
             this.bgm = this.bossTheme2;
-        })
-        this.bossTheme1.once('stop', () => {
-            this.transition1.play();
-            this.bgm = this.transition1;
-        })
+        });
+        this.transition1.once('stop', () => {
+            this.transition2.play();
+            this.bgm = this.transition2;
+        });
+        this.bossTheme2.once('stop', () => {
+            this.transition2.play();
+            this.bgm = this.transition2;
+        });
+        this.transition2.once('complete', () => {
+            this.bossTheme3.play();
+            this.bgm = this.bossTheme3;
+        });
+        this.bossTheme3.once('complete', () => {
+            this.winner = true;
+        });
+
     }
 
     createSound() {
@@ -359,9 +395,23 @@ class BossRoom extends Phaser.Scene {
             volume: 0.3 * audio,
             rate: 1.0,
             loop: true,
-        })
+        });
 
-        this.transition1 = this.sound.add('F_Sharp', {
+        this.bossTheme3 = this.sound.add('bossTheme2', {
+            mute: false,
+            volume: 0.3 * audio,
+            rate: 1.0,
+            loop: false,
+        });
+
+        this.transition1 = this.sound.add('bossTransition1', {
+            mute: false,
+            volume: 0.3 * audio,
+            rate: 1.0,
+            loop: false,
+        });
+
+        this.transition2 = this.sound.add('bossTransition1', {
             mute: false,
             volume: 0.3 * audio,
             rate: 1.0,
