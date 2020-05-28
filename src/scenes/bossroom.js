@@ -196,10 +196,6 @@ class BossRoom extends Phaser.Scene {
             return !this.player.hasAttacked;
         }, this.x);
 
-        this.time.delayedCall(this.finalPhaseDuration, () => {
-            this.winner = true;
-        }, null, this); //MUST REMOVE CAN ADD THIS FLAG TO WHEN THE FINAL SONG FINISHES.
-
         let fKey = new Phaser.GameObjects.Sprite(this, this.player.x, this.player.y + 200, 'keyAtlas', 'f').setAlpha(0).setOrigin(0.5).setDepth(uiDepth).setScale(2.0);
         this.add.existing(fKey);
         console.log(fKey);
@@ -397,7 +393,7 @@ class BossRoom extends Phaser.Scene {
             loop: true,
         });
 
-        this.bossTheme3 = this.sound.add('bossTheme2', {
+        this.bossTheme3 = this.sound.add('bossTheme3', {
             mute: false,
             volume: 0.3 * audio,
             rate: 1.0,

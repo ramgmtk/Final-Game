@@ -239,7 +239,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.reverseRange = new Phaser.Physics.Arcade.Sprite(this.scene, this.x, this.y, null, 0).setOrigin(0.5).setDepth(uiDepth - 1);
         this.scene.physics.add.existing(this.reverseRange);
         this.reverseRange.setImmovable(true);
-        this.reverseRange.body.setCircle(this.scene.playerSpriteInfo.width * 4);
+        this.reverseRange.body.setCircle(this.scene.playerSpriteInfo.width * 6);
         this.reverseRange.setDebugBodyColor(0xffffff);
     }
 

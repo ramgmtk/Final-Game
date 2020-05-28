@@ -41,7 +41,7 @@ class efxEmitter {
         let noteTween = this.scene.tweens.add({
             targets: notefx,
             alpha: {from: 1, to: 0},
-            scale: {from: 2, to: 0},
+            scale: {from: 3, to: 0},
             angle: {from: 0, to: 360},
             duration: 1000,
             repeat: 0,
