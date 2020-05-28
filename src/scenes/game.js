@@ -75,7 +75,7 @@ class Game extends Phaser.Scene {
             runChildUpdate: true,
         });
         console.assert(debugFlags.enemyFlag, this.projectileGroup);
-        this.physics.add.overlap(this.projectileGroup, levelLayer, (object1, object2) => {
+        this.physics.add.collider(this.projectileGroup, levelLayer, (object1, object2) => {
             object1.destroy();
         }, null, this);
         
@@ -83,11 +83,10 @@ class Game extends Phaser.Scene {
             scene: this,
             runChildUpdate: true,
         });
-        let eSpawnString = 'Enemy_Spawn0';
-        for (let i = 0; i < 3; i++) {
-            eSpawnString = eSpawnString.slice(0, -1);
-            eSpawnString = eSpawnString + (i + 1).toString();
-            let eSpawn = map.findObject('Object_Layer', (obj) => obj.name == eSpawnString);
+        let eSpawnString = 'Enemy_Spawn';
+        for (let i = 0; i < 32; i++) {
+            let eSpawnS = eSpawnString + (i + 1).toString();
+            let eSpawn = map.findObject('Object_Layer', (obj) => obj.name == eSpawnS);
             let enemy = new Enemy(this, eSpawn.x, eSpawn.y, playerAtlas, 10, 'AMPidle');
             this.enemyGroup.add(enemy);
         }
