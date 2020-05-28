@@ -40,16 +40,16 @@ class BossRoom extends Phaser.Scene {
         this.powerChordList = new Array(powerChordBar.length);
         this.createPowerChordList();
 
-        this.createSound();
+        //sound
+        this.createSound();        
+        this.setupBossTheme();
+
         //ENEMIES
         this.projectileGroup = this.add.group({
             scene: this,
             runChildUpdate: true,
         });
         this.boss = new Boss(this, centerX * 1/bossZoom, centerY * 1/bossZoom, 'bossAtlas', 'BOSSidle', this.player, true);
-        //sound
-        
-        this.setupBossTheme();
 
         //camera setup
         //CAMERA SETUP
@@ -295,71 +295,75 @@ class BossRoom extends Phaser.Scene {
         this.testNoise.once('complete', () => {
             this.bossTheme.play();
         }, this);*/
+        this.bgm = this.bossTheme1;
         this.bossTheme1.play();
         this.bossTheme1.once('stop', () => {
             this.transition1.play();
+            this.bgm = this.transition1;
         });
         this.transition1.once('complete', () => {
             this.bossTheme2.play();
+            this.bgm = this.bossTheme2;
         })
         this.bossTheme1.once('stop', () => {
             this.transition1.play();
+            this.bgm = this.transition1;
         })
     }
 
     createSound() {
         this.musicalNoteE = this.sound.add('E', {
             mute: false,
-            volume: 0.3,
+            volume: 0.3 * audio,
             rate: 1.0,
             loop: false,
         });
 
         this.musicalNoteF = this.sound.add('F', {
             mute: false,
-            volume: 0.3,
+            volume: 0.3 * audio,
             rate: 1.0,
             loop: false,
         });
 
         this.musicalNoteG = this.sound.add('G', {
             mute: false,
-            volume: 0.3,
+            volume: 0.3 * audio,
             rate: 1.0,
             loop: false,
         });
 
         this.musicalNoteA = this.sound.add('A', {
             mute: false,
-            volume: 0.3,
+            volume: 0.3 * audio,
             rate: 1.0,
             loop: false,
         });
 
         this.musicalNoteFS = this.sound.add('F_Sharp', {
             mute: false,
-            volume: 0.3,
+            volume: 0.3 * audio,
             rate: 1.0,
             loop: false,
         });
 
         this.bossTheme1 = this.sound.add('bossTheme1', {
             mute: false,
-            volume: 0.3,
+            volume: 0.3 * audio,
             rate: 1.0,
             loop: true,
         });
 
         this.bossTheme2 = this.sound.add('bossTheme2', {
             mute: false,
-            volume: 0.3,
+            volume: 0.3 * audio,
             rate: 1.0,
             loop: true,
         })
 
         this.transition1 = this.sound.add('F_Sharp', {
             mute: false,
-            volume: 0.3,
+            volume: 0.3 * audio,
             rate: 1.0,
             loop: false,
         });

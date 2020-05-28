@@ -8,6 +8,7 @@ class Game extends Phaser.Scene {
     create() {
         //misc
         this.gameOver = false;
+        this.bpms = 325;
         this.exitWorld = false;
         this.shrinkDuration = 0;
         this.canRevert = true;
@@ -56,7 +57,7 @@ class Game extends Phaser.Scene {
 
         this.physics.add.collider(this.player, levelLayer);
 
-        let pChord = new PowerChord(this, this.pSpawn.x + 100, this.pSpawn.y, 'invertedProjectile', null, 'hij');
+        let pChord = new PowerChord(this, this.pSpawn.x, this.pSpawn.y - 100, 'invertedProjectile', null, 'hij');
 
         this.physics.add.collider(this.player, pChord, (obj1, obj2) => {
             obj2.unlockPowerChord();
@@ -309,49 +310,56 @@ class Game extends Phaser.Scene {
     createSound() {
         this.musicalNoteE = this.sound.add('E', {
             mute: false,
-            volume: 0.3,
+            volume: 0.3 * audio,
             rate: 1.0,
             loop: false,
         });
 
         this.musicalNoteF = this.sound.add('F', {
             mute: false,
-            volume: 0.3,
+            volume: 0.3 * audio,
             rate: 1.0,
             loop: false,
         });
 
         this.musicalNoteG = this.sound.add('G', {
             mute: false,
-            volume: 0.3,
+            volume: 0.3 * audio,
             rate: 1.0,
             loop: false,
         });
 
         this.musicalNoteA = this.sound.add('A', {
             mute: false,
-            volume: 0.3,
+            volume: 0.3 * audio,
             rate: 1.0,
             loop: false,
         });
 
         this.musicalNoteFS = this.sound.add('F_Sharp', {
             mute: false,
-            volume: 0.3,
+            volume: 0.3 * audio,
             rate: 1.0,
             loop: false,
         });
 
+        this.musicMap = {};
+        this.musicMap['h'] = this.musicalNoteE;
+        this.musicMap['j'] = this.musicalNoteF,
+        this.musicMap['k'] = this.musicalNoteG,
+        this.musicMap['l'] = this.musicalNoteA,
+        this.musicMap['i'] = this.musicalNoteFS,
+
         this.bgm = this.sound.add('gameMusic', {
             mute: false,
-            volume: 0.5,
+            volume: 0.5 * audio,
             rate: 1.0,
             loop: true,
         });
 
         this.enemySound = this.sound.add('AmpAttack', {
             mute: false,
-            volume: 0.1,
+            volume: 0.1 * audio,
             rate: 1.0,
             loop: false,
         });

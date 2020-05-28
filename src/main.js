@@ -24,6 +24,7 @@ let config = {
 //GLOBALS
 let centerX = config.width/2;
 let centerY = config.height/2;
+let audio = 1.0;
 
 let playerAtlas = 'foo';
 let playerAccel = 5000; //note at values this high, might be better off working with velocity alone.
