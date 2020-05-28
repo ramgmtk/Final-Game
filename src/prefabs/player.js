@@ -168,13 +168,21 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     addNotes(note) {
         //array.shift can shift elements, but destroys some elements.
         let curr = note;
-        let prev = this.noteBar[this.noteBar.length - 1].text;
+        let prev = this.noteBar[this.noteBar.length - 1].frame.name;
         for (let i = this.noteBar.length - 1; i > 0; i--) {
-            this.noteBar[i].setText(curr);
+            if (curr == '__BASE') {
+                this.noteBar[i].setTexture(null, null).setAlpha(0)
+            } else {
+                this.noteBar[i].setTexture('keyAtlas', curr).setAlpha(1);
+            }
             curr = prev;
-            prev = this.noteBar[i - 1].text;
+            prev = this.noteBar[i - 1].frame.name;
         }
-        this.noteBar[0].setText(curr);
+        if (curr == '__BASE') {
+            this.noteBar[0].setTexture(null, null).setAlpha(0)
+        } else {
+            this.noteBar[0].setTexture('keyAtlas', curr).setAlpha(1);
+        }
     }
 
     addNoteListeners() {
@@ -187,7 +195,13 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     createNoteBar() {
         this.noteBar = [];
         for (let i = 0; i < noteQueueSize; i++) {
-            this.noteBar.push(this.scene.add.text((i * noteSize) + uiOffset.x, uiOffset.y, '',noteTextConfig).setOrigin(0).setDepth(uiDepth));
+            this.noteBar.push(this.scene.add.image((i * noteSize) + uiOffset.x, uiOffset.y, null, null).setOrigin(0).setDepth(uiDepth).setAlpha(0));
+        }
+    }
+
+    clearNoteBar() {
+        for (let i = 0; i < this.noteBar.length; i++) {
+            this.noteBar[i].setTexture(null, null,).setAlpha(0);
         }
     }
 

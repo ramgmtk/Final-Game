@@ -1,11 +1,13 @@
 let config = {
     type: Phaser.CANVAS,
+    render: {
+        pixelArt: true,
+    },
     width: 900,
     height: 900,
     scale: {
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
-    pixelArt: true,
     physics: {
         default: 'arcade',
         arcade: {
@@ -30,11 +32,7 @@ let playerDrag = playerAccel * 1.5;
 let projectileVelocity = 100;
 
 let noteQueueSize = 3;
-let noteTextConfig = {
-    fontSize: '32px',
-    strokeThickness: 3,
-}
-let noteSize = parseFloat(noteTextConfig.fontSize);
+let noteSize = 32;
 let uiDepth = 4;
 let uiOffset = {
     x: -300,

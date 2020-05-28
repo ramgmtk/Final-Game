@@ -1,7 +1,7 @@
 class efxEmitter {
-    constructor(scene, player, texture = playerAtlas, frame = 'Note') {
+    constructor(scene, parent, texture = playerAtlas, frame = 'Note') {
         this.scene = scene;
-        this.parent = player;
+        this.parent = parent;
         this.frame = frame;
         this.texture = texture;
         this.particleDistance = 50;

@@ -208,7 +208,7 @@ class BossRoom extends Phaser.Scene {
     noteComboCheck() {
         let noteCombo = '';
         for (let i = 0; i < this.player.noteBar.length; i++) {
-            noteCombo += this.player.noteBar[i].text;
+            noteCombo += this.player.noteBar[i].frame.name;
         }
         //add code below to string compare which combo to play
         if (noteCombo == powerChordBar[0].powerChord) {
@@ -250,9 +250,7 @@ class BossRoom extends Phaser.Scene {
             }
         }
         //Reset the bar
-        for (let i = 0; i < this.player.noteBar.length; i++) {
-            this.player.noteBar[i].setText('');
-        }
+        this.player.clearNoteBar();
     }
     //update the notebar
     createPowerChordList() {

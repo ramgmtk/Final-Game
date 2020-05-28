@@ -13,7 +13,7 @@ class Game extends Phaser.Scene {
         this.canRevert = true;
         //BACKGROUND
         const map = this.add.tilemap('tutorial_map');
-        const tileset = map.addTilesetImage('tutorial_level', 'tutorial_tile');
+        const tileset = map.addTilesetImage('Tiles', 'tutorial_tile');
 
         //const backgroundLayer = map.createStaticLayer('Background_Layer', tileset, 0, 0);
         const levelLayer = map.createStaticLayer('Wall_Layer', tileset, 0, 0);
@@ -51,7 +51,7 @@ class Game extends Phaser.Scene {
         };
 
         //CREATE THE PLAYER
-        this.pSpawn = map.findObject('Object_Layer',  (obj) => obj.name === 'pSpawn')
+        this.pSpawn = map.findObject('Object_Layer',  (obj) => obj.name === 'Player_Spawn')
         this.player = new Player(this, this.pSpawn.x, this.pSpawn.y, playerAtlas, 'MCidle', 'Note');
 
         this.physics.add.collider(this.player, levelLayer);
@@ -75,7 +75,7 @@ class Game extends Phaser.Scene {
             runChildUpdate: true,
         });
         console.assert(debugFlags.enemyFlag, this.projectileGroup);
-        this.physics.add.collider(this.projectileGroup, levelLayer, (object1, object2) => {
+        this.physics.add.overlap(this.projectileGroup, levelLayer, (object1, object2) => {
             object1.destroy();
         }, null, this);
         
@@ -83,7 +83,7 @@ class Game extends Phaser.Scene {
             scene: this,
             runChildUpdate: true,
         });
-        let eSpawnString = 'eSpawn0';
+        let eSpawnString = 'Enemy_Spawn0';
         for (let i = 0; i < 3; i++) {
             eSpawnString = eSpawnString.slice(0, -1);
             eSpawnString = eSpawnString + (i + 1).toString();
@@ -114,7 +114,7 @@ class Game extends Phaser.Scene {
         this.playerCam = cams[3];
 
         //test
-        const bEnt = map.findObject('Object_Layer', (obj) => obj.name === 'bEntrance');
+        const bEnt = map.findObject('Object_Layer', (obj) => obj.name === 'Boss_Entrance');
         this.bossEntrance = new Phaser.Physics.Arcade.Sprite(this, bEnt.x, bEnt.y, playerAtlas, 'Note').setDepth(uiDepth - 1);
         this.physics.add.existing(this.bossEntrance);
         this.bossEntrance.setImmovable(true);
@@ -237,7 +237,7 @@ class Game extends Phaser.Scene {
     noteComboCheck() {
         let noteCombo = '';
         for (let i = 0; i < this.player.noteBar.length; i++) {
-            noteCombo += this.player.noteBar[i].text;
+            noteCombo += this.player.noteBar[i].frame.name;
         }
         //add code below to string compare which combo to play
         if (noteCombo == powerChordBar[0].powerChord) {
@@ -276,9 +276,7 @@ class Game extends Phaser.Scene {
             }
         }
         //Reset the bar
-        for (let i = 0; i < this.player.noteBar.length; i++) {
-            this.player.noteBar[i].setText('');
-        }
+        this.player.clearNoteBar();
     }
 
     //SHOULD FIX, IT IS POSSIBLE TO CRASH THE GAME IF THE PLAYERS BODY REMAINS IN A TIGHT SPACE;

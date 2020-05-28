@@ -9,9 +9,10 @@ class Menu extends Phaser.Scene {
         this.load.atlas('bossAtlas', 'BossSprite.png', 'BossSprite.json');
         this.load.atlas('healthAtlas', 'health.png', 'health.json');
         this.load.atlas('powerAtlas', 'powerchords.png', 'powerchords.json');
+        this.load.atlas('keyAtlas', 'keys.png', 'keys.json');
         this.load.path = './assets/tilemap/';
-        this.load.image('tutorial_tile', 'Tile Sheet.png');
-        this.load.tilemapTiledJSON('tutorial_map', 'Tutorial.json')
+        this.load.image('tutorial_tile', 'Tile_Sheet_v2.png');
+        this.load.tilemapTiledJSON('tutorial_map', 'Tutorial1.json')
         this.load.path = './assets/';
         this.load.image('bg', 'bg.png');
         this.load.image('shield', 'shield.png');
