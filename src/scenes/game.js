@@ -15,7 +15,7 @@ class Game extends Phaser.Scene {
         const map = this.add.tilemap('tutorial_map');
         const tileset = map.addTilesetImage('Tiles', 'tutorial_tile');
 
-        const backgroundLayer = map.createStaticLayer('Background_Layer_1', tileset, 0, 0);
+        //const backgroundLayer = map.createStaticLayer('Background_Layer_1', tileset, 0, 0);
         const levelLayer = map.createStaticLayer('Wall_Layer', tileset, 0, 0);
         this.levelLayer = levelLayer;
         this.stageInfo = {

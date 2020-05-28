@@ -49,7 +49,7 @@ class efxEmitter {
                 notefx.destroy();
             },
             onCompleteScope: this,
-        })
+        });
     }
 }
 

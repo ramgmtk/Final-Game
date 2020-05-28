@@ -40,6 +40,7 @@ class BossRoom extends Phaser.Scene {
         this.powerChordList = new Array(powerChordBar.length);
         this.createPowerChordList();
 
+        this.createSound();
         //ENEMIES
         this.projectileGroup = this.add.group({
             scene: this,
@@ -47,7 +48,8 @@ class BossRoom extends Phaser.Scene {
         });
         this.boss = new Boss(this, centerX * 1/bossZoom, centerY * 1/bossZoom, 'bossAtlas', 'BOSSidle', this.player, true);
         //sound
-        this.createSound();
+        
+        this.setupBossTheme();
 
         //camera setup
         //CAMERA SETUP
@@ -57,13 +59,6 @@ class BossRoom extends Phaser.Scene {
         this.heartCam;
         this.powerChordCam;
         this.createCams();
-
-        //audio example
-        /*this.testNoise.play();
-        this.testNoise.once('complete', () => {
-            this.bossTheme.play();
-        }, this);*/
-        this.bossTheme.play();
 
         //test vars
         this.finalPhaseDuration = 30000;
@@ -149,6 +144,7 @@ class BossRoom extends Phaser.Scene {
     }
 
     finalPhaseSetup() {
+        this.bossTheme2.stop();
         this.finalPhase = true;
         this.boss.clearEvents();
         this.player.canMove = false;
@@ -293,6 +289,24 @@ class BossRoom extends Phaser.Scene {
         this.bossCam.setZoom(bossZoom);
     }
 
+    setupBossTheme() {
+        //audio example
+        /*this.testNoise.play();
+        this.testNoise.once('complete', () => {
+            this.bossTheme.play();
+        }, this);*/
+        this.bossTheme1.play();
+        this.bossTheme1.once('stop', () => {
+            this.transition1.play();
+        });
+        this.transition1.once('complete', () => {
+            this.bossTheme2.play();
+        })
+        this.bossTheme1.once('stop', () => {
+            this.transition1.play();
+        })
+    }
+
     createSound() {
         this.musicalNoteE = this.sound.add('E', {
             mute: false,
@@ -329,19 +343,25 @@ class BossRoom extends Phaser.Scene {
             loop: false,
         });
 
-        this.bossTheme = this.sound.add('bossTheme', {
+        this.bossTheme1 = this.sound.add('bossTheme1', {
             mute: false,
             volume: 0.3,
             rate: 1.0,
-            loop: false,
+            loop: true,
         });
 
-        this.testNoise = this.sound.add('F_Sharp', {
+        this.bossTheme2 = this.sound.add('bossTheme2', {
+            mute: false,
+            volume: 0.3,
+            rate: 1.0,
+            loop: true,
+        })
+
+        this.transition1 = this.sound.add('F_Sharp', {
             mute: false,
             volume: 0.3,
             rate: 1.0,
             loop: false,
-            delay: 10000,
         });
     }
 }
