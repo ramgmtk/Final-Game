@@ -204,7 +204,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     bossMovementPattern_test() {
         if (this.isMoving) {
-            this.scene.physics.world.collide(this, this.movementGroup, (object1, object2) => {
+            this.scene.physics.world.overlap(this, this.movementGroup, (object1, object2) => {
                 object2.canCollide = false;
                 object1.isMoving = false;
                 this.elapsedTime = (this.scene.time.now - this.elapsedTime) / this.scene.sceneTimeDelay;
@@ -214,7 +214,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 object1.x = object2.x;
                 object1.y = object2.y;
                 console.assert(debugFlags.bossFlag,`Boss: ${this.x}, ${this.y}`);
-                console.assert(debugFlags.enemyFlag, '');
+                console.assert(debugFlags.bossFlag, ' ');
             }, (object1, object2)=> {
                 return object2.canCollide;
             }, this);

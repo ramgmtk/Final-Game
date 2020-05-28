@@ -3,6 +3,18 @@ class Menu extends Phaser.Scene {
         super('menuScene');
     }
     preload() {
+        let loading = this.add.graphics();
+        loading.fillStyle(0xffffff, 1);
+        loading.fillRect(game.config.width * 0.1, centerY - 20, game.config.width * 0.8, 40)
+        this.load.on('progress', (value) => {
+            loading.fillStyle(0x00ff00, 1);
+            loading.fillRect(game.config.width * 0.1, centerY - 20, game.config.width * 0.8 * value, 40);
+        });
+
+        this.load.on('complete', ()=> {
+            loading.destroy();
+        });
+
         //image data
         this.load.path = './assets/atlas/';
         this.load.atlas(playerAtlas, 'PlaceholderSprites.png', 'PlaceholderSprites.json');
