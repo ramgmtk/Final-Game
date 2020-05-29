@@ -18,7 +18,7 @@ let config = {
             }
         }
     },
-    scene: [Menu, GameOver],
+    scene: [Menu, Controls, GameOver],
 }
 
 //GLOBALS

@@ -35,6 +35,9 @@ class Menu extends Phaser.Scene {
         this.load.image('upButton', 'up.png');
         this.load.image('downButton', 'down.png');
         this.load.image('volumeButton', 'volume.png');
+        this.load.image('hijkl', 'hijkl.png');
+        this.load.image('wasd', 'wasd.png');
+        this.load.image('space', 'space.png');
 
         this.load.path = './assets/';
         this.load.image('bg', 'bg.png');
@@ -110,6 +113,9 @@ class Menu extends Phaser.Scene {
         controlsButton.on('pointerout', () => {
             controlsButton.setScale(1.0);
         });
+        controlsButton.on('pointerdown', () => {
+            this.scene.start('controlScene');
+        })
 
         upButton.setInteractive();
         upButton.on('pointerover', () => {
