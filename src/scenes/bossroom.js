@@ -100,7 +100,7 @@ class BossRoom extends Phaser.Scene {
                         console.log(`${this.projectilesFired}, ${this.projectilesDestroyed}`);
                     }
                     if (!this.bossHit) {
-                        this.boss.moveTo({x: this.player.x, y: this.player.y}, playerMaxVelocity/2);
+                        this.boss.moveTo({x: this.player.x, y: this.player.y}, playerMaxVelocity/1.5);
                     }
                 } else {
                     this.destroyObjects();
@@ -203,21 +203,24 @@ class BossRoom extends Phaser.Scene {
         let mashTween = this.tweens.add({
             targets: fKey,
             alpha: {from: 0, to: 1},
-            duration: this.bpms,
+            duration: this.bpms / 2,
             repeat: 0,
-            loop: 100,
+            loop: 3 * (this.transition2.duration + this.bossTheme3.duration),
             yoyo: true,
+            onComplete: () => {
+                fKey.destroy();
+            },
+            onCompleteScope: this,
         });
 
         //can add a delay have duration of transition 3.
-        this.controls.f.addListener('down', () => {
+        /*this.controls.f.addListener('down', () => {
             this.controls.f.removeListener('down');
-            console.log('bingus');
             mashTween.remove();
             fKey.destroy();
             //add bgm play here
-            this.finalPhaseStart = true;
-        }, this)
+            //this.finalPhaseStart = true;
+        }, this)*/
     }
 
     //used to manage the combo system.
@@ -335,6 +338,7 @@ class BossRoom extends Phaser.Scene {
         });
         this.transition2.once('complete', () => {
             this.bossTheme3.play();
+            this.finalPhaseStart = true;
             this.bgm = this.bossTheme3;
         });
         this.bossTheme3.once('complete', () => {
@@ -407,7 +411,7 @@ class BossRoom extends Phaser.Scene {
             loop: false,
         });
 
-        this.transition2 = this.sound.add('bossTransition1', {
+        this.transition2 = this.sound.add('bossTransition2', {
             mute: false,
             volume: 0.3 * audio,
             rate: 1.0,
