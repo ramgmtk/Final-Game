@@ -36,8 +36,8 @@ let noteQueueSize = 3;
 let noteSize = 32;
 let uiDepth = 4;
 let uiOffset = {
-    x: -300,
-    y: -300,
+    x: -700,
+    y: -700,
 }
 
 powerChordBar = [
@@ -86,7 +86,7 @@ let debugFlags = {
     playerFlag: false,
     uiFlag: true,
     enemyFlag: true,
-    bossFlag: false,
+    bossFlag: true,
 };
 
 function createCams(scene, heartCam, noteCam, powerChordCam, gameCam) {

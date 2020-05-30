@@ -47,6 +47,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     damagePlayer() {
         this.health.updateHealth();
+        this.scene.time.delayedCall(this.scene.bpms * 6, () => {
+            this.canCollide = true;
+        }, null, this);
         this.alphaTween.play();
         this.scaleTween = this.scene.tweens.add({ //needs to be done at runtime cause player scale does change
             targets: this,
@@ -237,7 +240,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             duration: this.scene.bpms,
             repeat: 6,
             onComplete: () => {
-                this.canCollide = true;
+                this.setAlpha(1.0);
             },
             onCompleteScope: this,
         });

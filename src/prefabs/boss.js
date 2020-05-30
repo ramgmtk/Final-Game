@@ -12,6 +12,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.player = player;
         this.maxHealth = 1000;
         this.health = this.maxHealth;
+        this.canMove = true;
         this.phase = 1;
         this.healthBar = new bossHealth(this.scene, this.maxHealth);
         this.isMoving = false;
@@ -48,6 +49,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.timerArray = [];
         this.movementTimer;
         this.spawnTimer;
+        this.extraTimer;
         this.projectileSpawnActive;
         this.projectileSpawnPassive;
         this.createTimers();
@@ -86,15 +88,17 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             } else {
                 if (this.health < (this.maxHealth - (this.maxHealth * 0.5 * this.phase))) {
                     this.phase += 1;
-                    this.soundList[this.phase - 2].stop();
                     this.projectileSetup = [];
                     this.projectileSpawnActive.callback = this.projectileSpawnTypes[this.phase - 1];
                     this.projectileSpawnActive.delay =  this.projectileDelay[this.phase - 1];
                     this.movement = this.movementType[1]; //REPLACE WITH THIS.PHASE - 1 NEED TO FIX
+                    this.soundList[this.phase - 2].stop();
                     console.assert(debugFlags.bossFlag, 'NEXT PHASE STARTED');
                 }
                 //SHOULD FIX WILL CRASH ON NEXT PHASE REACH
-                this.movement();
+                if (this.canMove) {
+                    this.movement();
+                }
                 this.scene.physics.world.overlap(this, this.scene.projectileGroup, (object1, object2) => {
                     object1.damageEnemy();
                     object2.destroy();
@@ -106,6 +110,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                     this.destroyObject();
                 }
             }
+            
         }
     }
 
@@ -118,6 +123,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     moveTo(destination, velocity = playerMaxVelocity) {
         console.assert(debugFlags.bossFlag, `Move to: ${destination.x}, ${destination.y}`);
+        this.elapsedTime = this.scene.time.now;
         let slope = {
             x: destination.x - this.x,
             y: destination.y - this.y,
@@ -139,6 +145,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         if (this.spawnTimer != null) {
             this.spawnTimer.destroy();
         }
+        if (this.extraTimer != null) {
+            this.extraTimer.destroy();
+        }
         this.scene.projectilesDestroyed +=  this.projectileGroup.children.entries.length; //NEED TO REMOVE
         this.projectileGroup.clear(true, true);
         this.movementGroup.clear(true, true);
@@ -156,9 +165,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     createProjectileSpawnList() {
         this.projectileSpawnTypes.push(this.spawnPatternCircle);
-        this.projectileDelay.push(this.scene.bpms * 8);
+        this.projectileDelay.push(this.scene.bpms * 7);
         this.projectileSpawnTypes.push(this.spawnPatternLine);
-        this.projectileDelay.push(this.scene.bpms * 8);
+        this.projectileDelay.push(this.scene.bpms * 4);
 
         this.movementType.push(this.bossPatternMovement_Static);
         this.movementType.push(this.bossMovementPattern_test);
@@ -232,7 +241,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             this.scene.physics.world.overlap(this, this.movementGroup, (object1, object2) => {
                 object2.canCollide = false;
                 object1.isMoving = false;
-                this.elapsedTime = (this.scene.time.now - this.elapsedTime) / this.scene.sceneTimeDelay;
+                this.elapsedTime = (this.scene.time.now - this.elapsedTime);// / this.scene.sceneTimeDelay;
                 console.assert(debugFlags.bossFlag, 'Reached collision Point');
                 object1.setVelocityX(0);
                 object1.setVelocityY(0);
@@ -250,8 +259,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             this.movementGroup.children.entries[this.availableMoves[randPoint]].canCollide = true;
             this.isMoving = true;
             this.movementTimer = this.scene.time.delayedCall((this.scene.bpms * 8) - this.elapsedTime, this.moveTo,
-                [this.bossPatternPoints[this.availableMoves[randPoint]], playerMaxVelocity * 1.5], this);
-            this.elapsedTime = this.scene.time.now
+                [this.bossPatternPoints[this.availableMoves[randPoint]], playerMaxVelocity * 3.0], this);
             this.availableMoves.splice(this.availableMoves.indexOf(this.currPos), 1)
         }
     }
@@ -282,11 +290,13 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     //ISSUE WITH THIS IS THAT EVEN THOUGH PROJECTILES ARE DESTROYED OFFSCREEN, THE ARRAY STILL NEEDS TO BE CLEARED ON 1 RUN THROUGH.
     spawnPatternCircle() {
+        this.projectileSpawnActive.paused = true;
         this.projectilePreviews.clear();
         this.projectilePreviews.fillStyle(0xff0000);
         if (this.projectileSetup.length == 0) {
             this.projectilePreviews.fillCircle(this.x, this.y, 200).setDepth(uiDepth - 1).setAlpha(0.5);
-            this.spawnTimer = this.scene.time.delayedCall(this.scene.bpms * 3, () => {
+            this.spawnTimer = this.scene.time.delayedCall(this.scene.bpms, () => {
+                this.projectileSpawnActive.paused = false;
                 this.projectilePreviews.clear();
                 let theta = (Math.PI/(this.spawnNumber/2)) + this.thetaVariance;
                 for (let i = 0; i < this.spawnNumber; i++) {
@@ -299,6 +309,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 this.thetaVariance = this.thetaVariance > 0 ? 0 : Math.PI/ 12;
             }, null, this);
         } else {
+            this.extraTimer = this.scene.time.delayedCall(this.scene.bpms, () => {
+                this.projectileSpawnActive.paused = false;
+            }, null, this);
             for (let i = 0; i < this.projectileSetup.length; i++) {
                 if (!this.projectileSetup[i].canCollideParent) {
                     this.projectileSetup[i].destroy();
@@ -310,6 +323,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
 
     //INCREDIBLY TAXING METHOD TO CREATE A WALL, SHOULD FIX
     spawnPatternLine() {
+        this.projectileSpawnActive.paused = true;
         this.projectilePreviews.clear();
         this.projectilePreviews.fillStyle(0xff0000);
         if (this.projectileSetup.length == 0) {
@@ -324,8 +338,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 this.projectilePreviews.fillRect(spawnPoint - (this.scene.bossProjectileInfo.width/2), 0, 
                     this.scene.bossProjectileInfo.width, game.config.height * (1/bossZoom)).setDepth(uiDepth - 1).setAlpha(0.5);
             }
-            this.spawnTimer = this.scene.time.delayedCall(this.scene.bpms * 3, (spawnPArr, spawnCols) => {
+            this.spawnTimer = this.scene.time.delayedCall(this.scene.bpms * 4, (spawnPArr, spawnCols) => {
                 this.projectilePreviews.clear();
+                this.projectileSpawnActive.paused = false;
                 for (let i = 0; i < spawnCols; i++) {
                     for (let j = 0; j < this.scene.stageInfo.height; j+= this.scene.bossProjectileInfo.height) {
                         let projectile = new Projectile(this.scene, spawnPArr[i].spawn, j, 'Projectile', this,
@@ -337,6 +352,9 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 this.scene.projectileGroup.addMultiple(this.projectileSetup);
             }, [spawnPArr, spawnCols], this);
         } else {
+            this.extraTimer = this.scene.time.delayedCall(this.scene.bpms * 4, () => {
+                this.projectileSpawnActive.paused = false;
+            }, null, this);
             for (let i = 0; i < this.projectileSetup.length; i++) {
                 if (!this.projectileSetup[i].canCollideParent) {
                     this.projectileSetup[i].destroy();

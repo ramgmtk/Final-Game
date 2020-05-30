@@ -8,7 +8,7 @@ class Game extends Phaser.Scene {
     create() {
         //misc
         this.gameOver = false;
-        this.bpms = 325;
+        this.bpms = 324;
         this.exitWorld = false;
         this.shrinkDuration = 0;
         this.canRevert = true;
@@ -134,7 +134,6 @@ class Game extends Phaser.Scene {
             //player actions
             this.player.update();
             if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
-                console.log(this.player.scale);
                 this.noteComboCheck();
             }
 
@@ -300,7 +299,7 @@ class Game extends Phaser.Scene {
         }, (object1, object2) => {
             return object2.collides == true && !this.canShrink;
         }, this)) {
-            console.assert(debugFlags.playerFlag, 'Bodies overlapping')
+            console.assert(debugFlags.playerFlag, 'Bodies overlapping');
             this.shrinkDuration += 3000;
             this.time.delayedCall(3000, this.shrinkCallback, null, this);
         } else {

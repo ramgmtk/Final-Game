@@ -21,7 +21,7 @@ class BossRoom extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height)
         this.playerSpriteInfo = game.textures.getFrame(playerAtlas, 'MCidle');
         this.bossProjectileInfo = game.textures.getFrame(playerAtlas, 'BossProjectile');
-        this.bpms = 325;
+        this.bpms = 324;
         this.sceneTimeDelay = 3.000333;
         this.controls = {
             w: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W),
@@ -98,6 +98,7 @@ class BossRoom extends Phaser.Scene {
                 if (!this.winner) {
                     if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
                         console.log(`${this.projectilesFired}, ${this.projectilesDestroyed}`);
+                        console.log(this.player.canCollide);
                     }
                     if (!this.bossHit) {
                         this.boss.moveTo({x: this.player.x, y: this.player.y}, playerMaxVelocity/1.5);
@@ -143,6 +144,8 @@ class BossRoom extends Phaser.Scene {
 
     finalPhaseSetup() {
         this.finalPhase = true;
+        this.player.canCollide = false;
+        this.player.hasAttacked = true;
         this.bgm.stop();
         this.boss.clearEvents();
         this.player.canMove = false;
@@ -153,35 +156,48 @@ class BossRoom extends Phaser.Scene {
         this.player.setAcceleration(0);
         this.player.setVelocity(0);
         this.boss.setVelocity(0);
-        this.player.x = centerX * 1/bossZoom;
-        this.player.y = centerY * 1/bossZoom + 200;
         this.player.setDrag(0);
         this.player.setAcceleration(0);
-        this.boss.x = this.player.x;
-        this.boss.y = this.player.y - 400;
         this.boss.setCollideWorldBounds(true);
-        //this.boss.setBounceY(1);
+        let bossTween = this.tweens.add({
+            targets: this.boss,
+            x: centerX * 1/bossZoom,
+            y: centerY * 1/bossZoom - 200,
+            ease: 'Sine.easeOut',
+            duration: this.transition2.duration * 1000,
+            repeat: 0,
+        });
+        let playerTween = this.tweens.add({
+            targets: this.player,
+            x: centerX * 1/bossZoom,
+            y: centerY * 1/bossZoom + 200,
+            ease: 'Sine.easeOut',
+            duration: this.transition2.duration * 1000,
+            repeat: 0,
+            onComplete: ()=> {
+                this.player.canCollide = true;
+                this.player.hasAttacked = false;
+            }
+        });
 
-        this.physics.add.collider(this.player, this.boss, (object1, object2) => {
+        this.physics.add.overlap(this.player, this.boss, (object1, object2) => {
             this.bossCam.shake(500, 0.003 * 1/bossZoom, false);
+            object1.canCollide = false;
             //Check if player has hit 0 health
             if (this.player.health.healthNum == 0) {
                 this.gameOver = true;
                 let health = this.player.healthBar.pop();
                 health.destroy();
             } else {
-                //SHOULD FIX add player blinking effect here
-                object1.canCollide = false;
-                this.player.health.updateHealth();
-                this.time.delayedCall(2000, () => {
-                    this.player.canCollide = true;
-                }, null, this);
+                this.player.damagePlayer();
+                this.boss.y = this.player.y - 400;
+                this.boss.setVelocity(0);
             }
         }, (object1, object2) => {
             return object1.canCollide;
         }, this);
 
-        this.physics.add.collider(this.player.weapon, this.boss, () => {
+        this.physics.add.overlap(this.player.weapon, this.boss, () => {
             this.player.hasAttacked = true;
             this.boss.y = this.player.weapon.y - 200;
             this.boss.setVelocity(0);
@@ -193,9 +209,8 @@ class BossRoom extends Phaser.Scene {
             return !this.player.hasAttacked;
         }, this.x);
 
-        let fKey = new Phaser.GameObjects.Sprite(this, this.player.x, this.player.y + 200, 'keyAtlas', 'f').setAlpha(0).setOrigin(0.5).setDepth(uiDepth).setScale(2.0);
+        let fKey = new Phaser.GameObjects.Sprite(this, centerX * 1/bossZoom, centerY * 1/bossZoom + 400, 'keyAtlas', 'f').setAlpha(0).setOrigin(0.5).setDepth(uiDepth).setScale(2.0);
         this.add.existing(fKey);
-        console.log(fKey);
 
         let mashTween = this.tweens.add({
             targets: fKey,
@@ -319,14 +334,30 @@ class BossRoom extends Phaser.Scene {
         this.bossTheme1.play();
         this.bossTheme1.once('stop', () => {
             this.transition1.play();
+            this.boss.canMove = false;
             this.bgm = this.transition1;
         });
         this.transition1.once('complete', () => {
             this.bossTheme2.play();
             this.bgm = this.bossTheme2;
+            this.boss.canMove = true;
+            if (this.boss.extraTimer != null) {
+                this.boss.extraTimer.paused = true;
+            }
+            this.boss.projectilePreviews.clear();
+            if (this.boss.spawnTimer != null) {
+                this.boss.spawnTimer.paused = true;
+            }
+            this.boss.projectileSpawnActive.reset({
+                delay: this.boss.projectileDelay[this.boss.phase - 1],
+                callback: this.boss.projectileSpawnTypes[this.boss.phase - 1],
+                loop: true,
+                callbackScope: this.boss,
+            });
         });
         this.transition1.once('stop', () => {
             this.transition2.play();
+            this.boss.canMove = true;
             this.bgm = this.transition2;
         });
         this.bossTheme2.once('stop', () => {
