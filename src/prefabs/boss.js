@@ -72,7 +72,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             duration: this.scene.bpms,
             repeat: 3,
             onComplete: () => {
-                this.canCollide = true;
+                this.setAlpha(1.0);
             },
             onCompleteScope: this,
         });

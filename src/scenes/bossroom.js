@@ -142,10 +142,9 @@ class BossRoom extends Phaser.Scene {
         
     }
 
+    //setting up the final phase of the boss fight
     finalPhaseSetup() {
         this.finalPhase = true;
-        this.player.canCollide = false;
-        this.player.hasAttacked = true;
         this.bgm.stop();
         this.boss.clearEvents();
         this.player.canMove = false;
@@ -159,6 +158,7 @@ class BossRoom extends Phaser.Scene {
         this.player.setDrag(0);
         this.player.setAcceleration(0);
         this.boss.setCollideWorldBounds(true);
+
         let bossTween = this.tweens.add({
             targets: this.boss,
             x: centerX * 1/bossZoom,
@@ -175,39 +175,37 @@ class BossRoom extends Phaser.Scene {
             duration: this.transition2.duration * 1000,
             repeat: 0,
             onComplete: ()=> {
-                this.player.canCollide = true;
-                this.player.hasAttacked = false;
-            }
+                this.physics.add.overlap(this.player, this.boss, (object1, object2) => {
+                    this.bossCam.shake(500, 0.003 * 1/bossZoom, false);
+                    object1.canCollide = false;
+                    //Check if player has hit 0 health
+                    if (this.player.health.healthNum == 0) {
+                        this.gameOver = true;
+                        let health = this.player.healthBar.pop();
+                        health.destroy();
+                    } else {
+                        this.player.damagePlayer();
+                        this.boss.y = this.player.y - 400;
+                        this.boss.setVelocity(0);
+                    }
+                }, (object1, object2) => {
+                    return object1.canCollide;
+                }, this);
+                this.physics.add.overlap(this.player.weapon, this.boss, () => {
+                    this.player.hasAttacked = true;
+                    console.log('hitting bos');
+                    this.boss.y = this.player.weapon.y - 200;
+                    this.boss.setVelocity(0);
+                    this.bossHit = true;
+                    this.time.delayedCall(this.bpms / 2, () => {
+                        this.bossHit = false;
+                    }, null, this);
+                }, () => {
+                    return !this.player.hasAttacked;
+                }, this);
+            },
+            onCompleteScope: this,
         });
-
-        this.physics.add.overlap(this.player, this.boss, (object1, object2) => {
-            this.bossCam.shake(500, 0.003 * 1/bossZoom, false);
-            object1.canCollide = false;
-            //Check if player has hit 0 health
-            if (this.player.health.healthNum == 0) {
-                this.gameOver = true;
-                let health = this.player.healthBar.pop();
-                health.destroy();
-            } else {
-                this.player.damagePlayer();
-                this.boss.y = this.player.y - 400;
-                this.boss.setVelocity(0);
-            }
-        }, (object1, object2) => {
-            return object1.canCollide;
-        }, this);
-
-        this.physics.add.overlap(this.player.weapon, this.boss, () => {
-            this.player.hasAttacked = true;
-            this.boss.y = this.player.weapon.y - 200;
-            this.boss.setVelocity(0);
-            this.bossHit = true;
-            this.time.delayedCall(this.bpms / 2, () => {
-                this.bossHit = false;
-            }, null, this);
-        }, () => {
-            return !this.player.hasAttacked;
-        }, this.x);
 
         let fKey = new Phaser.GameObjects.Sprite(this, centerX * 1/bossZoom, centerY * 1/bossZoom + 400, 'keyAtlas', 'f').setAlpha(0).setOrigin(0.5).setDepth(uiDepth).setScale(2.0);
         this.add.existing(fKey);
@@ -224,15 +222,6 @@ class BossRoom extends Phaser.Scene {
             },
             onCompleteScope: this,
         });
-
-        //can add a delay have duration of transition 3.
-        /*this.controls.f.addListener('down', () => {
-            this.controls.f.removeListener('down');
-            mashTween.remove();
-            fKey.destroy();
-            //add bgm play here
-            //this.finalPhaseStart = true;
-        }, this)*/
     }
 
     //used to manage the combo system.
