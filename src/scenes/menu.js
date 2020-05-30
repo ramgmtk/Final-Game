@@ -281,6 +281,56 @@ class Menu extends Phaser.Scene {
             }),
             duration: 325,
         });
+
+        this.anims.create({
+            key: 'bossIdle',
+            frames: this.anims.generateFrameNames('bossAtlas', {
+                prefix: 'idleB',
+                start: 1,
+                end: 9,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325,
+            repeat: -1,
+        });
+
+        this.anims.create({
+            key: 'bossAttackFast',
+            frames: this.anims.generateFrameNames('bossAtlas', {
+                prefix: 'bAtk',
+                start: 1,
+                end: 8,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325,
+        });
+
+        this.anims.create({
+            key: 'bossAttackSlow',
+            frames: this.anims.generateFrameNames('bossAtlas', {
+                prefix: 'bAtk',
+                start: 1,
+                end: 8,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325 * 4,
+        });
+
+        this.anims.create({
+            key: 'bossMove',
+            frames: this.anims.generateFrameNames('bossAtlas', {
+                prefix: 'bSideAtk',
+                start: 1,
+                end: 7,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325 * 2,
+            yoyo: true,
+        });
     }
 
 }

@@ -98,6 +98,10 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 //SHOULD FIX WILL CRASH ON NEXT PHASE REACH
                 if (this.canMove) {
                     this.movement();
+                } else {
+                    if (!this.anims.isPlaying) {
+                        this.anims.play('bossIdle', true);
+                    }
                 }
                 this.scene.physics.world.overlap(this, this.scene.projectileGroup, (object1, object2) => {
                     object1.damageEnemy();
@@ -127,6 +131,14 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         let slope = {
             x: destination.x - this.x,
             y: destination.y - this.y,
+        }
+        if (this.anims.getCurrentKey != 'bossAttackSlow') {
+            if (slope.x < 0) {
+                this.resetFlip();
+            } else {
+                this.setFlipX(true);
+            }
+            this.anims.play('bossMove', false);
         }
         let magnitude = Math.sqrt((slope.x * slope.x) + (slope.y * slope.y));
         slope.x = slope.x/magnitude;
@@ -233,10 +245,15 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     }
 
     bossPatternMovement_Static() {
-        return;
+        if (!this.anims.isPlaying) {
+            this.anims.play('bossIdle', true);
+        }
     }
 
     bossMovementPattern_test() {
+        if (!this.anims.isPlaying) {
+            this.anims.play('bossIdle');
+        }
         if (this.isMoving) {
             this.scene.physics.world.overlap(this, this.movementGroup, (object1, object2) => {
                 object2.canCollide = false;
@@ -295,6 +312,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.projectilePreviews.fillStyle(0xff0000);
         if (this.projectileSetup.length == 0) {
             this.projectilePreviews.fillCircle(this.x, this.y, 200).setDepth(uiDepth - 1).setAlpha(0.5);
+            this.anims.play('bossAttackFast');
             this.spawnTimer = this.scene.time.delayedCall(this.scene.bpms, () => {
                 this.projectileSpawnActive.paused = false;
                 this.projectilePreviews.clear();
@@ -338,6 +356,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                 this.projectilePreviews.fillRect(spawnPoint - (this.scene.bossProjectileInfo.width/2), 0, 
                     this.scene.bossProjectileInfo.width, game.config.height * (1/bossZoom)).setDepth(uiDepth - 1).setAlpha(0.5);
             }
+            this.anims.play('bossAttackSlow', false);
             this.spawnTimer = this.scene.time.delayedCall(this.scene.bpms * 4, (spawnPArr, spawnCols) => {
                 this.projectilePreviews.clear();
                 this.projectileSpawnActive.paused = false;

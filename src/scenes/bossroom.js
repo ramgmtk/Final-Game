@@ -50,7 +50,7 @@ class BossRoom extends Phaser.Scene {
             scene: this,
             runChildUpdate: true,
         });
-        this.boss = new Boss(this, centerX * 1/bossZoom, centerY * 1/bossZoom, 'bossAtlas', 'BOSSidle', this.player, true);
+        this.boss = new Boss(this, centerX * 1/bossZoom, centerY * 1/bossZoom, 'bossAtlas', 'idleB1', this.player, true);
 
         //camera setup
         //CAMERA SETUP
@@ -325,6 +325,7 @@ class BossRoom extends Phaser.Scene {
             this.transition1.play();
             this.boss.canMove = false;
             this.bgm = this.transition1;
+            this.boss.projectileSpawnPassive.paused = true;
         });
         this.transition1.once('complete', () => {
             this.bossTheme2.play();
@@ -342,6 +343,12 @@ class BossRoom extends Phaser.Scene {
                 callback: this.boss.projectileSpawnTypes[this.boss.phase - 1],
                 loop: true,
                 callbackScope: this.boss,
+            });
+            this.boss.projectileSpawnPassive.reset({
+                delay: this.bpms,
+                callback: this.boss.spawnPatternWave,
+                callbackScope: this.boss,
+                loop: true,
             });
         });
         this.transition1.once('stop', () => {

@@ -38,9 +38,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     update() {
-        if (this.canMove) {
-            this.playerMovement();
-        }
+        this.playerMovement();
         this.shieldMovement();
         this.weaponMovement();
         this.normalBodyMovement();
@@ -75,7 +73,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     //handles the players basic movement
     playerMovement() { //BECAUSE I FORGOT DISCREET MATH, THE IF ELSES IN THIS BLOCK ARE SLOPPY.
         //this.weapon.body.velocity.copy(this.body.velocity)
-        if (this.scene.controls.w.isDown) {
+        if (this.scene.controls.w.isDown && this.canMove) {
             if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
                 //do nothing,
             } else {
@@ -84,7 +82,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             }
             this.attackDirection = 'w';
             this.setAccelerationY(-playerAccel);
-        } else if (this.scene.controls.s.isDown) {
+        } else if (this.scene.controls.s.isDown && this.canMove) {
             if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
                 //do nothing,
             } else {
@@ -103,7 +101,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.setDragY(playerDrag);
         }
 
-        if (this.scene.controls.a.isDown) {
+        if (this.scene.controls.a.isDown && this.canMove) {
             if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
                 //do nothing,
             } else {
@@ -112,7 +110,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             this.setFlip(true, false);
             this.attackDirection = 'a';
             this.setAccelerationX(-playerAccel);
-        } else if (this.scene.controls.d.isDown) {
+        } else if (this.scene.controls.d.isDown && this.canMove) {
             if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
                 //do nothing,
             } else {
