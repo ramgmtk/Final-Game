@@ -44,6 +44,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
             },
             onCompleteScope: this,
         });
+        this.anims.play('AmpIdleForward', true);
     }
 
     update() {
@@ -52,6 +53,11 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
             this.destroyObject();
         } else {
             //Note this allows other nemies projectiles to damage other enemies.
+            if (!this.anims.isPlaying && this.anims.getCurrentKey() == 'AmpAttackForward') {
+                this.anims.play('AmpIdleForward', true);
+            } else if (!this.anims.isPlaying && this.anims.getCurrentKey() == 'AmpAttackSide') {
+                this.anims.play('AmpIdleSide', true);
+            }
             this.scene.physics.world.overlap(this, this.scene.projectileGroup, (object1, object2) => {
                 object1.damageEnemy(3);
                 object2.destroy();
@@ -74,13 +80,13 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
         let theta = Math.acos(slope.x);
         let dTheta = 10 * Math.PI / 180;
         if (theta > (2*Math.PI/3)) {
-            this.setFrame('AMPrun');
+            this.anims.play('AmpAttackSide');
             this.resetFlip();
         } else if (theta < Math.PI / 3) {
-            this.setFrame('AMPrun');
+            this.anims.play('AmpAttackSide');
             this.setFlip(true, false);
         } else {
-            this.setFrame('AMPidle');
+            this.anims.play('AmpAttackForward');
             this.resetFlip();
         }
         for (let i = -1; i < 2; i++) {

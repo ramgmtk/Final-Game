@@ -193,8 +193,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     addNotes(note) {
         //array.shift can shift elements, but destroys some elements.
         let curr = note;
-        let prev = this.noteBar[this.noteBar.length - 1].frame.name;
-        for (let i = this.noteBar.length - 1; i > 0; i--) {
+        let prev = this.noteBar[this.noteBar.length - 2].frame.name;
+        for (let i = this.noteBar.length - 2; i > 0; i--) {
             if (curr == '__BASE') {
                 this.noteBar[i].setTexture(null, null).setAlpha(0)
             } else {
@@ -222,10 +222,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         for (let i = 0; i < noteQueueSize; i++) {
             this.noteBar.push(this.scene.add.image((i * noteSize) + uiOffset.x, uiOffset.y, null, null).setOrigin(0).setDepth(uiDepth).setAlpha(0));
         }
+        this.noteBar.push(this.scene.add.image(uiOffset.x, uiOffset.y, 'Note Bar', null).setOrigin(0).setDepth(uiDepth - 1));
     }
 
     clearNoteBar() {
-        for (let i = 0; i < this.noteBar.length; i++) {
+        for (let i = 0; i < this.noteBar.length - 1; i++) {
             this.noteBar[i].setTexture(null, null,).setAlpha(0);
         }
     }

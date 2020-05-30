@@ -18,6 +18,7 @@ class Menu extends Phaser.Scene {
         //image data
         this.load.path = './assets/atlas/';
         this.load.atlas(playerAtlas, 'PlaceholderSprites.png', 'PlaceholderSprites.json');
+        this.load.atlas('ampAtlas', 'Amp_Atk.png', 'Amp_Atk.json');
         this.load.atlas('bossAtlas', 'BossSprite.png', 'BossSprite.json');
         this.load.atlas('healthAtlas', 'health.png', 'health.json');
         this.load.atlas('powerAtlas', 'powerchords.png', 'powerchords.json');
@@ -44,6 +45,7 @@ class Menu extends Phaser.Scene {
         this.load.image('shield', 'shield.png');
         this.load.image('invertedProjectile', 'invertedProjectile.png')
         this.load.image('reverse', 'reverse.png');
+        this.load.image('Note Bar', 'Note_Bar.png')
 
         //sound
         this.load.path = './assets/sounds/';
@@ -206,6 +208,56 @@ class Menu extends Phaser.Scene {
                 {frame: 'MCplay'},
             ],
             duration: 500,
+        });
+
+        this.anims.create({
+            key: 'AmpIdleForward',
+            frames: this.anims.generateFrameNames('ampAtlas', {
+                prefix: 'atk',
+                start: 1,
+                end: 3,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325,
+            repeat: -1,
+        });
+
+        this.anims.create({
+            key: 'AmpIdleSide',
+            frames: this.anims.generateFrameNames('ampAtlas', {
+                prefix: 'sideAtk',
+                start: 1,
+                end: 3,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325,
+            repeat: -1,
+        });
+
+        this.anims.create({
+            key: 'AmpAttackForward',
+            frames: this.anims.generateFrameNames('ampAtlas', {
+                prefix: 'atk',
+                start: 1,
+                end: 6,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325,
+        });
+
+        this.anims.create({
+            key: 'AmpAttackSide',
+            frames: this.anims.generateFrameNames('ampAtlas', {
+                prefix: 'sideAtk',
+                start: 1,
+                end: 6,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325,
         });
     }
 

@@ -239,7 +239,7 @@ class Game extends Phaser.Scene {
     //used to manage the combo system.
     noteComboCheck() {
         let noteCombo = '';
-        for (let i = 0; i < this.player.noteBar.length; i++) {
+        for (let i = 0; i < this.player.noteBar.length - 1; i++) {
             noteCombo += this.player.noteBar[i].frame.name;
         }
         //add code below to string compare which combo to play
