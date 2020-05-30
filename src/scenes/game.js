@@ -14,11 +14,12 @@ class Game extends Phaser.Scene {
         this.canRevert = true;
         //BACKGROUND
         const map = this.add.tilemap('tutorial_map');
+        this.map = map;
         const tileset = map.addTilesetImage('Tiles', 'tutorial_tile');
 
         //const backgroundLayer = map.createStaticLayer('Background_Layer_1', tileset, 0, 0);
         const levelLayer = map.createStaticLayer('Wall_Layer', tileset, 0, 0);
-        //this.destructible_layer = map.createStaticLayer('Destructible_Layer', tileset, 0, 0);
+        this.destructible_layer = map.createDynamicLayer('Destructible_Layer', tileset, 0, 0);
 
         this.levelLayer = levelLayer;
         this.stageInfo = {
@@ -29,6 +30,7 @@ class Game extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height);
 
         levelLayer.setCollisionByProperty({collides: true});
+        this.destructible_layer.setCollisionByProperty({collides: true});
 
         const debugGraphics = this.add.graphics().setAlpha(0.75)
         /*levelLayer.renderDebug(debugGraphics, {
@@ -277,6 +279,12 @@ class Game extends Phaser.Scene {
             }
         } else if (noteCombo == powerChordBar[3].powerChord) {
             console.assert(debugFlags.playerFlag, 'unlock');
+            this.physics.world.overlap(this.player.reverseRange, this.destructible_layer, (object1, object2) => {
+                console.log(typeof this.destructible_layer);
+                this.map.removeTile(object2);
+            }, (object1, object2) => {
+                return object2.collides;
+            }, this);
         }
         //Reset the bar
         this.player.clearNoteBar();
