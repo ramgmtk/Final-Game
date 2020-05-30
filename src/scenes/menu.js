@@ -19,6 +19,7 @@ class Menu extends Phaser.Scene {
         this.load.path = './assets/atlas/';
         this.load.atlas(playerAtlas, 'PlaceholderSprites.png', 'PlaceholderSprites.json');
         this.load.atlas('ampAtlas', 'Amp_Atk.png', 'Amp_Atk.json');
+        this.load.atlas('mcAtlas', 'MC_Animations.png', 'MC_Animations.json')
         this.load.atlas('bossAtlas', 'BossSprite.png', 'BossSprite.json');
         this.load.atlas('healthAtlas', 'health.png', 'health.json');
         this.load.atlas('powerAtlas', 'powerchords.png', 'powerchords.json');
@@ -157,57 +158,78 @@ class Menu extends Phaser.Scene {
 
     createAnimations() {
         this.anims.create({
-            key: 'left',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCrun'},
-            ],
-            frameRate: 48,
-        });
-
-        this.anims.create({
             key: 'right',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCrun'},
-            ],
-            frameRate: 48,
+            frames: this.anims.generateFrameNames('mcAtlas', {
+                prefix: 'sprite',
+                start: 55,
+                end: 60,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325,
+            repeat: -1,
         });
 
         this.anims.create({
             key: 'up',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCidle'},
-            ],
-            frameRate: 48,
+            frames: this.anims.generateFrameNames('mcAtlas', {
+                prefix: 'sprite',
+                start: 48,
+                end: 52,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325,
+            repeat: -1,
         });
 
         this.anims.create({
             key: 'down',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCidle'},
-            ],
-            frameRate: 48,
+            frames: this.anims.generateFrameNames('mcAtlas', {
+                prefix: 'sprite',
+                start: 48,
+                end: 52,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325,
+            repeat: -1,
         });
 
         this.anims.create({
             key: 'play',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCplay'},
-            ],
-            duration: 2000,
+            frames: this.anims.generateFrameNames('mcAtlas', {
+                prefix: 'sprite',
+                start: 76,
+                end: 79,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325,
         });
 
         this.anims.create({
             key: 'melee',
-            defaultTextureKey: playerAtlas,
-            frames: [
-                {frame: 'MCplay'},
-            ],
-            duration: 500,
+            frames: this.anims.generateFrameNames('mcAtlas', {
+                prefix: 'sprite',
+                start: 61,
+                end: 67,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325,
+        });
+
+        this.anims.create({
+            key: 'meleeUp',
+            frames: this.anims.generateFrameNames('mcAtlas', {
+                prefix: 'sprite',
+                start: 69,
+                end: 73,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325,
         });
 
         this.anims.create({

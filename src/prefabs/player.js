@@ -33,6 +33,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
         this.setup();
         this.playerSet = [this, this.weapon, this.shield];
+
+        this.anims.play('up');
     }
 
     update() {
@@ -71,40 +73,62 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
 
     //handles the players basic movement
-    playerMovement() {
+    playerMovement() { //BECAUSE I FORGOT DISCREET MATH, THE IF ELSES IN THIS BLOCK ARE SLOPPY.
         //this.weapon.body.velocity.copy(this.body.velocity)
         if (this.scene.controls.w.isDown) {
-            if (!this.anims.isPlaying && (this.anims.getCurrentKey() != 'play' || this.anims.getCurrentKey() != 'melee')) {
-                this.anims.play('up', false);
+            if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
+                //do nothing,
+            } else {
+                this.setFlipY(false);
+                this.anims.play('up', true);
             }
             this.attackDirection = 'w';
             this.setAccelerationY(-playerAccel);
         } else if (this.scene.controls.s.isDown) {
-            if (!this.anims.isPlaying && (this.anims.getCurrentKey() != 'play' || this.anims.getCurrentKey() != 'melee')) {
-                this.anims.play('down', false);
+            if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
+                //do nothing,
+            } else {
+                this.setFlipY(false);
+                this.anims.play('down', true);
             }
             this.attackDirection = 's';
             this.setAccelerationY(playerAccel);
         } else {
+            if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
+                //do nothing,
+            } else {
+                this.setFlipY(false);
+            };
             this.setAccelerationY(0);
             this.setDragY(playerDrag);
         }
 
         if (this.scene.controls.a.isDown) {
-            if (!this.anims.isPlaying && (this.anims.getCurrentKey() != 'play' || this.anims.getCurrentKey() != 'melee')) {
-                this.anims.play('left', false);
+            if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
+                //do nothing,
+            } else {
+                this.anims.play('right', true);
             }
             this.setFlip(true, false);
             this.attackDirection = 'a';
             this.setAccelerationX(-playerAccel);
         } else if (this.scene.controls.d.isDown) {
-            if (!this.anims.isPlaying && (this.anims.getCurrentKey() != 'play' || this.anims.getCurrentKey() != 'melee')) {
-                this.anims.play('right', false);
+            if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
+                //do nothing,
+            } else {
+                this.anims.play('right', true);
             }
             this.attackDirection = 'd';
-            this.resetFlip();
+            //this.resetFlip();
+            this.setFlip(false, false);
             this.setAccelerationX(playerAccel);
         } else {
+            if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
+                //do nothing,
+            } else {
+                this.anims.play('up', true);
+                this.setFlipY(false);
+            }
             this.setAccelerationX(0);
             this.setDragX(playerDrag);
         }
@@ -120,17 +144,21 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             console.assert(debugFlags.playerFlag, 'Performing melee attack');
             this.weaponOffsetX = 0;
             this.weaponOffsetY = 0
-            this.anims.play('melee');
             if (this.attackDirection == 'w') {
+                this.anims.play('meleeUp', false);
                 this.weapon.body.setSize(this.scene.playerSpriteInfo.width*2, this.scene.playerSpriteInfo.height);
                 this.weaponOffsetY = -this.scene.playerSpriteInfo.height
             } else if (this.attackDirection == 's') {
+                this.anims.play('meleeUp', false);
+                this.setFlipY(true);
                 this.weapon.body.setSize(this.scene.playerSpriteInfo.width*2, this.scene.playerSpriteInfo.height);
                 this.weaponOffsetY = this.scene.playerSpriteInfo.height;
             } else if (this.attackDirection == 'a') {
+                this.anims.play('melee', false);
                 this.weapon.body.setSize(this.scene.playerSpriteInfo.width, this.scene.playerSpriteInfo.height*2);
                 this.weaponOffsetX = -this.scene.playerSpriteInfo.width;
             } else {
+                this.anims.play('melee', false);
                 this.weapon.body.setSize(this.scene.playerSpriteInfo.width, this.scene.playerSpriteInfo.height*2);
                 this.weaponOffsetX = this.scene.playerSpriteInfo.width;
             }
@@ -164,7 +192,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         console.assert(debugFlags.playerFlag, 'Entered music note callback');
         //this.noteEfx.explode(5, this.x, this.y);
         this.particleManager.generateParticles();
-        this.anims.play('play');
+        this.setFlipY(false);
+        this.anims.play('play', false);
         switch(musicalNote.keyCode) {
             case Phaser.Input.Keyboard.KeyCodes.H:
                 this.scene.musicalNoteE.play();
