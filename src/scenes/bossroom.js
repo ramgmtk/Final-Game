@@ -136,10 +136,7 @@ class BossRoom extends Phaser.Scene {
         } else {
         //SHOULD FIX add player blinking effect here
             object2.destroy();
-            this.player.health.updateHealth();
-            this.time.delayedCall(2000, () => {
-                this.player.canCollide = true;
-            }, null, this);
+            this.player.damagePlayer();
         }
         
     }

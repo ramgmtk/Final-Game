@@ -51,6 +51,29 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.projectileSpawnActive;
         this.projectileSpawnPassive;
         this.createTimers();
+
+        this.scaleTween = this.scene.tweens.add({
+            targets: this,
+            paused: true,
+            scale: {from: this.scale, to: this.scale + 0.2},
+            duration: this.scene.bpms,
+            repeat: 3,
+            onComplete: () => {
+                this.setScale(1.0);
+            },
+            onCompleteScope: this,
+        });
+        this.alphaTween = this.scene.tweens.add({
+            targets: this,
+            paused: true,
+            alpha: {from: 0, to: 1},
+            duration: this.scene.bpms,
+            repeat: 3,
+            onComplete: () => {
+                this.canCollide = true;
+            },
+            onCompleteScope: this,
+        });
     }
 
     update() {
@@ -89,6 +112,8 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
     damageEnemy(damage = 10) {
         this.health -= damage;
         this.healthBar.decrease(damage);
+        this.scaleTween.play();
+        this.alphaTween.play();
     }
 
     moveTo(destination, velocity = playerMaxVelocity) {

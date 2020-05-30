@@ -18,6 +18,8 @@ class Game extends Phaser.Scene {
 
         //const backgroundLayer = map.createStaticLayer('Background_Layer_1', tileset, 0, 0);
         const levelLayer = map.createStaticLayer('Wall_Layer', tileset, 0, 0);
+        //this.destructible_layer = map.createStaticLayer('Destructible_Layer', tileset, 0, 0);
+
         this.levelLayer = levelLayer;
         this.stageInfo = {
             width: map.widthInPixels,
@@ -27,6 +29,7 @@ class Game extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height);
 
         levelLayer.setCollisionByProperty({collides: true});
+
         const debugGraphics = this.add.graphics().setAlpha(0.75)
         /*levelLayer.renderDebug(debugGraphics, {
             tileColor: new Phaser.Display.Color(125, 125, 240, 255),
@@ -56,6 +59,7 @@ class Game extends Phaser.Scene {
         this.player = new Player(this, this.pSpawn.x, this.pSpawn.y, playerAtlas, 'MCidle', 'Note');
 
         this.physics.add.collider(this.player, levelLayer);
+        this.physics.add.collider(this.player, this.destructible_layer);
 
         let pChord = new PowerChord(this, this.pSpawn.x, this.pSpawn.y - 100, 'invertedProjectile', null, 'hij');
 
@@ -130,6 +134,7 @@ class Game extends Phaser.Scene {
             //player actions
             this.player.update();
             if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
+                console.log(this.player.scale);
                 this.noteComboCheck();
             }
 
@@ -195,10 +200,7 @@ class Game extends Phaser.Scene {
         } else {
             //SHOULD FIX add player blinking effect here
             object2.destroy();
-            this.player.health.updateHealth();
-            this.time.delayedCall(2000, () => {
-                this.player.canCollide = true;
-            }, null, this);
+            this.player.damagePlayer();
         }
         
     }
@@ -274,6 +276,8 @@ class Game extends Phaser.Scene {
                     this.player.setMaxVelocity(playerMaxVelocity);
                 }, null, this);
             }
+        } else if (noteCombo == powerChordBar[3].powerChord) {
+            console.assert(debugFlags.playerFlag, 'unlock');
         }
         //Reset the bar
         this.player.clearNoteBar();

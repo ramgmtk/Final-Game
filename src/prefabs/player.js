@@ -45,6 +45,28 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.reverseRangeMovement();
     }
 
+    damagePlayer() {
+        this.health.updateHealth();
+        this.alphaTween.play();
+        this.scaleTween = this.scene.tweens.add({ //needs to be done at runtime cause player scale does change
+            targets: this,
+            paused: true,
+            scale: {from: this.scale, to: this.scale + 0.2},
+            duration: this.scene.bpms,
+            repeat: 6,
+            onComplete: () => {
+                if (this.canShrink) {
+                    this.setScale(1.0);
+                } else {
+                    this.setScale(0.5);
+                };
+            },
+            onCompleteScope: this,
+        });
+        this.scaleTween.play();
+    }
+
+
     //handles the players basic movement
     playerMovement() {
         //this.weapon.body.velocity.copy(this.body.velocity)
@@ -208,6 +230,17 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     createHealthBar() {
         this.health = new Health(this.scene, uiOffset.x, 0 + uiOffset.y, 'healthAtlas', 'health4')
         this.healthBar.push(this.health.health);
+        this.alphaTween = this.scene.tweens.add({
+            targets: this,
+            paused: true,
+            alpha: {from: 0, to: 1},
+            duration: this.scene.bpms,
+            repeat: 6,
+            onComplete: () => {
+                this.canCollide = true;
+            },
+            onCompleteScope: this,
+        });
     }
 
     createTools() {

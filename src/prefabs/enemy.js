@@ -16,10 +16,33 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 
         this.spawnNumber = 16;
         this.projectileSpawn = scene.time.addEvent({
-            delay: 1500,
+            delay: this.scene.bpms * 8,
             callback: this.spawnPattern,
             callbackScope: this,
             loop: true,
+        });
+
+        this.scaleTween = this.scene.tweens.add({
+            targets: this,
+            paused: true,
+            scale: {from: this.scale, to: this.scale + 0.2},
+            duration: this.scene.bpms,
+            repeat: 3,
+            onComplete: () => {
+                this.setScale(1.0);
+            },
+            onCompleteScope: this,
+        });
+        this.alphaTween = this.scene.tweens.add({
+            targets: this,
+            paused: true,
+            alpha: {from: 0, to: 1},
+            duration: this.scene.bpms,
+            repeat: 3,
+            onComplete: () => {
+                this.canCollide = true;
+            },
+            onCompleteScope: this,
         });
     }
 
@@ -70,6 +93,8 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     damageEnemy(damage = 1) {
         this.health -= damage;
+        this.alphaTween.play();
+        this.scaleTween.play();
         //insert some damage indicator
     }
 
