@@ -157,12 +157,26 @@ class Menu extends Phaser.Scene {
     }
 
     createAnimations() {
+
+        this.anims.create({
+            key: 'idle',
+            frames: this.anims.generateFrameNames('mcAtlas', {
+                prefix: 'idle',
+                start: 1,
+                end: 5,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            duration: 325,
+            repeat: -1,
+        });
+
         this.anims.create({
             key: 'right',
             frames: this.anims.generateFrameNames('mcAtlas', {
-                prefix: 'sprite',
-                start: 55,
-                end: 60,
+                prefix: 'run',
+                start: 1,
+                end: 6,
                 suffix: '',
                 zeroPad: 0,
             }),
@@ -173,9 +187,9 @@ class Menu extends Phaser.Scene {
         this.anims.create({
             key: 'up',
             frames: this.anims.generateFrameNames('mcAtlas', {
-                prefix: 'sprite',
-                start: 48,
-                end: 52,
+                prefix: 'runUp',
+                start: 1,
+                end: 5,
                 suffix: '',
                 zeroPad: 0,
             }),
@@ -186,9 +200,9 @@ class Menu extends Phaser.Scene {
         this.anims.create({
             key: 'down',
             frames: this.anims.generateFrameNames('mcAtlas', {
-                prefix: 'sprite',
-                start: 48,
-                end: 52,
+                prefix: 'runDown',
+                start: 1,
+                end: 5,
                 suffix: '',
                 zeroPad: 0,
             }),
@@ -199,9 +213,9 @@ class Menu extends Phaser.Scene {
         this.anims.create({
             key: 'play',
             frames: this.anims.generateFrameNames('mcAtlas', {
-                prefix: 'sprite',
-                start: 76,
-                end: 79,
+                prefix: 'playG',
+                start: 1,
+                end: 4,
                 suffix: '',
                 zeroPad: 0,
             }),
@@ -211,9 +225,9 @@ class Menu extends Phaser.Scene {
         this.anims.create({
             key: 'melee',
             frames: this.anims.generateFrameNames('mcAtlas', {
-                prefix: 'sprite',
-                start: 61,
-                end: 67,
+                prefix: 'atkMC',
+                start: 1,
+                end: 7,
                 suffix: '',
                 zeroPad: 0,
             }),
@@ -223,9 +237,9 @@ class Menu extends Phaser.Scene {
         this.anims.create({
             key: 'meleeUp',
             frames: this.anims.generateFrameNames('mcAtlas', {
-                prefix: 'sprite',
-                start: 69,
-                end: 73,
+                prefix: 'atkUp',
+                start: 1,
+                end: 5,
                 suffix: '',
                 zeroPad: 0,
             }),

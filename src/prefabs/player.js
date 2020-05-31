@@ -34,7 +34,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.setup();
         this.playerSet = [this, this.weapon, this.shield];
 
-        this.anims.play('up');
+        this.anims.play('idle');
     }
 
     update() {
@@ -73,62 +73,75 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     //handles the players basic movement
     playerMovement() { //BECAUSE I FORGOT DISCREET MATH, THE IF ELSES IN THIS BLOCK ARE SLOPPY.
         //this.weapon.body.velocity.copy(this.body.velocity)
-        if (this.scene.controls.w.isDown && this.canMove) {
-            if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
-                //do nothing,
+        if (this.scene.controls.w.isDown || this.scene.controls.a.isDown || this.scene.controls.s.isDown || this.scene.controls.d.isDown) {
+            if (this.scene.controls.w.isDown && this.canMove) {
+                if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
+                    //do nothing,
+                } else {
+                    this.setFlipY(false);
+                    this.anims.play('up', true);
+                }
+                this.attackDirection = 'w';
+                this.setAccelerationY(-playerAccel);
+            } else if (this.scene.controls.s.isDown && this.canMove) {
+                if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
+                    //do nothing,
+                } else {
+                    this.setFlipY(false);
+                    this.anims.play('down', true);
+                }
+                this.attackDirection = 's';
+                this.setAccelerationY(playerAccel);
             } else {
-                this.setFlipY(false);
-                this.anims.play('up', true);
+                if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
+                    //do nothing,
+                } else {
+                    this.setFlipY(false);
+                    //this.anims.play('idle', true);
+                };
+                this.setAccelerationY(0);
+                this.setDragY(playerDrag);
             }
-            this.attackDirection = 'w';
-            this.setAccelerationY(-playerAccel);
-        } else if (this.scene.controls.s.isDown && this.canMove) {
-            if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
-                //do nothing,
-            } else {
-                this.setFlipY(false);
-                this.anims.play('down', true);
-            }
-            this.attackDirection = 's';
-            this.setAccelerationY(playerAccel);
-        } else {
-            if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
-                //do nothing,
-            } else {
-                this.setFlipY(false);
-            };
-            this.setAccelerationY(0);
-            this.setDragY(playerDrag);
-        }
 
-        if (this.scene.controls.a.isDown && this.canMove) {
-            if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
-                //do nothing,
+            if (this.scene.controls.a.isDown && this.canMove) {
+                if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
+                    //do nothing,
+                } else {
+                    this.anims.play('right', true);
+                }
+                this.setFlip(true, false);
+                this.attackDirection = 'a';
+                this.setAccelerationX(-playerAccel);
+            } else if (this.scene.controls.d.isDown && this.canMove) {
+                if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
+                    //do nothing,
+                } else {
+                    this.anims.play('right', true);
+                }
+                this.attackDirection = 'd';
+                //this.resetFlip();
+                this.setFlip(false, false);
+                this.setAccelerationX(playerAccel);
             } else {
-                this.anims.play('right', true);
+                if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
+                    //do nothing,
+                } else {
+                    //this.anims.play('idle', true);
+                    this.setFlipY(false);
+                }
+                this.setAccelerationX(0);
+                this.setDragX(playerDrag);
             }
-            this.setFlip(true, false);
-            this.attackDirection = 'a';
-            this.setAccelerationX(-playerAccel);
-        } else if (this.scene.controls.d.isDown && this.canMove) {
-            if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
-                //do nothing,
-            } else {
-                this.anims.play('right', true);
-            }
-            this.attackDirection = 'd';
-            //this.resetFlip();
-            this.setFlip(false, false);
-            this.setAccelerationX(playerAccel);
         } else {
+            this.setAcceleration(0);
+            this.setDrag(playerDrag);
             if (this.anims.isPlaying && (this.anims.getCurrentKey() == 'play' || this.anims.getCurrentKey() == 'melee' || this.anims.getCurrentKey() == 'meleeUp')) {
-                //do nothing,
+                    //do nothing,
             } else {
-                this.anims.play('up', true);
+                //this.anims.play('idle', true);
+                this.anims.play('idle', true);
                 this.setFlipY(false);
             }
-            this.setAccelerationX(0);
-            this.setDragX(playerDrag);
         }
     }
 
