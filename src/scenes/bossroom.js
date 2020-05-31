@@ -12,6 +12,7 @@ class BossRoom extends Phaser.Scene {
         this.winner = false;
         this.finalPhase = false;
         this.finalPhaseStart = false;
+        this.endScene = false;
         this.bossHit = false;
         this.heartInfo = this.textures.get('heart').getSourceImage();
         this.stageInfo = {
@@ -20,6 +21,7 @@ class BossRoom extends Phaser.Scene {
         }
         this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height)
         this.playerSpriteInfo = game.textures.getFrame(playerAtlas, 'MCidle');
+        this.bossSpriteInfo = game.textures.getFrame('bossAtlas', 'idleB1');
         this.bossProjectileInfo = game.textures.getFrame(playerAtlas, 'BossProjectile');
         this.bpms = 324;
         this.sceneTimeDelay = 3.000333;
@@ -59,28 +61,25 @@ class BossRoom extends Phaser.Scene {
         this.noteCam;
         this.heartCam;
         this.powerChordCam;
+        this.shieldCam;
         this.createCams();
-
-        //test vars
-        this.finalPhaseDuration = 30000;
-        this.projectilesFired = 0;
-        this.projectilesDestroyed = 0;
     }
+
     update() {
         if (!this.gameOver) {
             this.player.update();
             if (this.boss.health > 0) {
                 this.boss.update();
                 //projectile collider
-                /*this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
+                this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
                     return object1.canCollide && !object2.canCollideParent ? true : false;
-                }, this);*/ //COMMENTED OUT FOR GOD MODE
+                }, this); //COMMENTED OUT FOR GOD MODE
                 if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
-                    console.log(`${this.projectilesFired}, ${this.projectilesDestroyed}`);
                     this.noteComboCheck();
                 }
                 if (this.player.shieldActive) {
                     this.physics.world.collide(this.player.shield, this.projectileGroup, (object1, object2) => {
+                        this.player.shieldMeter.increase(1);
                         object2.destroy();
                     }, null, this);
                 }
@@ -96,17 +95,15 @@ class BossRoom extends Phaser.Scene {
                 this.finalPhaseSetup();
             } else if (this.finalPhaseStart) {
                 if (!this.winner) {
-                    if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
-                        console.log(`${this.projectilesFired}, ${this.projectilesDestroyed}`);
-                        console.log(this.player.canCollide);
-                    }
                     if (!this.bossHit) {
                         this.boss.moveTo({x: this.player.x, y: this.player.y}, playerMaxVelocity/1.5);
                     }
                 } else {
-                    this.destroyObjects();
-                    this.scene.start('gameOverScene'); //replace with winner screen MUST FIX
-                    this.scene.remove('bossScene');
+                    if (this.endScene) {
+                        this.destroyObjects();
+                        this.scene.start('gameOverScene'); //replace with winner screen MUST FIX
+                        this.scene.remove('bossScene');
+                    }
                 }   
             }
         } else {
@@ -158,6 +155,9 @@ class BossRoom extends Phaser.Scene {
         this.player.setDrag(0);
         this.player.setAcceleration(0);
         this.boss.setCollideWorldBounds(true);
+        this.boss.anims.play('bossSetup', true);
+        this.boss.setScale(1);
+        this.boss.body.setSize(this.bossSpriteInfo.width / 1.5, this.bossSpriteInfo.height / 1.5);
 
         let bossTween = this.tweens.add({
             targets: this.boss,
@@ -175,7 +175,7 @@ class BossRoom extends Phaser.Scene {
             duration: this.transition2.duration * 1000,
             repeat: 0,
             onComplete: ()=> {
-                this.physics.add.overlap(this.player, this.boss, (object1, object2) => {
+                this.pCollide = this.physics.add.overlap(this.player, this.boss.body, (object1, object2) => {
                     this.bossCam.shake(500, 0.003 * 1/bossZoom, false);
                     object1.canCollide = false;
                     //Check if player has hit 0 health
@@ -191,10 +191,10 @@ class BossRoom extends Phaser.Scene {
                 }, (object1, object2) => {
                     return object1.canCollide;
                 }, this);
-                this.physics.add.overlap(this.player.weapon, this.boss, () => {
+                this.wCollide = this.physics.add.overlap(this.player.weapon, this.boss, () => {
                     this.player.hasAttacked = true;
                     console.log('hitting bos');
-                    this.boss.y = this.player.weapon.y - 200;
+                    this.boss.y = this.player.weapon.y - 300;
                     this.boss.setVelocity(0);
                     this.bossHit = true;
                     this.time.delayedCall(this.bpms / 2, () => {
@@ -261,13 +261,15 @@ class BossRoom extends Phaser.Scene {
                     duration: 1000,
                     repeat: 0,
                 });
-                this.player.setMaxVelocity(playerMaxVelocity/5);
+                this.player.setMaxVelocity(playerMaxVelocity/2);
                 this.time.delayedCall(2000, () => {
                     this.player.shieldActive = false;
                     this.player.shield.setAlpha(0);
                     this.player.setMaxVelocity(playerMaxVelocity);
                 }, null, this);
             }
+        } else {
+            this.player.particleManager.generateParticles_v3();
         }
         //Reset the bar
         this.player.clearNoteBar();
@@ -297,19 +299,21 @@ class BossRoom extends Phaser.Scene {
     }
 
     createCams() {
-        let cams = createCams(this, this.heartCam, this.noteCam, this.powerChordCam, this.playerCam);
+        let cams = createCams(this, this.heartCam, this.noteCam, this.powerChordCam, this.bossCam, this.shieldCam);
         this.heartCam = cams[0];
         this.noteCam = cams[1];
         this.powerChordCam = cams[2];
         this.bossCam = cams[3];
+        this.shieldCam = cams[4];
         this.heartCam.ignore([this.boss.healthBar.healthBar]);
         this.noteCam.ignore([this.boss.healthBar.healthBar, this.projectileGroup]);
         this.powerChordCam.ignore([this.boss.healthBar.healthBar, this.projectileGroup]);
+        this.shieldCam.ignore([this.boss.healthBar.healthBar, this.projectileGroup])
         //this.bossCam.ignore([this.boss.healthBar.healthBar]); leaving in just in case to see if a potential overlap with scene and offscreen elements occures
         this.bossHealthCam = this.cameras.add(0, 0, centerX * bossZoom, 50);
         this.bossHealthCam.setViewport(centerX * 0.65, 0, centerX, 50);
         this.bossHealthCam.setScroll(uiOffset.x, uiOffset.y);
-        this.bossHealthCam.ignore([this.player.healthBar, this.powerChordList, this.player.noteBar, this.projectileGroup]);
+        this.bossHealthCam.ignore([this.player.healthBar, this.powerChordList, this.player.noteBar, this.projectileGroup, this.player.shieldMeter.meter]);
         this.bossCam.setZoom(bossZoom);
     }
 
@@ -364,9 +368,23 @@ class BossRoom extends Phaser.Scene {
             this.bossTheme3.play();
             this.finalPhaseStart = true;
             this.bgm = this.bossTheme3;
+            this.boss.anims.play('test', true);
         });
         this.bossTheme3.once('complete', () => {
             this.winner = true;
+            this.pCollide.destroy();
+            this.wCollide.destroy();
+            this.boss.setVelocity(0);
+            this.tweens.add({
+                targets: this.boss,
+                scale: {from: 1, to: 0},
+                duration: 3000,
+                repeat: 0,
+                onComplete: () => {
+                    this.endScene = true;
+                },
+                onCompleteScope: this,
+            })
         });
 
     }

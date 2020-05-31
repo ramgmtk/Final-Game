@@ -11,7 +11,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true,
+            debug: false,
             gravity: {
                 x: 0,
                 y: 0,
@@ -89,21 +89,22 @@ let debugFlags = {
     bossFlag: true,
 };
 
-function createCams(scene, heartCam, noteCam, powerChordCam, gameCam) {
+function createCams(scene, heartCam, noteCam, powerChordCam, gameCam, shieldCam) {
     heartCam = scene.cameras.add(0, 0, 200, 200);
-    heartCam.setViewport(0, 0, scene.heartInfo.width * 3, scene.heartInfo.height);
+    heartCam.setViewport((20 * 1/bossZoom), (20 * 1/bossZoom), scene.heartInfo.width * 2, scene.heartInfo.height * 2);
     heartCam.setScroll(uiOffset.x, uiOffset.y);
-    heartCam.ignore([scene.player.noteBar, scene.powerChordList]);
+    heartCam.ignore([scene.player.noteBar, scene.powerChordList, scene.player.shieldMeter.meter]);
 
     noteCam = scene.cameras.add(0, 0, 200, 200);
-    noteCam.setViewport(scene.heartInfo.width, 0, noteSize * noteQueueSize, noteSize);
+    noteCam.setViewport((20 * 1/bossZoom) + scene.heartInfo.width, (20 * 1/bossZoom), noteSize * noteQueueSize, noteSize);
     noteCam.setScroll(uiOffset.x, uiOffset.y);
-    noteCam.ignore([scene.player.healthBar, scene.powerChordList]);
+    noteCam.ignore([scene.player.healthBar, scene.powerChordList, scene.player.shieldMeter.meter]);
 
     powerChordCam = scene.cameras.add(0, 0, 200, 200);
     powerChordCam.setViewport(game.config.width - (noteQueueSize * noteSize), 0, noteSize * noteQueueSize, noteSize * powerChordBar.length);
     powerChordCam.setScroll(uiOffset.x, uiOffset.y)
-    powerChordCam.ignore([scene.player.healthBar, scene.player.noteBar]);
+    powerChordCam.ignore([scene.player.healthBar, scene.player.noteBar, scene.player.shieldMeter.meter]);
+
     //How far the camera can go within the world.p
     gameCam = scene.cameras.main.setBounds(0, 0, scene.stageInfo.width, scene.stageInfo.height);
     //The actual lens through which we see the game.
@@ -112,9 +113,14 @@ function createCams(scene, heartCam, noteCam, powerChordCam, gameCam) {
     //wiggle room for the camera
     gameCam.setDeadzone(scene.playerSpriteInfo.width * 2, scene.playerSpriteInfo.height * 2);
     gameCam.setName('Player');
-    gameCam.ignore([scene.player.healthBar, scene.player.noteBar, scene.powerChordList]);
+    gameCam.ignore([scene.player.healthBar, scene.player.noteBar, scene.powerChordList, scene.player.shieldMeter.meter]);
+    
+    shieldCam = scene.cameras.add(0, 0, 200, 200);
+    shieldCam.setViewport((20 * 1/bossZoom), (20 * 1/bossZoom) + scene.heartInfo.height + 5, 50, 50);
+    shieldCam.setScroll(uiOffset.x, uiOffset.y)
+    shieldCam.ignore([scene.player.healthBar, scene.player.noteBar, scene.powerChordList]);
 
-    return [heartCam, noteCam, powerChordCam, gameCam];
+    return [heartCam, noteCam, powerChordCam, gameCam, shieldCam];
 }
 
 let game = new Phaser.Game(config);

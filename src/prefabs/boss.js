@@ -76,6 +76,8 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             },
             onCompleteScope: this,
         });
+
+        this.body.setSize(this.scene.bossSpriteInfo.width / 1.5, this.scene.bossSpriteInfo.height / 1.5);;
     }
 
     update() {
@@ -104,7 +106,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
                     }
                 }
                 this.scene.physics.world.overlap(this, this.scene.projectileGroup, (object1, object2) => {
-                    object1.damageEnemy();
+                    object1.damageEnemy(5);
                     object2.destroy();
                 }, (object1, object2) => {
                     return object2.canCollideParent;
@@ -122,7 +124,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         this.health -= damage;
         this.healthBar.decrease(damage);
         this.scaleTween.play();
-        this.alphaTween.play();
+        //this.alphaTween.play();
     }
 
     moveTo(destination, velocity = playerMaxVelocity) {
@@ -132,7 +134,7 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
             x: destination.x - this.x,
             y: destination.y - this.y,
         }
-        if (this.anims.getCurrentKey != 'bossAttackSlow') {
+        if (this.anims.getCurrentKey() != 'bossAttackSlow' && this.anims.getCurrentKey() != 'test') {
             if (slope.x < 0) {
                 this.resetFlip();
             } else {
@@ -160,7 +162,6 @@ class Boss extends Phaser.Physics.Arcade.Sprite {
         if (this.extraTimer != null) {
             this.extraTimer.destroy();
         }
-        this.scene.projectilesDestroyed +=  this.projectileGroup.children.entries.length; //NEED TO REMOVE
         this.projectileGroup.clear(true, true);
         this.movementGroup.clear(true, true);
         if (this.healthBar != null) {

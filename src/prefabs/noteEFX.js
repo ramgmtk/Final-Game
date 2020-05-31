@@ -34,6 +34,39 @@ class efxEmitter {
         } 
     }
 
+    generateParticles_v3() {
+        let notefx = new efxParticle(this.scene, this.parent.x, 
+            this.parent.y, this.texture, this.frame).setDepth(uiDepth - 1).setOrigin(0.5);
+        let noteTween = this.scene.tweens.add({
+            targets: notefx,
+            alpha: {from: 1, to: 0},
+            scale: {from: 0.1, to: 2},
+            x: {from: notefx.origin.x, to: notefx.origin.x + 150},
+            ease: 'Sine.easeOut',
+            duration: 1000,
+            repeat: 0,
+            onComplete: () => {
+                notefx.destroy();
+            },
+            onCompleteScope: this,
+        });
+        let notefx2 = new efxParticle(this.scene, this.parent.x, 
+            this.parent.y, this.texture, this.frame).setDepth(uiDepth - 1).setOrigin(0.5);
+        let noteTween2 = this.scene.tweens.add({
+            targets: notefx2,
+            alpha: {from: 1, to: 0},
+            scale: {from: 0.1, to: 2},
+            x: {from: notefx.origin.x, to: notefx.origin.x - 150},
+            ease: 'Sine.easeOut',
+            duration: 1000,
+            repeat: 0,
+            onComplete: () => {
+                notefx.destroy();
+            },
+            onCompleteScope: this,
+        });
+    }
+
     generateParticles_v2() {
         let notefx = new efxParticle(this.scene, this.parent.x, this.parent.y,
             'reverse', 0).setScale(0).setDepth(uiDepth -1).setOrigin(0.5);

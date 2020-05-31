@@ -19,13 +19,11 @@ class Projectile extends Phaser.Physics.Arcade.Sprite {
         this.setPath(vecX, vecY);
         this.parent = parent;
 
-        this.scene.projectilesFired += 1;
     }
 
     update() {
         if (this.body.checkWorldBounds()) {
             console.assert(debugFlags.enemyFlag, 'Projectile out of bounds');
-            this.scene.projectilesDestroyed += 1;
             this.destroy();
         }
     }
@@ -37,7 +35,6 @@ class Projectile extends Phaser.Physics.Arcade.Sprite {
     }
 
     redirect() {
-        this.scene.projectilesDestroyed += 1;
         this.canCollideParent = true;
         this.setFrame(null);
         this.setTexture('invertedProjectile');

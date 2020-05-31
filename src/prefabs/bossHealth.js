@@ -20,8 +20,8 @@ class bossHealth {
     draw() {
         this.healthBar.clear();
         //border
-        this.healthBar.fillStyle(0x00ff00);
-        this.healthBar.fillRect(uiOffset.x, uiOffset.y, centerX * bossZoom, (50* bossZoom));
+        //this.healthBar.fillStyle(0x00ff00);
+        //this.healthBar.fillRect(uiOffset.x, uiOffset.y, centerX * bossZoom, (50* bossZoom));
         //actual bar
         this.healthBar.fillStyle(0xffffff);
         this.healthBar.fillRect(uiOffset.x + this.borderOffset, uiOffset.y + this.borderOffset, 

@@ -113,11 +113,13 @@ class Game extends Phaser.Scene {
         this.noteCam;
         this.heartCam;
         this.powerChordCam;
-        let cams = createCams(this, this.heartCam, this.noteCam, this.powerChordCam, this.playerCam);
+        this.shieldCam;
+        let cams = createCams(this, this.heartCam, this.noteCam, this.powerChordCam, this.playerCam, this.shieldCam);
         this.heartCam = cams[0];
         this.noteCam = cams[1];
         this.powerChordCam = cams[2];
         this.playerCam = cams[3];
+        this.shieldCam = cams[4];
 
         //test
         const bEnt = map.findObject('Object_Layer', (obj) => obj.name === 'Boss_Entrance');
@@ -125,10 +127,6 @@ class Game extends Phaser.Scene {
         this.physics.add.existing(this.bossEntrance);
         this.bossEntrance.setImmovable(true);
         this.add.existing(this.bossEntrance);
-
-        //test vars
-        this.projectilesFired = 0;
-        this.projectilesDestroyed = 0;
     }
 
     update() {
@@ -155,6 +153,7 @@ class Game extends Phaser.Scene {
             }
             if (this.player.shieldActive) {
                 this.physics.world.overlap(this.player.shield, this.projectileGroup, (object1, object2) => {
+                    this.player.shieldMeter.increase(1);
                     object2.destroy();
                 }, null, this);
             }
@@ -189,7 +188,8 @@ class Game extends Phaser.Scene {
     //object2 is the projectile that has hit the player
     damagePlayer(object1, object2) {
         console.assert(debugFlags.enemyFlag, 'Collision with projectile');
-        this.playerCam.shake(500, 0.003, false);
+        this.playerCam.shake(500, 0.005, false);
+        this.heartCam.shake(1500, 0.010, false);
         object1.canCollide = false;
         //Check if player has hit 0 health
         if (this.player.health.healthNum == 0) {
@@ -239,6 +239,7 @@ class Game extends Phaser.Scene {
     //used to manage the combo system.
     noteComboCheck() {
         let noteCombo = '';
+        this.player.anims.play('play', false);
         for (let i = 0; i < this.player.noteBar.length - 1; i++) {
             noteCombo += this.player.noteBar[i].frame.name;
         }
@@ -270,7 +271,7 @@ class Game extends Phaser.Scene {
                     duration: 1000,
                     repeat: 0,
                 });
-                this.player.setMaxVelocity(playerMaxVelocity/5);
+                this.player.setMaxVelocity(playerMaxVelocity/2);
                 this.time.delayedCall(2000, () => {
                     this.player.shieldActive = false;
                     this.player.shield.setAlpha(0);
@@ -285,6 +286,8 @@ class Game extends Phaser.Scene {
             }, (object1, object2) => {
                 return object2.collides;
             }, this);
+        } else {
+            this.player.particleManager.generateParticles_v3();
         }
         //Reset the bar
         this.player.clearNoteBar();

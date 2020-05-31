@@ -23,6 +23,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.normalBody;
         this.canShrink;
         this.shield;
+        this.shieldMeter;
         this.shieldActive;
         this.reverseRange;
 
@@ -67,6 +68,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             onCompleteScope: this,
         });
         this.scaleTween.play();
+        this.healthTween.play();
     }
 
 
@@ -235,7 +237,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         let curr = note;
         let prev = this.noteBar[this.noteBar.length - 2].frame.name;
         for (let i = this.noteBar.length - 2; i > 0; i--) {
-            if (curr == '__BASE') {
+            if (curr == '__BASE' || curr == 'Note') {
                 this.noteBar[i].setTexture(null, null).setAlpha(0)
             } else {
                 this.noteBar[i].setTexture('keyAtlas', curr).setAlpha(1);
@@ -243,7 +245,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             curr = prev;
             prev = this.noteBar[i - 1].frame.name;
         }
-        if (curr == '__BASE') {
+        if (curr == '__BASE' || curr == 'Note') {
             this.noteBar[0].setTexture(null, null).setAlpha(0)
         } else {
             this.noteBar[0].setTexture('keyAtlas', curr).setAlpha(1);
@@ -267,12 +269,25 @@ class Player extends Phaser.Physics.Arcade.Sprite {
 
     clearNoteBar() {
         for (let i = 0; i < this.noteBar.length - 1; i++) {
-            this.noteBar[i].setTexture(null, null,).setAlpha(0);
+            //this.noteBar[i].setTexture(null, null,).setAlpha(0);
+            this.noteBar[i].setTexture(playerAtlas, 'Note');
+            this.scene.tweens.add({
+                targets: this.noteBar[i],
+                scale: {from: 1, to: 0},
+                onComplete: () => {
+                    this.noteBar[i].setScale(1);
+                    if (this.noteBar[i].frame.name == 'Note') {
+                        this.noteBar[i].setTexture(null, null,).setAlpha(0);
+                    }
+                },
+                onCompleteScope: this,
+                duration: this.scene.bpms,
+            });
         }
     }
 
     createHealthBar() {
-        this.health = new Health(this.scene, uiOffset.x, 0 + uiOffset.y, 'healthAtlas', 'health4')
+        this.health = new Health(this.scene, uiOffset.x + this.scene.heartInfo.width/2, uiOffset.y + this.scene.heartInfo.height / 2, 'healthAtlas', 'health4')
         this.healthBar.push(this.health.health);
         this.alphaTween = this.scene.tweens.add({
             targets: this,
@@ -282,6 +297,18 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             repeat: 6,
             onComplete: () => {
                 this.setAlpha(1.0);
+            },
+            onCompleteScope: this,
+        });
+        this.healthTween = this.scene.tweens.add({
+            targets: this.health.health,
+            paused: true,
+            //angle: {from: 0, to: 360},
+            scale: {from: 1, to: 0},
+            duration: this.scene.bpms,
+            repeat: 4,
+            onComplete: () => {
+                this.health.health.setScale(1.0);
             },
             onCompleteScope: this,
         });
@@ -305,6 +332,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         this.shield.body.setCircle(this.scene.playerSpriteInfo.width * 2);
         this.shield.setImmovable(true);
         this.shieldActive = false;
+        this.shieldMeter = new ShieldMeter(this.scene, 100, this);
 
         this.normalBody = new Phaser.Physics.Arcade.Sprite(this.scene, this.x, this.y, null, 0).setOrigin(0.5).setDepth(uiDepth - 1);
         this.scene.physics.add.existing(this.normalBody);

@@ -345,6 +345,34 @@ class Menu extends Phaser.Scene {
             duration: 325 * 2,
             yoyo: true,
         });
+
+        this.anims.create({
+            key: 'bossSetup',
+            frames: this.anims.generateFrameNames('bossAtlas', {
+                prefix: 'bAtk',
+                start: 1,
+                end: 7,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            yoyo: true,
+            duration: 325,
+            repeat: -1,
+        });
+
+        this.anims.create({
+            key: 'test',
+            frames: this.anims.generateFrameNames('bossAtlas', {
+                prefix: 'bAtk',
+                start: 3,
+                end: 6,
+                suffix: '',
+                zeroPad: 0,
+            }),
+            //yoyo: true,
+            duration: 325,
+            repeat: -1,
+        });
     }
 
 }
