@@ -153,7 +153,7 @@ class Game extends Phaser.Scene {
             }
             if (this.player.shieldActive) {
                 this.physics.world.overlap(this.player.shield, this.projectileGroup, (object1, object2) => {
-                    this.player.shieldMeter.increase(1);
+                    this.player.shieldMeter.increase(2);
                     object2.destroy();
                 }, null, this);
             }
@@ -211,6 +211,7 @@ class Game extends Phaser.Scene {
         this.heartCam.ignore([this.powerChordList]);
         this.noteCam.ignore([this.powerChordList]);
         this.playerCam.ignore([this.powerChordList]);
+        this.shieldCam.ignore([this.powerChordList]);
     }
     //update the notebar
     createPowerChordList() {
