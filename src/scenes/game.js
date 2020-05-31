@@ -17,10 +17,11 @@ class Game extends Phaser.Scene {
         this.map = map;
         const tileset = map.addTilesetImage('Tiles', 'tutorial_tile');
 
-        //const backgroundLayer = map.createStaticLayer('Background_Layer_1', tileset, 0, 0);
+        const backgroundLayer = map.createStaticLayer('Background_Layer_1', tileset, 0, 0);
         const levelLayer = map.createStaticLayer('Wall_Layer', tileset, 0, 0);
-        this.destructible_layer = map.createDynamicLayer('Destructible_Layer', tileset, 0, 0);
+        const destructible_layer = map.createDynamicLayer('Destructible_Layer', tileset, 0, 0);
 
+        this.destructible_layer = destructible_layer;
         this.levelLayer = levelLayer;
         this.stageInfo = {
             width: map.widthInPixels,
@@ -30,7 +31,7 @@ class Game extends Phaser.Scene {
         this.physics.world.setBounds(0, 0, this.stageInfo.width, this.stageInfo.height);
 
         levelLayer.setCollisionByProperty({collides: true});
-        this.destructible_layer.setCollisionByProperty({collides: true});
+        destructible_layer.setCollisionByProperty({collides: true});
 
         const debugGraphics = this.add.graphics().setAlpha(0.75)
         /*levelLayer.renderDebug(debugGraphics, {
@@ -59,13 +60,36 @@ class Game extends Phaser.Scene {
         //CREATE THE PLAYER
         this.pSpawn = map.findObject('Object_Layer',  (obj) => obj.name === 'Player_Spawn')
         this.player = new Player(this, this.pSpawn.x, this.pSpawn.y, playerAtlas, 'MCidle', 'Note');
-
+        this.pChordGroup = this.add.group({
+            scene: this,
+            runChildUpdate: false,
+        })
         this.physics.add.collider(this.player, levelLayer);
-        this.physics.add.collider(this.player, this.destructible_layer);
+        this.physics.add.collider(this.player, destructible_layer);
 
-        let pChord = new PowerChord(this, this.pSpawn.x, this.pSpawn.y - 100, 'invertedProjectile', null, 'hij');
+        let pChordSpawn;
+        if (powerChordBar[1].unlocked == false) {
+            pChordSpawn = map.findObject('Object_Layer',  (obj) => obj.name === 'Power_Chord_Shrink')
+            let pChord1 = new PowerChord(this, pChordSpawn.x, pChordSpawn.y, 'powerChord', null, 'hij');
+            this.pChordGroup.add(pChord1);
+        }
+        if (powerChordBar[2].unlocked == false) {
+            pChordSpawn = map.findObject('Object_Layer',  (obj) => obj.name === 'Power_Chord_Shield')
+            let pChord2 = new PowerChord(this, pChordSpawn.x, pChordSpawn.y, 'powerChord', null, 'khi');
+            this.pChordGroup.add(pChord2);
+        }
+        if (powerChordBar[0].unlocked == false) {
+            pChordSpawn = map.findObject('Object_Layer',  (obj) => obj.name === 'Power_Chord_Reflect')
+            let pChord3 = new PowerChord(this, pChordSpawn.x, pChordSpawn.y, 'powerChord', null, 'jkl');
+            this.pChordGroup.add(pChord3);
+        }
+        if (powerChordBar[3].unlocked == false) {
+            pChordSpawn = map.findObject('Object_Layer',  (obj) => obj.name === 'Power_Chord_Destroy')
+            let pChord4 = new PowerChord(this, pChordSpawn.x, pChordSpawn.y, 'powerChord', null, 'llh');
+            this.pChordGroup.add(pChord4);
+        }
 
-        this.physics.add.collider(this.player, pChord, (obj1, obj2) => {
+        this.physics.add.collider(this.player, this.pChordGroup, (obj1, obj2) => {
             obj2.unlockPowerChord();
         }, (obj1, obj2) => {
             return !obj2.collected;
@@ -90,8 +114,8 @@ class Game extends Phaser.Scene {
             scene: this,
             runChildUpdate: true,
         });
-        let eSpawnString = 'Enemy_Spawn';
-        for (let i = 0; i < 32; i++) {
+        let eSpawnString = 'enemy_spawn';
+        for (let i = 0; i < 35; i++) {
             let eSpawnS = eSpawnString + (i + 1).toString();
             let eSpawn = map.findObject('Object_Layer', (obj) => obj.name == eSpawnS);
             let enemy = new Enemy(this, eSpawn.x, eSpawn.y, playerAtlas, 10, 'AMPidle');
@@ -123,7 +147,7 @@ class Game extends Phaser.Scene {
 
         //test
         const bEnt = map.findObject('Object_Layer', (obj) => obj.name === 'Boss_Entrance');
-        this.bossEntrance = new Phaser.Physics.Arcade.Sprite(this, bEnt.x, bEnt.y, playerAtlas, 'Note').setDepth(uiDepth - 1);
+        this.bossEntrance = new Phaser.Physics.Arcade.Sprite(this, bEnt.x, bEnt.y, 'bossDoor', null).setDepth(uiDepth - 1);
         this.physics.add.existing(this.bossEntrance);
         this.bossEntrance.setImmovable(true);
         this.add.existing(this.bossEntrance);
@@ -176,9 +200,11 @@ class Game extends Phaser.Scene {
     }
 
     destroyObjects() {
+        this.events.removeAllListeners();
         this.time.removeAllEvents(); 
         this.enemyGroup.clear(true, true)
         this.projectileGroup.clear(true, true);
+        this.pChordGroup.clear(true, true);
         this.sound.stopAll();
         this.player.destroy();
     }
@@ -264,6 +290,7 @@ class Game extends Phaser.Scene {
             console.assert(debugFlags.playerFlag, 'Shield');
             if (!this.player.shieldActive) {
                 this.player.shieldActive = true;
+                this.player.canCollide = false;
                 //this.player.shield.setAlpha(1);
                 this.tweens.add({
                     targets: this.player.shield,
@@ -275,6 +302,7 @@ class Game extends Phaser.Scene {
                 this.player.setMaxVelocity(playerMaxVelocity/2);
                 this.time.delayedCall(2000, () => {
                     this.player.shieldActive = false;
+                    this.player.canCollide = true;
                     this.player.shield.setAlpha(0);
                     this.player.setMaxVelocity(playerMaxVelocity);
                 }, null, this);

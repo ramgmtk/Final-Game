@@ -5,10 +5,22 @@ class PowerChord extends Phaser.Physics.Arcade.Sprite {
         scene.add.existing(this);
         this.setImmovable(true);
         this.setDepth(uiDepth - 1);
+        this.origin = {
+            x: x,
+            y: y,
+        };
         this.setOrigin(0.5);
         this.scene = scene;
         this.key = key;
         this.collected = false;
+
+        this.idleTween = this.scene.tweens.add({
+            targets: this,
+            y: {from: this.origin.y, to: this.origin.y + 20},
+            yoyo: true,
+            duration: this.scene.bpms,
+            repeat: -1,
+        });
     }
 
     unlockPowerChord() {

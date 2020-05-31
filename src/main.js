@@ -43,16 +43,16 @@ let uiOffset = {
 powerChordBar = [
     {powerChord: 'jkl',
      name: 'Reverse',
-     unlocked: true,},
+     unlocked: false,},
     {powerChord: 'hij',
      name: 'Shrink',
      unlocked: false,},
     {powerChord: 'khi',
      name: 'Shield',
-     unlocked: true},
+     unlocked: false},
     {powerChord: 'llh',
      name: 'Unlock',
-     unlocked: true,},
+     unlocked: false,},
 ];
 
 let bossCornerSpace = 200
