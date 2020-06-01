@@ -68,25 +68,11 @@ class Game extends Phaser.Scene {
         this.physics.add.collider(this.player, destructible_layer);
 
         let pChordSpawn;
-        if (powerChordBar[1].unlocked == false) {
-            pChordSpawn = map.findObject('Object_Layer',  (obj) => obj.name === 'Power_Chord_Shrink')
-            let pChord1 = new PowerChord(this, pChordSpawn.x, pChordSpawn.y, 'powerChord', null, 'hij');
-            this.pChordGroup.add(pChord1);
-        }
-        if (powerChordBar[2].unlocked == false) {
-            pChordSpawn = map.findObject('Object_Layer',  (obj) => obj.name === 'Power_Chord_Shield')
-            let pChord2 = new PowerChord(this, pChordSpawn.x, pChordSpawn.y, 'powerChord', null, 'khi');
-            this.pChordGroup.add(pChord2);
-        }
-        if (powerChordBar[0].unlocked == false) {
-            pChordSpawn = map.findObject('Object_Layer',  (obj) => obj.name === 'Power_Chord_Reflect')
-            let pChord3 = new PowerChord(this, pChordSpawn.x, pChordSpawn.y, 'powerChord', null, 'jkl');
-            this.pChordGroup.add(pChord3);
-        }
-        if (powerChordBar[3].unlocked == false) {
-            pChordSpawn = map.findObject('Object_Layer',  (obj) => obj.name === 'Power_Chord_Destroy')
-            let pChord4 = new PowerChord(this, pChordSpawn.x, pChordSpawn.y, 'powerChord', null, 'llh');
-            this.pChordGroup.add(pChord4);
+        let pChordArr = ['Power_Chord_Reflect', 'Power_Chord_Shrink', 'Power_Chord_Shield', 'Power_Chord_Destroy'];
+        for (let i = 0; i < powerChordBar.length; i++) {
+            pChordSpawn = map.findObject('Object_Layer',  (obj) => obj.name === pChordArr[i]);
+            let pChord = new PowerChord(this, pChordSpawn.x, pChordSpawn.y, 'powerChord', null, powerChordBar[i].powerChord);
+            this.pChordGroup.add(pChord);
         }
 
         this.physics.add.collider(this.player, this.pChordGroup, (obj1, obj2) => {
@@ -283,6 +269,7 @@ class Game extends Phaser.Scene {
             console.assert(debugFlags.playerFlag, 'Shrink');
             if (this.player.canShrink) {
                 this.player.setScale(0.5);
+                this.player.setMaxVelocity(playerMaxVelocity / 2);
                 this.player.canShrink = false;
                 this.time.delayedCall(3000, this.shrinkCallback, null, this);
             }
@@ -327,8 +314,9 @@ class Game extends Phaser.Scene {
     shrinkCallback() {
         //THE CURRENT STRUCTURE ASSUMS THAT CENTERX CENTERY WILL NOT HAVE ANYTHING THE PLAYER CAN COLLIDE WITH.
         if (this.shrinkDuration > 12000) {
-            this.player.x = this.pSpawn.x
-            this.player.y = this.pSpawn.y
+            this.player.x = this.pSpawn.x;
+            this.player.y = this.pSpawn.y;
+            this.player.setMaxVelocity(playerMaxVelocity);
             this.shrinkDuration = 0;
             this.player.setScale(1.0);
             this.player.canShrink = true;
@@ -343,6 +331,7 @@ class Game extends Phaser.Scene {
             this.shrinkDuration += 3000;
             this.time.delayedCall(3000, this.shrinkCallback, null, this);
         } else {
+            this.player.setMaxVelocity(playerMaxVelocity);
             this.shrinkDuration = 0;
             this.player.setScale(1.0);
             this.player.canShrink = true;

@@ -243,9 +243,11 @@ class BossRoom extends Phaser.Scene {
             console.assert(debugFlags.playerFlag, 'Shrink');
             if (this.player.canShrink) {
                 this.player.setScale(0.5);
+                this.player.setMaxVelocity(playerMaxVelocity/2);
                 this.player.canShrink = false;
                 this.time.delayedCall(3000, () => {
                     this.player.setScale(1.0);
+                    this.player.setMaxVelocity(playerMaxVelocity);
                     this.player.canShrink = true;
                 }, null, this);
             }

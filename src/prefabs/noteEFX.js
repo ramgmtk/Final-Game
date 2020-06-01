@@ -76,7 +76,7 @@ class efxEmitter {
             alpha: {from: 1, to: 0},
             scale: {from: 3, to: 0},
             angle: {from: 0, to: 360},
-            duration: 1000,
+            duration: 325,
             repeat: 0,
             onComplete: () => {
                 notefx.destroy();

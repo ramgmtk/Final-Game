@@ -11,6 +11,7 @@ class Projectile extends Phaser.Physics.Arcade.Sprite {
         this.scene = scene;
         this.setImmovable(true);
         this.setOrigin(0.5);
+        this.body.setCircle(this.body.halfWidth * 0.3, 15, 20);
         this.setDepth(uiDepth - 1);
 
         this.reverseable = reverseable;

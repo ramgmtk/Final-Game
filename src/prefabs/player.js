@@ -47,7 +47,9 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     }
 
     damagePlayer() {
-        this.health.updateHealth();
+        if (!devMode) {
+            this.health.updateHealth();
+        }
         this.scene.time.delayedCall(this.scene.bpms * 6, () => {
             this.canCollide = true;
         }, null, this);

@@ -11,7 +11,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false,
+            debug: true,
             gravity: {
                 x: 0,
                 y: 0,
@@ -25,10 +25,11 @@ let config = {
 let centerX = config.width/2;
 let centerY = config.height/2;
 let audio = 1.0;
+let devMode = false;
 
 let playerAtlas = 'foo';
 let playerAccel = 5000; //note at values this high, might be better off working with velocity alone.
-let playerMaxVelocity = 700;
+let playerMaxVelocity = 500;
 let playerDrag = playerAccel * 1.5;
 let projectileVelocity = 100;
 

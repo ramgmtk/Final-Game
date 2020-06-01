@@ -42,13 +42,14 @@ class Menu extends Phaser.Scene {
         this.load.image('space', 'space.png');
 
         this.load.path = './assets/';
-        this.load.image('bg', 'bg.png');
         this.load.image('shield', 'shield.png');
         this.load.image('invertedProjectile', 'invertedProjectile.png')
         this.load.image('reverse', 'reverse.png');
         this.load.image('Note Bar', 'Note_Bar.png')
         this.load.image('powerChord', 'powerChord.png');
         this.load.image('bossDoor', 'bossDoor.png');
+        this.load.image('uncheck', 'checkBox.png');
+        this.load.image('check', 'checkBoxChecked.png');
 
         //sound
         this.load.path = './assets/sounds/';
@@ -156,6 +157,27 @@ class Menu extends Phaser.Scene {
                 volume.setText(`${volumeLevel}`);
             }
         });
+
+        //setup dev mode box
+        let texture = devMode ? 'check' : 'uncheck';
+        let checkbox = this.add.image(game.config.height - 100, game.config.width - 100, texture, null).setOrigin(0.5).setDepth(uiDepth).setScale(0.5);
+        checkbox.setInteractive();
+        checkbox.on('pointerover', () => {
+            checkbox.setScale(0.6);
+        });
+        checkbox.on('pointerout', () => {
+            checkbox.setScale(0.5);
+        });
+        checkbox.on('pointerdown', () => {
+            texture = checkbox.texture.key == 'uncheck' ? 'check' : 'uncheck';
+            devMode = !devMode;
+            checkbox.setTexture(texture, null);
+        });
+        this.add.text(game.config.height - 100, game.config.width - 164, `Grader Mode`, {
+            fontFamily: 'Courier',
+            fontSize: '16px',
+            color: '#ffffff',
+        }).setOrigin(0.5).setDepth(uiDepth);
     }
 
     createAnimations() {
