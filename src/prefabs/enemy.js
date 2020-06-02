@@ -99,7 +99,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     damageEnemy(damage = 1) {
         this.health -= damage;
-        this.alphaTween.play();
+        //this.alphaTween.play();
         this.scaleTween.play();
         //insert some damage indicator
     }

@@ -1,3 +1,8 @@
+//Pluck and the Power of the Chord
+//Rammohan Ramanathan
+//Ricky Chavez
+//Anthony Plescia
+
 let config = {
     type: Phaser.CANVAS,
     render: {
