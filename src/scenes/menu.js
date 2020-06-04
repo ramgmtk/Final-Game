@@ -40,6 +40,7 @@ class Menu extends Phaser.Scene {
         this.load.image('hijkl', 'hijkl.png');
         this.load.image('wasd', 'wasd.png');
         this.load.image('space', 'space.png');
+        this.load.image('menuBG', 'MenuBG.png');
 
         this.load.path = './assets/';
         this.load.image('shield', 'shield.png');
@@ -69,21 +70,8 @@ class Menu extends Phaser.Scene {
 
     create() {
         this.createAnimations();
-        /*let menuConfig = {
-            fontFamily: 'Courier',
-            fontSize: '28px',
-            backgroundColor: '#F3B141',
-            color: '#843605',
-            align: 'right',
-            padding: {
-                top: 5,
-                bottom: 5,
-            },
-            fixedWidth: 0
-        }
-        this.add.text(centerX , centerY - 32, 'Final Game Prototype' , menuConfig).setOrigin(.5);
-        this.add.text(centerX, centerY, 'WASD to move, F melee attack, hijkl note keys', menuConfig).setOrigin(0.5);
-        this.add.text(centerX, centerY + 32, 'Press SPACE to play song / start', menuConfig).setOrigin(0.5);*/
+        
+        this.add.image(0, 0, 'menuBG').setOrigin(0).setDepth(0);
 
         let volumeLevel = audio * 10;
         let playButton = this.add.image(centerX, centerY, 'playButton', null).setOrigin(0.5).setDepth(uiDepth);
@@ -95,7 +83,7 @@ class Menu extends Phaser.Scene {
         let volume = this.add.text(centerX + 218/2, centerY + 350, `${volumeLevel}`, {
             fontFamily: 'Courier',
             fontSize: '64px',
-            color: '#ffffff',
+            color: '#000000',
 
         }).setOrigin(0.5).setDepth(uiDepth);
 
@@ -176,7 +164,7 @@ class Menu extends Phaser.Scene {
         this.add.text(game.config.height - 100, game.config.width - 164, `Grader Mode`, {
             fontFamily: 'Courier',
             fontSize: '16px',
-            color: '#ffffff',
+            color: '#000000',
         }).setOrigin(0.5).setDepth(uiDepth);
     }
 

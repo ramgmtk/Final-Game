@@ -89,7 +89,7 @@ class Enemy extends Phaser.Physics.Arcade.Sprite {
             this.anims.play('AmpAttackForward');
             this.resetFlip();
         }
-        for (let i = -1; i < 2; i++) {
+        for (let i = 0; i < 1; i++) {
             let angle = theta + (i * dTheta);
             let projectile = new Projectile(this.scene, this.x, this.y, 'Projectile', this, Math.cos(angle), Math.sin(angle), projectileVelocity);
             this.projectileGroup.add(projectile);

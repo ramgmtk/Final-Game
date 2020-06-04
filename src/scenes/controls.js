@@ -10,14 +10,16 @@ class Controls extends Phaser.Scene {
             color: '#ffffff',
         }
 
-        this.add.image(centerX - 250, centerY - 200, 'wasd', null).setOrigin(0.5).setDepth(uiDepth).setScale(1.5);
-        this.add.image(centerX + 250, centerY - 200, 'hijkl', null).setOrigin(0.5).setDepth(uiDepth).setScale(1.5);
-        this.add.image(centerX, centerY - 175, 'keyAtlas', 'f').setOrigin(0.5).setDepth(uiDepth).setScale(1.5);
+        this.add.image(0, 0, 'menuBG').setOrigin(0).setDepth(0);
+        
+        this.add.image(centerX - 250, centerY - 100, 'wasd', null).setOrigin(0.5).setDepth(uiDepth).setScale(1.5);
+        this.add.image(centerX + 250, centerY - 100, 'hijkl', null).setOrigin(0.5).setDepth(uiDepth).setScale(1.5);
+        this.add.image(centerX, centerY - 75, 'keyAtlas', 'f').setOrigin(0.5).setDepth(uiDepth).setScale(1.5);
         this.add.image(centerX, centerY + 50, 'space', null).setOrigin(0.5).setDepth(uiDepth).setScale(1.5);
 
-        this.add.text(centerX - 325 , centerY - 150, 'Movement', textConfig);
-        this.add.text(centerX + 175 , centerY - 150, 'Play Note', textConfig);
-        this.add.text(centerX - 50, centerY - 125, 'Melee', textConfig);
+        this.add.text(centerX - 325 , centerY - 50, 'Movement', textConfig);
+        this.add.text(centerX + 175 , centerY - 50, 'Play Note', textConfig);
+        this.add.text(centerX - 50, centerY - 25, 'Melee', textConfig);
         this.add.text(centerX - 88, centerY + 100, 'Play Song', textConfig);
 
         let backButton  = this.add.image(centerX, game.config.height - 200, 'backButton', null).setOrigin(0.5).setDepth(uiDepth);

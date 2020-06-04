@@ -101,10 +101,10 @@ class Game extends Phaser.Scene {
             runChildUpdate: true,
         });
         let eSpawnString = 'enemy_spawn';
-        for (let i = 0; i < 35; i++) {
+        for (let i = 0; i < 32; i++) {
             let eSpawnS = eSpawnString + (i + 1).toString();
             let eSpawn = map.findObject('Object_Layer', (obj) => obj.name == eSpawnS);
-            let enemy = new Enemy(this, eSpawn.x, eSpawn.y, playerAtlas, 10, 'AMPidle');
+            let enemy = new Enemy(this, eSpawn.x, eSpawn.y, playerAtlas, 1, 'AMPidle');
             this.enemyGroup.add(enemy);
         }
 
