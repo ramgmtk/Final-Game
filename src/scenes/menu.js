@@ -66,6 +66,7 @@ class Menu extends Phaser.Scene {
         this.load.audio('bossTheme3', 'Boss_theme3.wav');
         this.load.audio('bossTransition1', 'First_Boss_Transition.wav');
         this.load.audio('bossTransition2', 'Second_Boss_Transition.wav');
+        this.load.audio('gameOverSound', 'Groan.wav');
     }
 
     create() {

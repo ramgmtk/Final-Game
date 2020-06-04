@@ -9,6 +9,7 @@ class BossRoom extends Phaser.Scene {
 
     create() {
         this.gameOver = false;
+        this.playerDeath = false;
         this.winner = false;
         this.finalPhase = false;
         this.finalPhaseStart = false;
@@ -71,7 +72,10 @@ class BossRoom extends Phaser.Scene {
             if (this.boss.health > 0) {
                 this.boss.update();
                 //projectile collider
-                this.physics.world.collide(this.player, this.projectileGroup, this.damagePlayer, (object1, object2) => {
+                this.physics.world.collide(this.player, this.projectileGroup, (object1, object2) =>{
+                    object2.destroy();
+                    this.damagePlayer(object1, object2);
+                }, (object1, object2) => {
                     return object1.canCollide && !object2.canCollideParent ? true : false;
                 }, this); //COMMENTED OUT FOR GOD MODE
                 if (Phaser.Input.Keyboard.JustDown(this.controls.space)) {
@@ -107,16 +111,18 @@ class BossRoom extends Phaser.Scene {
                 }   
             }
         } else {
-            this.destroyObjects();
-            this.scene.start('gameOverScene');
-            this.scene.remove('bossScene');
+            if (this.playerDeath) {
+                this.destroyObjects();
+                this.scene.start('gameOverScene');
+                this.scene.remove('bossScene');
+            }
         }
     }
 
     destroyObjects() {
         this.time.removeAllEvents(); 
-        this.projectileGroup.clear(true, true);
-        this.boss.destroyObject();
+        //this.projectileGroup.clear(true, true);
+        //this.boss.destroyObject();
         this.sound.stopAll();
         this.player.destroy();
     }
@@ -129,11 +135,25 @@ class BossRoom extends Phaser.Scene {
         if (this.player.health.healthNum == 0) {
             console.log('destroy player')
             this.gameOver = true;
+            this.player.setAcceleration(0);
+            this.player.setDrag(0);
+            this.player.setVelocity(0);
+            this.bgm.pause();
+            this.gameOverSound.play();
+            this.player.particleManager.gameOverParticles();
+            this.tweens.add({
+                targets: this.player,
+                scale: {from: 1, to: 0},
+                alpha: {from: 1, to: 0},
+                duration: 3000,
+                repeat: 0,
+            });
             let health = this.player.healthBar.pop();
             health.destroy();
+            this.projectileGroup.clear(true, true);
+            this.boss.destroyObject();
         } else {
         //SHOULD FIX add player blinking effect here
-            object2.destroy();
             this.player.damagePlayer();
         }
         
@@ -175,16 +195,9 @@ class BossRoom extends Phaser.Scene {
             duration: this.transition2.duration * 1000,
             repeat: 0,
             onComplete: ()=> {
-                this.pCollide = this.physics.add.overlap(this.player, this.boss.body, (object1, object2) => {
-                    this.bossCam.shake(500, 0.003 * 1/bossZoom, false);
-                    object1.canCollide = false;
-                    //Check if player has hit 0 health
-                    if (this.player.health.healthNum == 0) {
-                        this.gameOver = true;
-                        let health = this.player.healthBar.pop();
-                        health.destroy();
-                    } else {
-                        this.player.damagePlayer();
+                this.pCollide = this.physics.add.overlap(this.player, this.boss, (object1, object2) => {
+                    this.damagePlayer(object1, object2);
+                    if (this.player.health.healthNum > 0) {
                         this.boss.y = this.player.y - 400;
                         this.boss.setVelocity(0);
                     }
@@ -458,6 +471,13 @@ class BossRoom extends Phaser.Scene {
         });
 
         this.transition2 = this.sound.add('bossTransition2', {
+            mute: false,
+            volume: 0.3 * audio,
+            rate: 1.0,
+            loop: false,
+        });
+
+        this.gameOverSound = this.sound.add('gameOverSound', {
             mute: false,
             volume: 0.3 * audio,
             rate: 1.0,

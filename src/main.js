@@ -29,12 +29,12 @@ let config = {
 //GLOBALS
 let centerX = config.width/2;
 let centerY = config.height/2;
-let audio = 1.0;
+let audio = 0.5;
 let devMode = false;
 
 let playerAtlas = 'foo';
 let playerAccel = 5000; //note at values this high, might be better off working with velocity alone.
-let playerMaxVelocity = 500;
+let playerMaxVelocity = 300;
 let playerDrag = playerAccel * 1.5;
 let projectileVelocity = 100;
 

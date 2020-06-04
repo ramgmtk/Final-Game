@@ -84,6 +84,37 @@ class efxEmitter {
             onCompleteScope: this,
         });
     }
+
+    gameOverParticles() {
+        let theta = (Math.PI/(4));
+        for (let i = 0; i < 7; i++) {
+            let efx = new efxParticle(this.scene, this.parent.x, this.parent.y, playerAtlas, 'MCidle').setAlpha(0.3).setDepth(uiDepth - 1); 
+            this.scene.tweens.add({
+                targets: efx,
+                x: {from: efx.origin.x, to: efx.origin.x + (100*Math.cos(i * theta))},
+                y: {from: efx.origin.y, to: efx.origin.y + (100*Math.sin(i*theta))},
+                duration: 3000,
+                repeat: 0,
+                onComplete: () => {
+                    efx.destroy();
+                },
+                onCompleteScope: this,
+            });
+        }
+        let efx = new efxParticle(this.scene, this.parent.x, this.parent.y, playerAtlas, 'MCidle').setAlpha(0.3).setDepth(uiDepth - 1); 
+        this.scene.tweens.add({
+            targets: efx,
+            x: {from: efx.origin.x, to: efx.origin.x + (100*Math.cos(7 * theta))},
+            y: {from: efx.origin.y, to: efx.origin.y + (100*Math.sin(7 * theta))},
+            duration: 3000,
+            repeat: 0,
+            onComplete: () => {
+                this.scene.playerDeath = true;
+                efx.destroy();
+            },
+            onCompleteScope: this,
+        });
+    }
 }
 
 class efxParticle extends Phaser.GameObjects.Sprite {

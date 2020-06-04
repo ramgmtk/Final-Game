@@ -8,6 +8,7 @@ class Game extends Phaser.Scene {
     create() {
         //misc
         this.gameOver = false;
+        this.playerDeath = false;
         this.bpms = 324;
         this.exitWorld = false;
         this.shrinkDuration = 0;
@@ -173,15 +174,21 @@ class Game extends Phaser.Scene {
                 this.exitWorld = true;
             }, null, this);
         } else {
-            this.destroyObjects();
+            //this.destroyObjects();
             if (this.gameOver) {
-                this.scene.start('gameOverScene');
-                this.scene.remove('bossScene');
-                
+                this.player.setAcceleration(0);
+                this.player.setDrag(0);
+                if (this.playerDeath) {
+                    this.destroyObjects();
+                    this.scene.start('gameOverScene');
+                    this.scene.remove('bossScene');
+                    this.scene.remove('gameScene');
+                }
             } else {
+                this.destroyObjects();
                 this.scene.start('bossScene');
+                this.scene.remove('gameScene');
             }
-            this.scene.remove('gameScene');
         }
     }
 
@@ -207,6 +214,19 @@ class Game extends Phaser.Scene {
         if (this.player.health.healthNum == 0) {
             this.gameOver = true;
             this.exitWorld = true;
+            this.player.setAcceleration(0);
+            this.player.setDrag(0);
+            this.player.setVelocity(0);
+            this.bgm.pause();
+            this.gameOverSound.play();
+            this.player.particleManager.gameOverParticles();
+            this.tweens.add({
+                targets: this.player,
+                scale: {from: 1, to: 0},
+                alpha: {from: 1, to: 0},
+                duration: 3000,
+                repeat: 0,
+            });
             let health = this.player.healthBar.pop();
             //THERE ARE CASES WHERE THIS IS CALLED TWICE I THINK. SHOULD FIX. LIKELY CAUSE IT DAMAGE PLAYER GETTING CALLED TWICE
             health.destroy();
@@ -392,6 +412,13 @@ class Game extends Phaser.Scene {
         this.enemySound = this.sound.add('AmpAttack', {
             mute: false,
             volume: 0.1 * audio,
+            rate: 1.0,
+            loop: false,
+        });
+
+        this.gameOverSound = this.sound.add('gameOverSound', {
+            mute: false,
+            volume: 0.3 * audio,
             rate: 1.0,
             loop: false,
         });
