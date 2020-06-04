@@ -64,6 +64,9 @@ class BossRoom extends Phaser.Scene {
         this.powerChordCam;
         this.shieldCam;
         this.createCams();
+
+        //
+        this.deathbg = this.add.image(0, 0, 'whiteBG').setDepth(uiDepth + 1).setDepth(uiDepth + 1).setAlpha(0).setOrigin(0).setScale(13, 13);
     }
 
     update() {
@@ -90,7 +93,7 @@ class BossRoom extends Phaser.Scene {
                 if (this.player.isAttacking) {
                     this.physics.world.collide(this.player.weapon, this.boss, (object1, object2) => {
                         this.player.hasAttacked = true
-                        object2.damageEnemy(3);
+                        object2.damageEnemy(100);
                     }, () => {
                         return !this.player.hasAttacked;
                     }, this);
@@ -100,12 +103,12 @@ class BossRoom extends Phaser.Scene {
             } else if (this.finalPhaseStart) {
                 if (!this.winner) {
                     if (!this.bossHit) {
-                        this.boss.moveTo({x: this.player.x, y: this.player.y}, playerMaxVelocity/1.5);
+                        this.boss.moveTo({x: this.player.x, y: this.player.y}, playerMaxVelocity * 2/1.5);
                     }
                 } else {
                     if (this.endScene) {
                         this.destroyObjects();
-                        this.scene.start('gameOverScene'); //replace with winner screen MUST FIX
+                        this.scene.start('creditScene'); //replace with winner screen MUST FIX
                         this.scene.remove('bossScene');
                     }
                 }   
@@ -145,6 +148,16 @@ class BossRoom extends Phaser.Scene {
                 targets: this.player,
                 scale: {from: 1, to: 0},
                 alpha: {from: 1, to: 0},
+                duration: 3000,
+                repeat: 0,
+                onComplete: () => {
+                    this.playerDeath = true;
+                },
+                onCompleteScope: this,
+            });
+            this.tweens.add({
+                targets: this.deathbg,
+                alpha: {from: 0, to: 1},
                 duration: 3000,
                 repeat: 0,
             });
@@ -246,7 +259,7 @@ class BossRoom extends Phaser.Scene {
         //add code below to string compare which combo to play
         if (noteCombo == powerChordBar[0].powerChord) {
             console.assert(debugFlags.playerFlag, 'Reverse');
-            this.player.particleManager.generateParticles_v2();
+            this.player.particleManager.reverseParticles();
             this.physics.world.overlap(this.player.reverseRange, this.projectileGroup, (object1, object2) => {
                 object2.redirect();
             }, (object1, object2) => {
@@ -286,7 +299,7 @@ class BossRoom extends Phaser.Scene {
                 }, null, this);
             }
         } else {
-            this.player.particleManager.generateParticles_v3();
+            this.player.particleManager.dudParticles();
         }
         //Reset the bar
         this.player.clearNoteBar();

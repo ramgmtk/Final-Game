@@ -7,6 +7,7 @@ class Game extends Phaser.Scene {
     }*/
     create() {
         //misc
+        this.deathbg = this.add.image(0, 0, 'whiteBG').setDepth(uiDepth + 1).setDepth(uiDepth + 1).setAlpha(0).setOrigin(0).setScale(34, 34);
         this.gameOver = false;
         this.playerDeath = false;
         this.bpms = 324;
@@ -138,6 +139,8 @@ class Game extends Phaser.Scene {
         this.physics.add.existing(this.bossEntrance);
         this.bossEntrance.setImmovable(true);
         this.add.existing(this.bossEntrance);
+
+        this.deathbg = this.add.image(0, 0, 'whiteBG').setDepth(uiDepth + 1).setDepth(uiDepth + 1).setAlpha(0).setOrigin(0).setScale(34, 34);
     }
 
     update() {
@@ -212,6 +215,7 @@ class Game extends Phaser.Scene {
         object1.canCollide = false;
         //Check if player has hit 0 health
         if (this.player.health.healthNum == 0) {
+
             this.gameOver = true;
             this.exitWorld = true;
             this.player.setAcceleration(0);
@@ -224,6 +228,16 @@ class Game extends Phaser.Scene {
                 targets: this.player,
                 scale: {from: 1, to: 0},
                 alpha: {from: 1, to: 0},
+                duration: 3000,
+                repeat: 0,
+                onComplete: () => {
+                    this.playerDeath = true;
+                },
+                onCompleteScope: this,
+            });
+            this.tweens.add({
+                targets: this.deathbg,
+                alpha: {from: 0, to: 1},
                 duration: 3000,
                 repeat: 0,
             });
@@ -279,7 +293,7 @@ class Game extends Phaser.Scene {
         //add code below to string compare which combo to play
         if (noteCombo == powerChordBar[0].powerChord) {
             console.assert(debugFlags.playerFlag, 'Reverse');
-            this.player.particleManager.generateParticles_v2();
+            this.player.particleManager.reverseParticles();
             this.physics.world.overlap(this.player.reverseRange, this.projectileGroup, (object1, object2) => {
                 object2.redirect();
             }, (object1, object2) => {
@@ -323,7 +337,7 @@ class Game extends Phaser.Scene {
                 return object2.collides;
             }, this);
         } else {
-            this.player.particleManager.generateParticles_v3();
+            this.player.particleManager.dudParticles();
         }
         //Reset the bar
         this.player.clearNoteBar();

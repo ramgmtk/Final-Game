@@ -13,7 +13,7 @@ class efxEmitter {
         });
     }
 
-    generateParticles() {
+    noteParticles() {
         for (let i = 0; i < this.xArr.length; i++) {
             let notefx = new efxParticle(this.scene, this.parent.x, 
                 this.parent.y, this.texture, this.frame).setDepth(uiDepth - 1).setOrigin(0.5);
@@ -34,7 +34,7 @@ class efxEmitter {
         } 
     }
 
-    generateParticles_v3() {
+    dudParticles() {
         let notefx = new efxParticle(this.scene, this.parent.x, 
             this.parent.y, this.texture, this.frame).setDepth(uiDepth - 1).setOrigin(0.5);
         let noteTween = this.scene.tweens.add({
@@ -67,7 +67,7 @@ class efxEmitter {
         });
     }
 
-    generateParticles_v2() {
+    reverseParticles() {
         let notefx = new efxParticle(this.scene, this.parent.x, this.parent.y,
             'reverse', 0).setScale(0).setDepth(uiDepth -1).setOrigin(0.5);
         this.noteGroup.add(notefx);
@@ -109,11 +109,17 @@ class efxEmitter {
             duration: 3000,
             repeat: 0,
             onComplete: () => {
-                this.scene.playerDeath = true;
                 efx.destroy();
             },
             onCompleteScope: this,
         });
+    }
+
+    shieldEfx() {
+        let theta = Math.PI/2;
+        for (let i = 0; i < 4; i++) {
+            let efx = new efxParticle(this.scene, this.parent.x, this.parent.y, this.texture, this.frame).setAlpha(0).setDepth(uiDepth - 1);
+        }
     }
 }
 

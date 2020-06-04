@@ -7,7 +7,7 @@ class Controls extends Phaser.Scene {
         let textConfig  = {
             fontFamily: 'Courier',
             fontSize: '32px',
-            color: '#ffffff',
+            color: '#000000',
         }
 
         this.add.image(0, 0, 'menuBG').setOrigin(0).setDepth(0);

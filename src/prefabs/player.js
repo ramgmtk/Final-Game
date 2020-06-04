@@ -206,7 +206,7 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     playMusic(musicalNote) {
         console.assert(debugFlags.playerFlag, 'Entered music note callback');
         //this.noteEfx.explode(5, this.x, this.y);
-        this.particleManager.generateParticles();
+        this.particleManager.noteParticles();
         this.setFlipY(false);
         this.anims.play('play', false);
         switch(musicalNote.keyCode) {

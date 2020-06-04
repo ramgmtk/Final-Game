@@ -23,7 +23,7 @@ let config = {
             }
         }
     },
-    scene: [Menu, Controls, GameOver],
+    scene: [Menu, Controls, GameOver, Credits],
 }
 
 //GLOBALS
