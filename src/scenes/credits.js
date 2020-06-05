@@ -4,7 +4,8 @@ class Credits extends Phaser.Scene {
     }
 
     create() {
-
+        this.createSoud();
+        this.bossTheme1.play();
         let textConfig  = {
             fontFamily: 'Courier',
             fontSize: '32px',
@@ -26,7 +27,41 @@ class Credits extends Phaser.Scene {
             backButton.setScale(1.0);
         });
         backButton.on('pointerdown', () => {
+            this.sound.stopAll();
             this.scene.start('menuScene');
+        });
+    }
+
+    createSoud() {
+        this.bossTheme1 = this.sound.add('bossTheme1', {
+            mute: false,
+            volume: 0.3 * audio,
+            rate: 1.0,
+            loop: false,
+        });
+
+        this.bossTheme2 = this.sound.add('bossTheme2', {
+            mute: false,
+            volume: 0.3 * audio,
+            rate: 1.0,
+            loop: false,
+        });
+
+        this.bossTheme3 = this.sound.add('bossTheme3', {
+            mute: false,
+            volume: 0.3 * audio,
+            rate: 1.0,
+            loop: false,
+        });
+
+        this.bossTheme1.once('complete', () => {
+            this.bossTheme2.play();
+        });
+        this.bossTheme2.once('complete', () => {
+            this.bossTheme3.play();
+        });
+        this.bossTheme3.once('complete', () => {
+            this.bossTheme1.play();
         });
     }
 }

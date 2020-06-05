@@ -72,10 +72,12 @@ class Game extends Phaser.Scene {
         let pChordSpawn;
         let pChordArr = ['Power_Chord_Reflect', 'Power_Chord_Shrink', 'Power_Chord_Shield', 'Power_Chord_Destroy'];
         for (let i = 0; i < powerChordBar.length; i++) {
-            pChordSpawn = map.findObject('Object_Layer',  (obj) => obj.name === pChordArr[i]);
-            let pChord = new PowerChord(this, pChordSpawn.x, pChordSpawn.y, 'powerChord', null, powerChordBar[i].powerChord);
-            pChord.setScale(0.5);
-            this.pChordGroup.add(pChord);
+            if (!powerChordBar[i].unlocked) {
+                pChordSpawn = map.findObject('Object_Layer',  (obj) => obj.name === pChordArr[i]);
+                let pChord = new PowerChord(this, pChordSpawn.x, pChordSpawn.y, 'powerChord', null, powerChordBar[i].powerChord);
+                pChord.setScale(0.5);
+                this.pChordGroup.add(pChord);
+            }
         }
 
         this.physics.add.collider(this.player, this.pChordGroup, (obj1, obj2) => {
@@ -334,7 +336,6 @@ class Game extends Phaser.Scene {
         } else if (noteCombo == powerChordBar[3].powerChord) {
             console.assert(debugFlags.playerFlag, 'unlock');
             this.physics.world.overlap(this.player.reverseRange, this.destructible_layer, (object1, object2) => {
-                console.log(typeof this.destructible_layer);
                 this.map.removeTile(object2);
             }, (object1, object2) => {
                 return object2.collides;

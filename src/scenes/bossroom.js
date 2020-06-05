@@ -94,7 +94,7 @@ class BossRoom extends Phaser.Scene {
                 if (this.player.isAttacking) {
                     this.physics.world.collide(this.player.weapon, this.boss, (object1, object2) => {
                         this.player.hasAttacked = true
-                        object2.damageEnemy(3);
+                        object2.damageEnemy(100);
                     }, () => {
                         return !this.player.hasAttacked;
                     }, this);
@@ -220,7 +220,6 @@ class BossRoom extends Phaser.Scene {
                 }, this);
                 this.wCollide = this.physics.add.overlap(this.player.weapon, this.boss, () => {
                     this.player.hasAttacked = true;
-                    console.log('hitting bos');
                     this.boss.y = this.player.weapon.y - 300;
                     this.boss.setVelocity(0);
                     this.bossHit = true;
