@@ -23,6 +23,7 @@ class Menu extends Phaser.Scene {
         this.load.atlas('bossAtlas', 'BossSprite.png', 'BossSprite.json');
         this.load.atlas('healthAtlas', 'health.png', 'health.json');
         this.load.atlas('powerAtlas', 'powerchords.png', 'powerchords.json');
+        this.load.atlas('doorAtlas', 'doorSprite.png', 'doorSprite.json');
         this.load.atlas('keyAtlas', 'keys.png', 'keys.json');
         this.load.path = './assets/tilemap/';
         this.load.image('tutorial_tile', 'Tile_Sheet_v2.png');
@@ -385,6 +386,17 @@ class Menu extends Phaser.Scene {
             }),
             //yoyo: true,
             duration: 325,
+            repeat: -1,
+        });
+
+        this.anims.create({
+            key: 'doorAnim',
+            defaultTextureKey: 'doorAtlas',
+            frames: [
+                {frame: 'doorSprite1'},
+                {frame: 'doorSprite2'},
+            ],
+            frameRate: 2,
             repeat: -1,
         });
     }

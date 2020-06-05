@@ -7,6 +7,8 @@ class efxEmitter {
         this.particleDistance = 50;
         this.xArr = [this.particleDistance, -this.particleDistance, this.particleDistance, -this.particleDistance];
         this.yArr = [this.particleDistance, this.particleDistance, -this.particleDistance, -this.particleDistance];
+        this.xArr2 = [200, 0, -200, 0];
+        this.yArr2 = [0, 200, 0, -200];
         this.noteGroup = this.scene.add.group({
             scene: this,
             runChildUpdate: true,
@@ -118,7 +120,33 @@ class efxEmitter {
     shieldEfx() {
         let theta = Math.PI/2;
         for (let i = 0; i < 4; i++) {
-            let efx = new efxParticle(this.scene, this.parent.x, this.parent.y, this.texture, this.frame).setAlpha(0).setDepth(uiDepth - 1);
+            let notefx = new efxParticle(this.scene, this.parent.x, this.parent.y, this.texture, this.frame).setAlpha(0).setDepth(uiDepth - 1).setScale(1);
+            this.scene.tweens.add({
+                targets: notefx,
+                alpha: {from: 0, to: 1},
+                x: {from: notefx.origin.x, to: notefx.origin.x + this.xArr2[i]},
+                y: {from: notefx.origin.y, to: notefx.origin.y + this.yArr2[i]},
+                duration: 1000,
+                repeat: 0,
+                ease: 'Sine.easeOut',
+                onComplete: () => {
+                    this.scene.tweens.add({
+                        targets: notefx,
+                        alpha: {from: 0, to: 1},
+                        scale: {from: 1, to: 0},
+                        x: this.scene.mainCam.getWorldPoint(20 * 1/this.scene.mainCam.zoom + 15, 20 * 1/this.scene.mainCam.zoom + 15 + this.scene.heartInfo.height).x,
+                        y: this.scene.mainCam.getWorldPoint(20 * 1/this.scene.mainCam.zoom + 15, 20 * 1/this.scene.mainCam.zoom + 15 + this.scene.heartInfo.height).y,
+                        repeat: 0,
+                        duration: 1000,
+                        ease: 'Sine.easeOut',
+                        onComplete: () => {
+                            notefx.destroy();
+                        },
+                        onCompleteSCope: this,
+                    });
+                },
+                onCompleteScope: this,
+            });
         }
     }
 }

@@ -72,32 +72,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":78.4051469931195,
-                 "y":3106.30819408453
-                }, 
-                {
-                 "height":0,
-                 "id":2,
-                 "name":"Boss_Entrance",
-                 "polygon":[
-                        {
-                         "x":0,
-                         "y":0
-                        }, 
-                        {
-                         "x":0,
-                         "y":220
-                        }, 
-                        {
-                         "x":114,
-                         "y":112
-                        }],
-                 "rotation":0,
-                 "type":"",
-                 "visible":true,
-                 "width":0,
-                 "x":2941,
-                 "y":3120
+                 "x":78.4051,
+                 "y":3106.31
                 }, 
                 {
                  "height":0,
@@ -131,8 +107,8 @@
                  "type":"",
                  "visible":true,
                  "width":34,
-                 "x":60.3141810383344,
-                 "y":3279.22741488696
+                 "x":60.3142,
+                 "y":3279.23
                 }, 
                 {
                  "ellipse":true,
@@ -531,6 +507,18 @@
                  "width":0,
                  "x":1988,
                  "y":3308
+                }, 
+                {
+                 "height":0,
+                 "id":150,
+                 "name":"Boss_Entrance",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2973.81824680547,
+                 "y":3247.40952551157
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -539,7 +527,7 @@
          "y":0
         }],
  "nextlayerid":6,
- "nextobjectid":150,
+ "nextobjectid":151,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.3.4",

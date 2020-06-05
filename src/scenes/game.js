@@ -74,6 +74,7 @@ class Game extends Phaser.Scene {
         for (let i = 0; i < powerChordBar.length; i++) {
             pChordSpawn = map.findObject('Object_Layer',  (obj) => obj.name === pChordArr[i]);
             let pChord = new PowerChord(this, pChordSpawn.x, pChordSpawn.y, 'powerChord', null, powerChordBar[i].powerChord);
+            pChord.setScale(0.5);
             this.pChordGroup.add(pChord);
         }
 
@@ -121,24 +122,25 @@ class Game extends Phaser.Scene {
         this.bgm.play();
 
         //CAMERA SETUP
-        this.playerCam;
+        this.mainCam;
         this.noteCam;
         this.heartCam;
         this.powerChordCam;
         this.shieldCam;
-        let cams = createCams(this, this.heartCam, this.noteCam, this.powerChordCam, this.playerCam, this.shieldCam);
+        let cams = createCams(this, this.heartCam, this.noteCam, this.powerChordCam, this.mainCam, this.shieldCam);
         this.heartCam = cams[0];
         this.noteCam = cams[1];
         this.powerChordCam = cams[2];
-        this.playerCam = cams[3];
+        this.mainCam = cams[3];
         this.shieldCam = cams[4];
 
         //test
         const bEnt = map.findObject('Object_Layer', (obj) => obj.name === 'Boss_Entrance');
-        this.bossEntrance = new Phaser.Physics.Arcade.Sprite(this, bEnt.x, bEnt.y, 'bossDoor', null).setDepth(uiDepth - 1);
+        this.bossEntrance = new Phaser.Physics.Arcade.Sprite(this, bEnt.x, bEnt.y, 'doorAtlas', 'doorSprite1').setDepth(uiDepth - 1);
         this.physics.add.existing(this.bossEntrance);
         this.bossEntrance.setImmovable(true);
         this.add.existing(this.bossEntrance);
+        this.bossEntrance.anims.play('doorAnim');
 
         this.deathbg = this.add.image(0, 0, 'whiteBG').setDepth(uiDepth + 1).setDepth(uiDepth + 1).setAlpha(0).setOrigin(0).setScale(34, 34);
     }
@@ -167,7 +169,8 @@ class Game extends Phaser.Scene {
             }
             if (this.player.shieldActive) {
                 this.physics.world.overlap(this.player.shield, this.projectileGroup, (object1, object2) => {
-                    this.player.shieldMeter.increase(2);
+                    this.player.particleManager.shieldEfx();
+                    this.player.shieldMeter.increase(15);
                     object2.destroy();
                 }, null, this);
             }
@@ -210,7 +213,7 @@ class Game extends Phaser.Scene {
     //object2 is the projectile that has hit the player
     damagePlayer(object1, object2) {
         console.assert(debugFlags.enemyFlag, 'Collision with projectile');
-        this.playerCam.shake(500, 0.005, false);
+        this.mainCam.shake(500, 0.005, false);
         this.heartCam.shake(1500, 0.010, false);
         object1.canCollide = false;
         //Check if player has hit 0 health
@@ -256,7 +259,7 @@ class Game extends Phaser.Scene {
         this.createPowerChordList();
         this.heartCam.ignore([this.powerChordList]);
         this.noteCam.ignore([this.powerChordList]);
-        this.playerCam.ignore([this.powerChordList]);
+        this.mainCam.ignore([this.powerChordList]);
         this.shieldCam.ignore([this.powerChordList]);
     }
     //update the notebar

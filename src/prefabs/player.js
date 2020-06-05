@@ -70,7 +70,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             onCompleteScope: this,
         });
         this.scaleTween.play();
-        this.healthTween.play();
     }
 
 
@@ -299,18 +298,6 @@ class Player extends Phaser.Physics.Arcade.Sprite {
             repeat: 6,
             onComplete: () => {
                 this.setAlpha(1.0);
-            },
-            onCompleteScope: this,
-        });
-        this.healthTween = this.scene.tweens.add({
-            targets: this.health.health,
-            paused: true,
-            //angle: {from: 0, to: 360},
-            scale: {from: 1, to: 0},
-            duration: this.scene.bpms,
-            repeat: 4,
-            onComplete: () => {
-                this.health.health.setScale(1.0);
             },
             onCompleteScope: this,
         });

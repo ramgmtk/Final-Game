@@ -57,7 +57,7 @@ class BossRoom extends Phaser.Scene {
 
         //camera setup
         //CAMERA SETUP
-        this.bossCam;
+        this.mainCam;
         this.bossHealthCam;
         this.noteCam;
         this.heartCam;
@@ -86,14 +86,15 @@ class BossRoom extends Phaser.Scene {
                 }
                 if (this.player.shieldActive) {
                     this.physics.world.collide(this.player.shield, this.projectileGroup, (object1, object2) => {
-                        this.player.shieldMeter.increase(2);
+                        this.player.particleManager.shieldEfx();
+                        this.player.shieldMeter.increase(5);
                         object2.destroy();
                     }, null, this);
                 }
                 if (this.player.isAttacking) {
                     this.physics.world.collide(this.player.weapon, this.boss, (object1, object2) => {
                         this.player.hasAttacked = true
-                        object2.damageEnemy(100);
+                        object2.damageEnemy(3);
                     }, () => {
                         return !this.player.hasAttacked;
                     }, this);
@@ -132,7 +133,7 @@ class BossRoom extends Phaser.Scene {
 
     damagePlayer(object1, object2) {
         console.assert(debugFlags.enemyFlag, 'Collision with projectile');
-        this.bossCam.shake(500, 0.003 * 1/bossZoom, false);
+        this.mainCam.shake(500, 0.003 * 1/bossZoom, false);
         object1.canCollide = false;
         //Check if player has hit 0 health
         if (this.player.health.healthNum == 0) {
@@ -329,11 +330,11 @@ class BossRoom extends Phaser.Scene {
     }
 
     createCams() {
-        let cams = createCams(this, this.heartCam, this.noteCam, this.powerChordCam, this.bossCam, this.shieldCam);
+        let cams = createCams(this, this.heartCam, this.noteCam, this.powerChordCam, this.mainCam, this.shieldCam);
         this.heartCam = cams[0];
         this.noteCam = cams[1];
         this.powerChordCam = cams[2];
-        this.bossCam = cams[3];
+        this.mainCam = cams[3];
         this.shieldCam = cams[4];
         this.heartCam.ignore([this.boss.healthBar.healthBar]);
         this.noteCam.ignore([this.boss.healthBar.healthBar, this.projectileGroup]);
@@ -344,7 +345,7 @@ class BossRoom extends Phaser.Scene {
         this.bossHealthCam.setViewport(centerX * 0.65, 0, centerX, 50);
         this.bossHealthCam.setScroll(uiOffset.x, uiOffset.y);
         this.bossHealthCam.ignore([this.player.healthBar, this.powerChordList, this.player.noteBar, this.projectileGroup, this.player.shieldMeter.meter]);
-        this.bossCam.setZoom(bossZoom);
+        this.mainCam.setZoom(bossZoom);
     }
 
     setupBossTheme() {
