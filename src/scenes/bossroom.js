@@ -39,7 +39,7 @@ class BossRoom extends Phaser.Scene {
             i: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.I),
             space: this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE),
         };
-        this.player = new Player(this, centerX * 1/bossZoom , centerY * 1/bossZoom + 200, playerAtlas, 'MCidle', 'Note');
+        this.player = new Player(this, centerX * 1/bossZoom , centerY * 1/bossZoom + 400, playerAtlas, 'MCidle', 'Note');
         //UI ELEMENTS
         this.powerChordList = new Array(powerChordBar.length);
         this.createPowerChordList();

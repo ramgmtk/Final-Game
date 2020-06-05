@@ -43,13 +43,13 @@ class Menu extends Phaser.Scene {
         this.load.image('space', 'space.png');
         this.load.image('menuBG', 'MenuBG.png');
 
-        this.load.path = './assets/';
+        this.load.path = './assets/misc/';
         this.load.image('shield', 'shield.png');
-        this.load.image('invertedProjectile', 'invertedProjectile.png')
+        this.load.image('invertedProjectile', 'invertedProjectile.png');
+        this.load.image('nonProjectile', 'nonReflect.png');
         this.load.image('reverse', 'reverse.png');
         this.load.image('Note Bar', 'Note_Bar.png')
         this.load.image('powerChord', 'powerChord.png');
-        this.load.image('bossDoor', 'bossDoor.png');
         this.load.image('uncheck', 'checkBox.png');
         this.load.image('check', 'checkBoxChecked.png');
         this.load.image('whiteBG', 'whiteBG.png');

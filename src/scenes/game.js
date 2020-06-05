@@ -185,7 +185,7 @@ class Game extends Phaser.Scene {
                 this.player.setAcceleration(0);
                 this.player.setDrag(0);
                 if (this.playerDeath) {
-                    this.destroyObjects();
+                    this.destroyObjects(); //seems redundant, but that is b/c the part outside of this if will run multiple times.
                     this.scene.start('gameOverScene');
                     this.scene.remove('bossScene');
                     this.scene.remove('gameScene');
