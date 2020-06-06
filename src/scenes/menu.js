@@ -82,11 +82,11 @@ class Menu extends Phaser.Scene {
         let volumeLevel = audio * 10;
         let playButton = this.add.image(centerX, centerY, 'playButton', null).setOrigin(0.5).setDepth(uiDepth);
         let controlsButton = this.add.image(centerX, centerY + 150, 'controlsButton', null).setOrigin(0.5).setDepth(uiDepth);
-        let volumeControl = this.add.image(centerX - 64, centerY + 350, 'volumeButton', null).setOrigin(0.5).setDepth(uiDepth);
-        let upButton = this.add.image(centerX + 218/2, centerY + 286, 'upButton', null).setOrigin(0.5).setDepth(uiDepth);
-        let downButton = this.add.image(centerX + 218/2, centerY + 414, 'downButton', null).setOrigin(0.5).setDepth(uiDepth);
+        let volumeControl = this.add.image(centerX - 34, centerY + 350, 'volumeButton', null).setOrigin(0.5).setDepth(uiDepth);
+        let upButton = this.add.image(centerX + 250/2, centerY + 286, 'upButton', null).setOrigin(0.5).setDepth(uiDepth);
+        let downButton = this.add.image(centerX + 250/2, centerY + 414, 'downButton', null).setOrigin(0.5).setDepth(uiDepth);
 
-        let volume = this.add.text(centerX + 218/2, centerY + 350, `${volumeLevel}`, {
+        let volume = this.add.text(centerX + 250/2, centerY + 350, `${volumeLevel}`, {
             fontFamily: 'Courier',
             fontSize: '64px',
             color: '#000000',
@@ -154,7 +154,7 @@ class Menu extends Phaser.Scene {
 
         //setup dev mode box
         let texture = devMode ? 'check' : 'uncheck';
-        let checkbox = this.add.image(game.config.height - 100, game.config.width - 100, texture, null).setOrigin(0.5).setDepth(uiDepth).setScale(0.5);
+        let checkbox = this.add.image(game.config.width - 120, game.config.height - 100, texture, null).setOrigin(0.5).setDepth(uiDepth).setScale(0.5);
         checkbox.setInteractive();
         checkbox.on('pointerover', () => {
             checkbox.setScale(0.6);
@@ -167,10 +167,12 @@ class Menu extends Phaser.Scene {
             devMode = !devMode;
             checkbox.setTexture(texture, null);
         });
-        this.add.text(game.config.height - 100, game.config.width - 164, `Grader Mode`, {
+        this.add.text(game.config.width - 120, game.config.height - 164, `Grader Mode`, {
             fontFamily: 'Courier',
-            fontSize: '16px',
+            fontSize: '32px',
             color: '#000000',
+            stroke: '#000000',
+            strokeThickness: 4,
         }).setOrigin(0.5).setDepth(uiDepth);
     }
 

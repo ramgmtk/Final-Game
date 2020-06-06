@@ -8,6 +8,8 @@ class Controls extends Phaser.Scene {
             fontFamily: 'Courier',
             fontSize: '32px',
             color: '#000000',
+            stroke: '#000000',
+            strokeThickness: 4,
         }
 
         this.add.image(0, 0, 'menuBG').setOrigin(0).setDepth(0);
@@ -18,9 +20,9 @@ class Controls extends Phaser.Scene {
         this.add.image(centerX, centerY + 50, 'space', null).setOrigin(0.5).setDepth(uiDepth).setScale(1.5);
 
         this.add.text(centerX - 325 , centerY - 50, 'Movement', textConfig);
-        this.add.text(centerX + 175 , centerY - 50, 'Play Note', textConfig);
+        this.add.text(centerX + 165 , centerY - 50, 'Play Note', textConfig);
         this.add.text(centerX - 50, centerY - 25, 'Melee', textConfig);
-        this.add.text(centerX - 88, centerY + 100, 'Play Note Combo', textConfig);
+        this.add.text(centerX - 150, centerY + 100, 'Play Note Combo', textConfig);
 
         let backButton  = this.add.image(centerX, game.config.height - 200, 'backButton', null).setOrigin(0.5).setDepth(uiDepth);
         backButton.setInteractive();
