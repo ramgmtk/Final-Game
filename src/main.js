@@ -1,7 +1,12 @@
 //Pluck and the Power of the Chord
+//Artg120 Section A
+//Cmpm 120
 //Rammohan Ramanathan
 //Ricky Chavez
 //Anthony Plescia
+
+//Credit Screen guitar art originally created by:
+//https://www.pikrepo.com/fjvov/brown-and-white-stratocaster-electric-guitar
 
 let config = {
     type: Phaser.CANVAS,

@@ -19,7 +19,7 @@ class Projectile extends Phaser.Physics.Arcade.Sprite {
         this.projectileVelocity = velocity;
         this.setPath(vecX, vecY);
         this.parent = parent;
-        this.anims.play('projectileIdle');
+        //this.anims.play('projectileIdle');
     }
 
     update() {

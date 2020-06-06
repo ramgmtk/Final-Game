@@ -4,6 +4,7 @@ class Credits extends Phaser.Scene {
     }
 
     create() {
+        this.add.image(0, 0, 'winScreen').setOrigin(0).setDepth(0);
         this.createSoud();
         this.bossTheme1.play();
         let textConfig  = {

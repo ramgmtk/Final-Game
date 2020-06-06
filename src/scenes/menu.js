@@ -57,6 +57,7 @@ class Menu extends Phaser.Scene {
         this.load.image('check', 'checkBoxChecked.png');
         this.load.image('whiteBG', 'whiteBG.png');
         this.load.image('gameOverScreen', 'End_Credits_Screen.png')
+        this.load.image('winScreen', 'Win_Credits.png')
 
         //sound
         this.load.path = './assets/sounds/';
