@@ -20,7 +20,7 @@ class Controls extends Phaser.Scene {
         this.add.text(centerX - 325 , centerY - 50, 'Movement', textConfig);
         this.add.text(centerX + 175 , centerY - 50, 'Play Note', textConfig);
         this.add.text(centerX - 50, centerY - 25, 'Melee', textConfig);
-        this.add.text(centerX - 88, centerY + 100, 'Play Song', textConfig);
+        this.add.text(centerX - 88, centerY + 100, 'Play Note Combo', textConfig);
 
         let backButton  = this.add.image(centerX, game.config.height - 200, 'backButton', null).setOrigin(0.5).setDepth(uiDepth);
         backButton.setInteractive();

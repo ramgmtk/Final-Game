@@ -72,12 +72,12 @@ class Game extends Phaser.Scene {
         let pChordSpawn;
         let pChordArr = ['Power_Chord_Reflect', 'Power_Chord_Shrink', 'Power_Chord_Shield', 'Power_Chord_Destroy'];
         for (let i = 0; i < powerChordBar.length; i++) {
-            if (!powerChordBar[i].unlocked) {
+            //if (!powerChordBar[i].unlocked) {
                 pChordSpawn = map.findObject('Object_Layer',  (obj) => obj.name === pChordArr[i]);
                 let pChord = new PowerChord(this, pChordSpawn.x, pChordSpawn.y, 'powerChord', null, powerChordBar[i].powerChord);
                 pChord.setScale(0.5);
                 this.pChordGroup.add(pChord);
-            }
+            //}
         }
 
         this.physics.add.collider(this.player, this.pChordGroup, (obj1, obj2) => {

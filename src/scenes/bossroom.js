@@ -94,7 +94,7 @@ class BossRoom extends Phaser.Scene {
                 if (this.player.isAttacking) {
                     this.physics.world.collide(this.player.weapon, this.boss, (object1, object2) => {
                         this.player.hasAttacked = true
-                        object2.damageEnemy(100);
+                        object2.damageEnemy(3);
                     }, () => {
                         return !this.player.hasAttacked;
                     }, this);
