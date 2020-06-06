@@ -25,6 +25,8 @@ class Menu extends Phaser.Scene {
         this.load.atlas('powerAtlas', 'powerchords.png', 'powerchords.json');
         this.load.atlas('doorAtlas', 'doorSprite.png', 'doorSprite.json');
         this.load.atlas('keyAtlas', 'keys.png', 'keys.json');
+        this.load.atlas('projectileAtlas', 'Projectile.png', 'Projectile.json');
+        this.load.atlas('reflectAtlas', 'reflect.png', 'reflect.json');
         this.load.path = './assets/tilemap/';
         this.load.image('tutorial_tile', 'Tile_Sheet_v2.png');
         this.load.tilemapTiledJSON('tutorial_map', 'Tutorial1.json');
@@ -397,6 +399,32 @@ class Menu extends Phaser.Scene {
                 {frame: 'doorSprite2'},
             ],
             frameRate: 2,
+            repeat: -1,
+        });
+
+        this.anims.create({
+            key: 'projectileIdle',
+            frames: this.anims.generateFrameNames('projectileAtlas', {
+                prefix: 'proj',
+                start: 1,
+                end: 4,
+                suffix: '',
+                zeroPad: 0
+            }),
+            duration: 325,
+            repeat: -1,
+        });
+
+        this.anims.create({
+            key: 'projectileReflect',
+            frames: this.anims.generateFrameNames('reflectAtlas', {
+                prefix: 'reflect',
+                start: 1,
+                end: 4,
+                suffix: '',
+                zeroPad: 0
+            }),
+            duration: 325,
             repeat: -1,
         });
     }
