@@ -39,8 +39,18 @@ class PowerChord extends Phaser.Physics.Arcade.Sprite {
         this.scene.add.existing(key1);
         this.scene.add.existing(key2);
         this.scene.add.existing(key3);
+        let camCenter = this.scene.mainCam.getWorldPoint(centerX, centerY);
+        let key4 = new Phaser.GameObjects.Sprite(this.scene, camCenter.x - (noteSize * 4), camCenter.y + (noteSize * 4), 'keyAtlas', this.key[0]).setAlpha(0).setDepth(uiDepth).setScale(4);
+        let key5 = new Phaser.GameObjects.Sprite(this.scene, camCenter.x, camCenter.y + (noteSize * 4), 'keyAtlas', this.key[1]).setAlpha(0).setDepth(uiDepth).setScale(4);
+        let key6 = new Phaser.GameObjects.Sprite(this.scene, camCenter.x + (noteSize * 4), camCenter.y + (noteSize * 4), 'keyAtlas', this.key[2]).setAlpha(0).setDepth(uiDepth).setScale(4);
+        let space = new Phaser.GameObjects.Sprite(this.scene, camCenter.x, camCenter.y, 'space', null).setAlpha(0).setDepth(uiDepth).setScale(3);
+        this.scene.add.existing(key4);
+        this.scene.add.existing(key5);
+        this.scene.add.existing(key6);
+        this.scene.add.existing(space);
+
         let scene = this.scene;
-        let timeline = this.scene.tweens.timeline({
+        let timeline1 = this.scene.tweens.timeline({
             repeat: 0,
             paused: true,
             duration: this.scene.bpms * 3,
@@ -72,10 +82,52 @@ class PowerChord extends Phaser.Physics.Arcade.Sprite {
                 key1.destroy();
                 key2.destroy();
                 key3.destroy();
+                timeline2.play();
             },
             onCompleteScope: this,
         });
-        timeline.play();
+        
+        let timeline2 = this.scene.tweens.timeline({
+            repeat: 0,
+            paused: true,
+            duration: this.scene.bpms * 3,
+            tweens: [{
+                targets: key4,
+                alpha: {from: 0, to: 1},
+                onComplete: () => {
+                    scene.musicMap[this.key[0]].play();
+                },
+                onCompleteScope: this,
+            },
+            {
+                targets: key5,
+                alpha: {from: 0, to: 1},
+                onComplete: () => {
+                    scene.musicMap[this.key[1]].play();
+                },
+                onCompleteScope: this,
+            },
+            {
+                targets: key6,
+                alpha: {from: 0, to: 1},
+                onComplete: () => {
+                    scene.musicMap[this.key[2]].play();
+                },
+                onCompleteScope: this,
+            },
+            {
+                targets: space,
+                alpha: {from: 0, to: 1},
+            }],
+            onComplete: ()=> {
+                key4.destroy();
+                key5.destroy();
+                key6.destroy();
+                space.destroy();
+            },
+            onCompleteScope: this,
+        });
+        timeline1.play();
         this.destroy();
     }
 }
