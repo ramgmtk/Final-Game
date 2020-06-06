@@ -268,6 +268,7 @@ class BossRoom extends Phaser.Scene {
         } else if (noteCombo == powerChordBar[1].powerChord) { //MUST FIX, WHAT IF PLAYER RESIZES INTO A NARROW ENTRANCE?
             console.assert(debugFlags.playerFlag, 'Shrink');
             if (this.player.canShrink) {
+                this.player.particleManager.shrinkParticles();
                 this.player.setScale(0.5);
                 this.player.setMaxVelocity(playerMaxVelocity/2);
                 this.player.canShrink = false;

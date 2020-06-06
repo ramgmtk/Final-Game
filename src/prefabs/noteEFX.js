@@ -87,6 +87,30 @@ class efxEmitter {
         });
     }
 
+    shrinkParticles() {
+        let notefx1 = new efxParticle(this.scene, this.parent.x, this.parent.y, 'shrink', null).setScale(1).setDepth(uiDepth - 1).setOrigin(0.5).setFlip(true, false);
+        let notefx2 = new efxParticle(this.scene, this.parent.x, this.parent.y, 'shrink', null).setScale(1).setDepth(uiDepth - 1).setOrigin(0.5).setFlip(false, false);
+        let notefx3 = new efxParticle(this.scene, this.parent.x, this.parent.y, 'shrink', null).setScale(1).setDepth(uiDepth - 1).setOrigin(0.5).setFlip(true, true);
+        let notefx4 = new efxParticle(this.scene, this.parent.x, this.parent.y, 'shrink', null).setScale(1).setDepth(uiDepth - 1).setOrigin(0.5).setFlip(false, true);
+        let noteArr = [notefx1, notefx2, notefx3, notefx4];
+        for (let i = 0; i < noteArr.length; i++) {
+            let noteTween = this.scene.tweens.add({
+                targets: noteArr[i],
+                alpha: {from: 1, to: 0},
+                scale: {from: 1, to: 0},
+                x: {from: noteArr[i].origin.x + this.xArr[i], to: noteArr[i].origin.x},
+                y: {from: noteArr[i].origin.y + this.yArr[i], to: noteArr[i].origin.y},
+                //ease: 'Sine.easeOut',
+                duration: 500,
+                repeat: 0,
+                onComplete: () => {
+                    noteArr[i].destroy();
+                },
+                onCompleteScope: this,
+            });
+        }
+    }
+
     gameOverParticles() {
         let theta = (Math.PI/(4));
         for (let i = 0; i < 7; i++) {
